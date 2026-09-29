@@ -1,0 +1,478 @@
+{
+  "intents": [
+    {
+      "id": "INT-001",
+      "title": "Provision org, sandboxes, and DevOps pipeline",
+      "epic_id": "E12",
+      "phase": 1,
+      "priority": null,
+      "confidence": "Confirmed",
+      "surface": "devops",
+      "outcome": {
+        "summary": "A production org and lower sandboxes are stood up with a source-controlled CI/CD flow so every subsequent phase deploys metadata predictably."
+      },
+      "build_target": "- Production org, Full Sandbox, Partial Sandbox, and N Developer Pro sandboxes exist and are named per convention\n- Source repo holds the base metadata (profiles, permission sets, custom settings, base custom objects)\n- CI/CD pipeline deploys a change from a feature branch through Partial → Full → Production\n- LDV baseline set: skinny table + selective indexes on Subsidy_Application__c placeholder, Big Object archival design captured\n- Business Hours records exist per region (APAC, EMEA, AMER) for downstream SLA math",
+      "guardrails": [
+        "Must not create org-wide sharing rules or Restriction Rules (INT-004 owns PHI security)",
+        "Must not create the Subsidy_Application__c or Assignment__c objects (INT-007/INT-009 own them)",
+        "Must not enable Shield Platform Encryption without the Phase 0 PHI classification signoff"
+      ],
+      "out_of_scope": [
+        "Must not stand up per-region orgs (deferred to G0904 resolution)",
+        "Must not procure Partner Community licenses (belongs to INT-009)"
+      ],
+      "acceptance": "A DevOps engineer merges a trivial custom-label change on a feature branch, watches CI promote it through the sandbox tiers to Production, and confirms the label appears in Setup in each org.",
+      "dependencies": {
+        "external": [
+          { "system": "Salesforce Licensing", "need": "Service Cloud + Experience Cloud + sandbox licenses provisioned", "owner": "PTSF IT" }
+        ]
+      }
+    },
+    {
+      "id": "INT-002",
+      "title": "Federate three regional Active Directories with JIT provisioning",
+      "epic_id": "E08",
+      "phase": 1,
+      "priority": null,
+      "confidence": "Assumed",
+      "surface": "security",
+      "outcome": {
+        "summary": "Internal PTSF users sign in with their regional AD credentials and land in Salesforce with Region and Language attributes pre-populated."
+      },
+      "build_target": "- Three SAML Single Sign-On configurations (one per regional AD: APAC, EMEA, AMER)\n- JIT provisioning handler that creates the User with Profile, Region__c, and Language attributes from the SAML assertion\n- MyDomain configured; login page routes each region to the correct IdP\n- Named permission set for each region grants regional data-scope access",
+      "guardrails": [
+        "Must not federate patient or practitioner logins (INT-003 owns those)",
+        "Must not grant a JIT-provisioned user any PHI-access permission set"
+      ],
+      "out_of_scope": [
+        "Must not build a global AD federation (three regional trusts is the ratified design)"
+      ],
+      "acceptance": "An Assessor in EMEA authenticates against the EMEA AD, lands in Salesforce with Region__c = EMEA and Language = French pre-set, and can open a French-locale application list view.",
+      "dependencies": {
+        "external": [
+          { "system": "PTSF Regional AD (APAC/EMEA/AMER)", "need": "SAML metadata + JIT attribute contract", "owner": "PTSF IT / regional AD admins" }
+        ]
+      }
+    },
+    {
+      "id": "INT-003",
+      "title": "Patient and practitioner login (email/password, Facebook, and partner path)",
+      "epic_id": "E08",
+      "phase": 1,
+      "priority": null,
+      "confidence": "Assumed",
+      "surface": "experience-cloud",
+      "outcome": {
+        "summary": "Patients and practitioners can register and log in through the right channel for their role, without touching internal identity."
+      },
+      "build_target": "- Experience Cloud login pages for Patient Portal (email/password + Facebook Auth Provider) and Practitioner Community (partner path per G0401 resolution)\n- Self-registration for patients; admin-vetting queue for practitioner registrations (strawman)\n- Password/reset flows in each site's supported languages\n- Auth Provider config for Facebook, tested against a real developer app",
+      "guardrails": [
+        "Must not merge patient and practitioner Contact records — RecordType keeps them distinct",
+        "Must not provision a Partner Community license until admin vetting completes"
+      ],
+      "out_of_scope": [
+        "Must not build passwordless / magic-link auth (not requested)"
+      ],
+      "acceptance": "A patient registers with Facebook, lands on the onboarding wizard entry screen; separately, a practitioner self-registers, waits for admin approval, and then logs in to a practitioner-community home page.",
+      "open_questions": [
+        {
+          "id": "Q-003-1",
+          "question": "Is the practitioner auth path self-registration-with-vetting, or federated against a professional-registry IdP?",
+          "resolver": "PTSF Program Sponsor + IA",
+          "answer": null
+        }
+      ]
+    },
+    {
+      "id": "INT-004",
+      "title": "PHI security model — Medical_History__c Private OWD + Apex-managed sharing + Restriction Rules",
+      "epic_id": "E09",
+      "phase": 1,
+      "priority": null,
+      "confidence": "Confirmed",
+      "surface": "security",
+      "outcome": {
+        "summary": "Practitioners see a patient's medical history only during an open assessment; internal PTSF staff never see it, verified by a Restriction Rule that even View All can't bypass."
+      },
+      "build_target": "- Medical_History__c custom object as child of Contact, OWD Private\n- Apex trigger on Assignment__c: on Status → Accepted, insert Medical_History__Share rows granting Read to the Practitioner User; on Status → Completed/Declined/Reassigned, delete those manual shares\n- Restriction Rule on Medical_History__c blocking all internal profiles (Assessor, Team Manager, Regional Ops, System Administrator)\n- 'PHI Emergency Access' permission set — Compliance-Officer-assigned only — granting the Restriction Rule exception\n- Audit_Log__c custom object capturing every break-glass grant with reason\n- Shield Platform Encryption applied per the classification matrix (deterministic on searchable fields, probabilistic on free-text)",
+      "guardrails": [
+        "Must not use standard sharing rules or role-hierarchy grants on Medical_History__c — only manual shares via the trigger",
+        "Must not expose Medical_History__c through any report, list view, or related list on an internal profile",
+        "Must not defer break-glass audit logging — the grant and the log write are the same transaction"
+      ],
+      "out_of_scope": [
+        "Must not encrypt attachments (E10 migration will decide separately)"
+      ],
+      "acceptance": "A compliance-officer test: log in as a System Administrator with View All on Contact, open a patient record, try to reach Medical_History__c — no records visible, no error, no leak. Then a practitioner-side test: an Assignment moves to Accepted; the practitioner sees the patient's Medical_History__c rows on the assignment record. Move the Assignment to Completed; the practitioner refreshes and the records are gone.",
+      "grounding": {
+        "artifacts": [
+          { "type": "decision", "ref": "Private OWD Medical History with Apex-managed sharing", "location": "data/memory.json#decision_log" }
+        ]
+      }
+    },
+    {
+      "id": "INT-005",
+      "title": "Region-scoped OWD and role hierarchy for non-PHI records",
+      "epic_id": "E09",
+      "phase": 1,
+      "priority": null,
+      "confidence": "Assumed",
+      "surface": "security",
+      "outcome": {
+        "summary": "Every non-PHI record is scoped to its region by default — an APAC Assessor doesn't see EMEA cases, and reports honor row-level security automatically."
+      },
+      "build_target": "- Region__c on User, Contact, Subsidy_Application__c, Assignment__c, Assessment__c\n- OWD Public Read-Only for Subsidy_Application__c, Assignment__c, Assessment__c with a criteria-based sharing rule constraining visibility to same-Region users\n- Role hierarchy modeled per region (Regional Ops Manager → Team Manager → Assessor)\n- Permission set groups per Profile × Region combination",
+      "guardrails": [
+        "Must not apply this pattern to Medical_History__c (INT-004 owns it)",
+        "Must not let a role-hierarchy grant cross regions"
+      ],
+      "out_of_scope": [
+        "Must not build cross-region reporting overrides (Reporting phase decides)"
+      ],
+      "acceptance": "An APAC Assessor opens the All Open Applications list view and sees only APAC applications; the EMEA Regional Ops Manager sees only EMEA."
+    },
+    {
+      "id": "INT-006",
+      "title": "Patient portal + onboarding wizard with async HIC prefill",
+      "epic_id": "E01",
+      "phase": 2,
+      "priority": null,
+      "confidence": "Confirmed",
+      "surface": "experience-cloud",
+      "outcome": {
+        "summary": "A new patient can register and complete a localized onboarding wizard that prefills insurance data from the HIC without ever blocking on the 15-second peak latency."
+      },
+      "build_target": "- Experience Cloud LWR site 'Patient Portal' with localized templates per region\n- LWC wizard capturing name, DOB, address, language preference, insurance details\n- Onboarding__c staging record persisted per wizard step\n- Platform Event `HIC_Prefill_Requested__e` fired on wizard entry; UI shows a non-blocking 'checking coverage' state\n- Address validation callout to Loqate (strawman) on address entry\n- Localized welcome email template set, keyed by Contact.Language_Preference__c\n- Contact.Onboarding_Complete__c gate that blocks the subsidy application journey until onboarding is finished",
+      "guardrails": [
+        "Must not block wizard progression on the HIC callout returning — the wizard advances, HIC fills in later",
+        "Must not send unlocalized emails — every template exists in every supported language",
+        "Must not write insurance detail to a Contact field cleartext where it should live encrypted on Medical_History__c (INT-004)"
+      ],
+      "out_of_scope": [
+        "Must not build the subsidy application form (INT-008 owns it)",
+        "Must not build the HIC entitlement-check pattern for submissions (INT-007 owns the shared pattern)"
+      ],
+      "acceptance": "A patient in Singapore registers with Facebook, enters the wizard in English, submits an address that Loqate corrects, sees the 'coverage check pending' pill, continues to the language step, and by the time they reach the summary the insurance details have prefilled from HIC. A localized welcome email lands in their inbox.",
+      "dependencies": { "internal": ["INT-003", "INT-007"] }
+    },
+    {
+      "id": "INT-007",
+      "title": "Health Insurance Checker async integration pattern (Platform Event → Queueable → callback)",
+      "epic_id": "E03",
+      "phase": 2,
+      "priority": null,
+      "confidence": "Confirmed",
+      "surface": "integration",
+      "outcome": {
+        "summary": "Every HIC call — onboarding prefill and application entitlement check — runs asynchronously with retry, idempotency, and a hourly Scheduled Flow fallback, so a 15-second peak never blocks a user."
+      },
+      "build_target": "- Platform Event `HIC_Prefill_Requested__e` and `HIC_Entitlement_Requested__e`\n- Queueable Apex `HICQueueable` calling HIC via Named Credential, 20s callout timeout, exponential backoff up to 3 attempts\n- HIC_Check__c custom object linked to the source record (Onboarding__c or Subsidy_Application__c)\n- Completion Platform Events (`HIC_Prefill_Completed__e`, `HIC_Entitlement_Completed__e`) with the result payload\n- Scheduled Flow retrying HIC_Check__c rows in 'pending' state hourly for 24 hours\n- Idempotency key `SHA(record_id, submitted_at)` on every request",
+      "guardrails": [
+        "Must not call HIC synchronously from a Flow, LWC, or trigger — every call goes through the Queueable",
+        "Must not exceed 3 retry attempts before deferring to the Scheduled Flow",
+        "Must not create duplicate HIC_Check__c rows for the same idempotency key"
+      ],
+      "out_of_scope": [
+        "Must not decide the business rules for auto-reject (INT-008 owns the Flow that acts on the completion event)"
+      ],
+      "acceptance": "A Subsidy Application is submitted with a mock HIC that takes 14 seconds; the user sees 'pending' in the wizard and can navigate away. Fourteen seconds later, HIC_Check__c is populated with the result, the completion event fires, and the application status advances. A second submission with the same idempotency key does not create a second HIC_Check__c row.",
+      "dependencies": {
+        "external": [
+          { "system": "Health Insurance Checker (HIC) API", "need": "Named Credential endpoint, contract SLA (p50/p99), payload schema", "owner": "PTSF IT + HIC vendor" }
+        ]
+      },
+      "open_questions": [
+        {
+          "id": "Q-007-1",
+          "question": "What is the exact HIC request/response payload schema and rate-limit contract?",
+          "resolver": "PTSF IT + HIC vendor",
+          "answer": null
+        }
+      ]
+    },
+    {
+      "id": "INT-008",
+      "title": "Subsidy application lifecycle with treatment picker and auto-reject",
+      "epic_id": "E02",
+      "phase": 2,
+      "priority": null,
+      "confidence": "Confirmed",
+      "surface": "screen-flow",
+      "outcome": {
+        "summary": "A patient submits a subsidy application, picks a treatment from a hierarchy of 500+ leaves, and — if HIC confirms their insurance covers travel — sees the application auto-rejected with a plain-language explanation."
+      },
+      "build_target": "- Subsidy_Application__c custom object with status state machine (Draft → Submitted → HIC-check pending → Awaiting Practitioner → Assessment → Approved/Rejected)\n- Treatment_Type__c hierarchical object with a metadata-driven picker component\n- Medical_History__c snapshot mechanism captured at submission time\n- On-submit Flow that fires `HIC_Entitlement_Requested__e` (INT-007) and moves status to HIC-check pending\n- On HIC completion: if entitlement covers travel, auto-reject Flow generates a localized explanation and emails the patient; else move to Awaiting Practitioner (INT-009 picks it up)\n- Skinny table + selective indexes on Status + Region + Created_Date",
+      "guardrails": [
+        "Must not allow submission before Contact.Onboarding_Complete__c",
+        "Must not let a patient edit an application after submission (a corrections workflow is out of scope this phase)"
+      ],
+      "out_of_scope": [
+        "Must not assign a practitioner (INT-009 owns assignment)",
+        "Must not decide subsidy amount (INT-014 owns determination)"
+      ],
+      "acceptance": "A patient completes onboarding, opens a new application, picks 'Oncology → Radiation Therapy' from the hierarchical picker, submits; HIC returns 'covered by insurance' in 6 seconds; the patient sees an auto-reject screen in their language with the reason and a localized rejection email arrives."
+    },
+    {
+      "id": "INT-009",
+      "title": "Practitioner community and geolocation-based auto-assignment",
+      "epic_id": "E04",
+      "phase": 3,
+      "priority": null,
+      "confidence": "Confirmed",
+      "surface": "experience-cloud",
+      "outcome": {
+        "summary": "When a subsidy application is not auto-rejected, the nearest available practitioner in the treatment specialty is auto-assigned within a few seconds of submission."
+      },
+      "build_target": "- Partner Community licenses provisioned for ~4,000 practitioners (subject to G0101 resolution)\n- Contact geocoded on Address change (Location__c geolocation field)\n- Practitioner_Specialty__c junction between Contact and Treatment_Type__c\n- Assignment__c custom object with Status (Assigned / Accepted / Declined / Completed / Reassigned)\n- Apex trigger on Subsidy_Application__c after HIC completion → enqueue Queueable `AssignmentSelector`\n- SOQL selection by DISTANCE() from patient Location__c, filtered by specialty, On_Leave__c = false, Current_Load__c < Capacity_Max__c, excluding previously-declined practitioners\n- Community record page for Assignment__c with Accept / Decline buttons and Medical_History__c related list (visible only via INT-004's sharing)",
+      "guardrails": [
+        "Must not select a practitioner outside the patient's region (patient's Region drives BusinessHours downstream)",
+        "Must not assign more than one open Assignment per application at a time",
+        "Must not expose an application's Medical_History__c to a practitioner before their Assignment reaches Accepted"
+      ],
+      "out_of_scope": [
+        "Must not build the reassignment SLA clock (INT-010 owns it)",
+        "Must not build the assessment form (INT-011 owns it)"
+      ],
+      "acceptance": "A submitted application in APAC with treatment 'Oncology → Radiation Therapy' fires the trigger; within 5 seconds, an Assignment__c exists on the nearest oncology-capable, on-duty APAC practitioner. That practitioner opens the community, sees the assignment tile, opens it, and can see the patient's Medical_History__c rows.",
+      "dependencies": { "internal": ["INT-003", "INT-008"] },
+      "open_questions": [
+        {
+          "id": "Q-009-1",
+          "question": "What tie-breakers apply when two practitioners tie on distance (load, longest-since-last-assignment, random)?",
+          "resolver": "PTSF Ops leadership + IA",
+          "answer": null
+        }
+      ]
+    },
+    {
+      "id": "INT-010",
+      "title": "3-business-day accept-or-reassign SLA with regional Business Hours",
+      "epic_id": "E04",
+      "phase": 3,
+      "priority": null,
+      "confidence": "Confirmed",
+      "surface": "automation",
+      "outcome": {
+        "summary": "A practitioner who doesn't accept an assignment within 3 business days for their region has the assignment automatically reassigned to the next-nearest eligible practitioner."
+      },
+      "build_target": "- Scheduled Flow running nightly at 01:00 local per region\n- Query: Assignment__c where Status = Assigned AND Accepted_Date = null AND Assigned_Date < TODAY minus 3 business days (per the practitioner's Region Business Hours)\n- On match: set Status = Reassigned, add practitioner to previously-declined set on the Application, enqueue AssignmentSelector (INT-009) to pick the next candidate\n- Email notification to the practitioner explaining the reassignment (localized)",
+      "guardrails": [
+        "Must not use calendar days — business days per Region Business Hours only",
+        "Must not reassign an application without excluding the previously-declined practitioner"
+      ],
+      "out_of_scope": [
+        "Must not escalate to a manager here — INT-012 owns 15-day escalation"
+      ],
+      "acceptance": "An assignment made in APAC at 10:00 Monday, with Region Business Hours excluding weekends and local holidays, remains unaccepted; by 01:00 the following Friday (3 business days elapsed) the Scheduled Flow reassigns it to the next candidate, and the original practitioner receives a localized 'assignment reassigned' email.",
+      "dependencies": { "internal": ["INT-009"] },
+      "open_questions": [
+        {
+          "id": "Q-010-1",
+          "question": "Whose Business Hours drive the clock — the practitioner's region, the patient's region, or the assessing region?",
+          "resolver": "PTSF Ops leadership + IA",
+          "answer": null
+        }
+      ]
+    },
+    {
+      "id": "INT-011",
+      "title": "Digital assessment form with specialist re-referral",
+      "epic_id": "E05",
+      "phase": 3,
+      "priority": null,
+      "confidence": "Confirmed",
+      "surface": "lwc",
+      "outcome": {
+        "summary": "A practitioner completes a treatment-specific digital assessment inside the community, replacing the current PDF flow, and can spawn a specialist re-referral when needed."
+      },
+      "build_target": "- Assessment__c custom object linked to Assignment__c\n- LWC Assessment component that loads a dynamic form from metadata-driven layouts keyed by Treatment_Type__c\n- Save-draft support; submission moves Assessment to Pending Review\n- 'Request specialist assessment' action creates a child Assessment__c and a new Assignment__c via INT-009's logic filtered to the specialist specialty\n- Attachments (imaging, prior reports) uploadable and linked to Assessment__c",
+      "guardrails": [
+        "Must not let a practitioner see or edit an Assessment for an Assignment they don't own",
+        "Must not accept a submission without all metadata-required fields for the treatment type"
+      ],
+      "out_of_scope": [
+        "Must not implement the 15-day escalation (INT-012 owns it)",
+        "Must not build the assessor review console (INT-013 owns it)"
+      ],
+      "acceptance": "A practitioner with an accepted oncology assignment opens the Assessment LWC, sees the oncology-specific form, saves a draft, returns the next day, completes it, and submits. A second run: they request a specialist assessment; a child Assessment is created and a new Assignment appears on the assigned specialist's community home."
+    },
+    {
+      "id": "INT-012",
+      "title": "15-day assessment escalation to Team Manager",
+      "epic_id": "E05",
+      "phase": 3,
+      "priority": null,
+      "confidence": "Assumed",
+      "surface": "automation",
+      "outcome": {
+        "summary": "An assessment that stays pending for 15 days from its Assigned Date is escalated to the practitioner's Team Manager so it doesn't sit forever."
+      },
+      "build_target": "- Scheduled Flow scanning Assessment__c where Status = Pending AND Assigned_Date < TODAY - 15 (calendar days)\n- On match: create a Task assigned to the Team Manager (region-aware) with a link to the Assessment\n- Set Assessment.Escalated__c = true and store Escalated_Date__c",
+      "guardrails": [
+        "Must not double-escalate — check Escalated__c before creating a Task"
+      ],
+      "out_of_scope": [
+        "Must not build a chatter-post variant — Task is the ratified channel (subject to G0501 confirmation)"
+      ],
+      "acceptance": "An Assessment created 16 days ago in Pending status is escalated on the next Scheduled Flow run: the Team Manager sees a new Task on their queue and clicking through opens the Assessment.",
+      "open_questions": [
+        {
+          "id": "Q-012-1",
+          "question": "Escalation channel — Task, Case, or Chatter post?",
+          "resolver": "PTSF Ops leadership",
+          "answer": null
+        }
+      ]
+    },
+    {
+      "id": "INT-013",
+      "title": "Assessor Service Console for application review",
+      "epic_id": "E06",
+      "phase": 4,
+      "priority": null,
+      "confidence": "Confirmed",
+      "surface": "console",
+      "outcome": {
+        "summary": "An Assessor works a subsidy application end-to-end in a Service Console app that shows everything relevant except medical history."
+      },
+      "build_target": "- Service Console app 'Application Review' with Subsidy_Application__c as primary tab\n- Related lists: Assessment(s), HIC_Check(s), Practitioner info (Contact card)\n- Medical_History__c intentionally NOT shown (INT-004's Restriction Rule enforces)\n- Utility bar with a 'Determine Subsidy' launcher (INT-014) and 'Escalate to Manager' action\n- List views for My Queue, Regional Queue, SLA Breached",
+      "guardrails": [
+        "Must not expose Medical_History__c anywhere in this console — no related list, no lookup, no report",
+        "Must not surface an application from a different region on a Regional Ops list view"
+      ],
+      "out_of_scope": [
+        "Must not build the determination Flow (INT-014 owns it)",
+        "Must not build managerial approval routing (INT-015 owns it)"
+      ],
+      "acceptance": "An APAC Assessor opens the console, sees My Queue with only APAC applications, opens one, sees the Assessment and HIC_Check tiles, tries to reach medical history — nothing exists in the UI to reach it — and clicks Determine Subsidy to launch INT-014."
+    },
+    {
+      "id": "INT-014",
+      "title": "Subsidy determination Flow with regional threshold approval",
+      "epic_id": "E06",
+      "phase": 4,
+      "priority": null,
+      "confidence": "Assumed",
+      "surface": "screen-flow",
+      "outcome": {
+        "summary": "The Assessor uses a decision-support tool that proposes a subsidy amount from distance × transport type; if the amount exceeds a regional threshold, an Approval Process routes it to a Team Manager."
+      },
+      "build_target": "- Subsidy_Determination_Rule__c custom object holding transport-type multipliers per region\n- Screen Flow 'Determine Subsidy' invoked from INT-013's utility bar; computes proposed amount from Practitioner.Distance_From_Patient × Transport_Type multiplier\n- Assessor can adjust the amount with a reason field\n- Approval Process: if Amount > Region.Threshold__c, route to Team Manager (role hierarchy)\n- Subsidy_Application__c fields: Proposed_Amount__c, Approved_Amount__c, Adjustment_Reason__c",
+      "guardrails": [
+        "Must not commit a subsidy amount that skips the approval process where required",
+        "Must not use a global threshold — Region.Threshold__c drives it"
+      ],
+      "out_of_scope": [
+        "Must not integrate to a payment system (G0603 unresolved)"
+      ],
+      "acceptance": "An Assessor in EMEA determines a subsidy of €1,800 (threshold €1,500); the Approval Process routes to the EMEA Team Manager, who approves; the application moves to Approved with Approved_Amount__c populated.",
+      "open_questions": [
+        {
+          "id": "Q-014-1",
+          "question": "Is the decision-support mechanism a business rule engine, this Flow-based calculator, or a reference-table lookup?",
+          "resolver": "PTSF Program Sponsor + IA",
+          "answer": null
+        }
+      ]
+    },
+    {
+      "id": "INT-015",
+      "title": "Chat, deflection bot, and knowledge base on both surfaces",
+      "epic_id": "E07",
+      "phase": 4,
+      "priority": null,
+      "confidence": "Assumed",
+      "surface": "experience-cloud",
+      "outcome": {
+        "summary": "Patients and practitioners can chat with an Einstein Bot that answers most questions; live handoff to an Assessor happens on intent or user request."
+      },
+      "build_target": "- Messaging for In-App/Web widget embedded on Patient Portal and Practitioner Community\n- Einstein Bot answering the top intents from the current static-website FAQ\n- Omni-Channel routing on handoff, keyed by Language and Region as skills\n- Knowledge base seeded from the current static-website FAQ content, per language",
+      "guardrails": [
+        "Must not route a patient chat to an Assessor in a different region unless no in-region agent is available",
+        "Must not surface medical-history references in bot responses"
+      ],
+      "out_of_scope": [
+        "Must not build voice channel — chat only"
+      ],
+      "acceptance": "A French-speaking patient opens chat on the EMEA portal, the bot answers three FAQ intents, then the patient asks about a specific application; the bot routes to Omni-Channel and lands with a French-speaking EMEA Assessor."
+    },
+    {
+      "id": "INT-016",
+      "title": "Operational and executive reporting",
+      "epic_id": "E11",
+      "phase": 4,
+      "priority": null,
+      "confidence": "Assumed",
+      "surface": "console",
+      "outcome": {
+        "summary": "Assessors, managers, and executives see the operational and cycle-time metrics they need without any medical-history leakage."
+      },
+      "build_target": "- Assessor dashboard: My Queue, SLA breaches, applications-in-flight by status\n- Team Manager dashboard: regional throughput, escalation count, practitioner acceptance rate\n- Executive dashboard (CRM Analytics if standard reports hit LDV): subsidies granted per region, rejection reasons, cycle time\n- All reports run against region-scoped rows; med-history-derived fields are excluded from any internal-facing report",
+      "guardrails": [
+        "Must not surface any Medical_History__c field, count, or derived metric on an internal report",
+        "Must not aggregate across regions on a Regional Ops dashboard"
+      ],
+      "out_of_scope": [
+        "Must not build patient-facing analytics"
+      ],
+      "acceptance": "An APAC Regional Ops Manager opens their dashboard, sees 200 in-flight APAC applications, a 5% SLA breach count, and no data leaks across into EMEA or AMER."
+    },
+    {
+      "id": "INT-017",
+      "title": "TAMS-to-Salesforce data migration ETL and dedup",
+      "epic_id": "E10",
+      "phase": 5,
+      "priority": null,
+      "confidence": "Confirmed",
+      "surface": "integration",
+      "outcome": {
+        "summary": "The historical patient, application, and assessment data from 30 bespoke TAMS instances lands in Salesforce, deduplicated and with attribution back to source office."
+      },
+      "build_target": "- Per-TAMS-instance ETL adapter (MuleSoft or Informatica) mapping the source shape to a canonical staging model\n- Canonical staging schema with source-office attribution on every row\n- Contact dedup on (Family Name + DOB + Email + Region) with a Data Steward review queue for near-matches (<95% score)\n- Bulk API 2.0 load in phased batches by region, in this order: Contact → Subsidy_Application__c (historical, Status=Closed) → Assessment__c → attachments (PDFs as ContentDocument)\n- Reconciliation reports (row counts + checksums) per batch",
+      "guardrails": [
+        "Must not migrate in-flight applications — they finish in TAMS by their own dynamic",
+        "Must not lose source-office attribution — every migrated row carries Origin_Office__c",
+        "Must not merge two Contacts automatically below the 95% match threshold — humans review"
+      ],
+      "out_of_scope": [
+        "Must not migrate audit history (out of scope for this program)"
+      ],
+      "acceptance": "For a pilot region (smallest AMER office), the ETL loads 12,000 Contacts, 40,000 historical applications, and 90,000 assessments; reconciliation reports show 100% count parity with the TAMS source, and the Data Steward queue contains fewer than 200 near-match candidates to review.",
+      "dependencies": {
+        "external": [
+          { "system": "TAMS (30 bespoke instances)", "need": "Schema inventory + read access per instance + PDF export path", "owner": "PTSF IT + regional office leads" }
+        ]
+      },
+      "open_questions": [
+        {
+          "id": "Q-017-1",
+          "question": "Are PDF-only historical assessments OCR'd (text-searchable) or migrated as-is attachments?",
+          "resolver": "PTSF Program Sponsor",
+          "answer": null
+        }
+      ]
+    },
+    {
+      "id": "INT-018",
+      "title": "Per-region cutover with 4-week dual-run",
+      "epic_id": "E10",
+      "phase": 5,
+      "priority": null,
+      "confidence": "Confirmed",
+      "surface": "devops",
+      "outcome": {
+        "summary": "Each region cuts over from TAMS to Salesforce with a 4-week dual-run tail so in-flight work completes without disruption, then TAMS goes read-only."
+      },
+      "build_target": "- Cutover runbook per region (smallest region first, then next-largest, then largest)\n- Freeze window for TAMS new-application intake during the migration batch\n- 4-week dual-run window: new applications go to Salesforce, in-flight TAMS applications stay in TAMS and finish there\n- Post-cutover: TAMS becomes read-only per region; reconciliation report signed off by Regional Ops Manager\n- Rollback plan documented (fail fast in the first 48 hours)",
+      "guardrails": [
+        "Must not cut over more than one region on the same weekend",
+        "Must not close the dual-run window before every in-flight TAMS application has completed"
+      ],
+      "out_of_scope": [
+        "Must not decommission TAMS hardware (PTSF IT owns that after read-only cutover)"
+      ],
+      "acceptance": "AMER-pilot region cuts over on a Friday night; Monday morning, new applications flow into Salesforce; the last in-flight TAMS application closes on day 24; on day 29 TAMS-AMER is set read-only and the Regional Ops Manager signs the reconciliation report.",
+      "dependencies": { "internal": ["INT-017"] }
+    }
+  ]
+}

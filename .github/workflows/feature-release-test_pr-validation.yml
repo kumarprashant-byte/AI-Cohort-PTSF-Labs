@@ -1,0 +1,220 @@
+name: feature-release-test_pr-validation
+# This workflow validates the pull request for the release branch
+on:
+  pull_request:
+    branches:
+      - "release/*"
+
+jobs:
+  pr-validation:
+    runs-on: ubuntu-latest
+    environment: TEST
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Resolve the deployable package directories ONCE from sfdx-project.json so
+      # neither the delta --source-dir nor the FULL_BUILD deploy hardcodes
+      # force-app/ (issue #64). FAIL CLOSED, correctly: when we can't scope to
+      # specific subdirs (missing/unparseable file, no packageDirectories, or a
+      # ROOT "." package), scope_all=true → consumers scan/deploy the WHOLE repo
+      # rather than guessing force-app/ (fail-OPEN for a custom-dir repo).
+      - name: Resolve package directories
+        id: resolve-dirs
+        run: |
+          node -e '
+            const fs = require("fs");
+            let dirs = null;
+            try {
+              const p = JSON.parse(fs.readFileSync("sfdx-project.json", "utf8"));
+              dirs = (p.packageDirectories || [])
+                .map(d => String((d && d.path) || "").replace(/^\.\//, "").replace(/\/+$/, ""))
+                .filter(s => s !== "");
+            } catch (e) { dirs = null; }
+            const out = process.env.GITHUB_OUTPUT;
+            const scopeAll = dirs === null || dirs.length === 0 || dirs.some(d => d === ".");
+            if (scopeAll) {
+              console.log("::warning::Could not scope to package directories — scoping CI to the whole repo (fail-closed).");
+              fs.appendFileSync(out, "scope_all=true\npkg_dirs=\n");
+              console.log("Package directories: <whole repo>");
+              process.exit(0);
+            }
+            fs.appendFileSync(out, `scope_all=false\npkg_dirs=${dirs.join(" ")}\n`);
+            console.log("Resolved package directories: " + dirs.join(" "));
+          '
+
+      - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli
+
+      - name: Install sfdx-git-delta plugin
+        run: echo 'y' | sf plugins install sfdx-git-delta
+
+      - name: Authenticate to sandbox org (SFDX URL)
+        env:
+          SFDX_URL: ${{ secrets.SFDX_URL }}
+        run: |
+          if [ -z "$SFDX_URL" ]; then
+            echo "Missing required secret: SFDX_URL"
+            exit 1
+          fi
+
+          echo "$SFDX_URL" > ./sfdx_auth_url.txt
+          sf org login sfdx-url \
+            --sfdx-url-file ./sfdx_auth_url.txt \
+            --alias sandbox \
+            --set-default
+          rm -f ./sfdx_auth_url.txt
+
+      - name: Verify authenticated org
+        run: sf org list --all
+
+      - name: Build delta package
+        id: delta-package
+        env:
+          PKG_DIRS: ${{ steps.resolve-dirs.outputs.pkg_dirs }}
+          SCOPE_ALL: ${{ steps.resolve-dirs.outputs.scope_all }}
+        run: |
+          full_build_flag="$(printf '%s' "${{ vars.FULL_BUILD }}" | tr '[:upper:]' '[:lower:]')"
+
+          if [ "$full_build_flag" = "true" ]; then
+            # scope_all → search the whole repo ("."); else the resolved package dirs.
+            if [ "$SCOPE_ALL" = "true" ]; then full_search="."; else full_search="$PKG_DIRS"; fi
+            echo "FULL_BUILD is true. Search roots: $full_search"
+            echo "has_delta=true" >> "$GITHUB_OUTPUT"
+            echo "manifest_path=" >> "$GITHUB_OUTPUT"
+            echo "search_dirs=$full_search" >> "$GITHUB_OUTPUT"
+            echo "post_destructive_path=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          mkdir -p delta
+          # One --source-dir per resolved package dir: the flag is repeatable and
+          # sfdx-git-delta does NOT read packageDirectories itself (issue #64).
+          # scope_all → none, so sgd scans the whole repo. PKG_DIRS via env (data).
+          src_args=()
+          if [ "$SCOPE_ALL" != "true" ]; then
+            for d in $PKG_DIRS; do
+              src_args+=(--source-dir "$d")
+            done
+          fi
+          sf sgd source delta \
+            --from "${{ github.event.pull_request.base.sha }}" \
+            --to "${{ github.event.pull_request.head.sha }}" \
+            --output-dir delta \
+            "${src_args[@]}" \
+            --generate-delta
+
+          manifest_path="delta/package/package.xml"
+          # --generate-delta mirrors each changed file under delta/<repo-relative
+          # path>, so the delta output root covers every package dir.
+          search_dirs="delta"
+          post_destructive_path="delta/destructiveChanges/destructiveChanges.xml"
+
+          has_delta=false
+
+          if [ -f "$manifest_path" ] && grep -q "<types>" "$manifest_path"; then
+            has_delta=true
+          fi
+
+          if [ -f "$post_destructive_path" ] && grep -q "<types>" "$post_destructive_path"; then
+            has_delta=true
+          else
+            post_destructive_path=""
+          fi
+
+          if [ "$has_delta" != "true" ]; then
+            echo "No metadata changes detected in delta package."
+          fi
+
+          echo "has_delta=$has_delta" >> "$GITHUB_OUTPUT"
+          echo "manifest_path=$manifest_path" >> "$GITHUB_OUTPUT"
+          echo "search_dirs=$search_dirs" >> "$GITHUB_OUTPUT"
+          echo "post_destructive_path=$post_destructive_path" >> "$GITHUB_OUTPUT"
+
+      - name: Build Apex test class list
+        id: apex-tests
+        if: vars.TEST_LEVEL == 'RunSpecifiedTests'
+        env:
+          SEARCH_DIRS: ${{ steps.delta-package.outputs.search_dirs }}
+        run: |
+          if [ "${{ steps.delta-package.outputs.has_delta }}" != "true" ]; then
+            echo "No delta changes to validate."
+            echo "has_tests=false" >> "$GITHUB_OUTPUT"
+            echo "test_classes=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # SEARCH_DIRS via env (data, not shell source); unquoted so several roots
+          # (FULL_BUILD) word-split into separate find path args; single "delta" in delta mode.
+          mapfile -t test_files < <(find $SEARCH_DIRS -type f -iname '*test*.cls' | sort)
+
+          if [ "${#test_files[@]}" -eq 0 ]; then
+            echo "No Apex test classes matching '*Test*.cls' (case-insensitive) were found in $SEARCH_DIRS."
+            # Surface, don't smooth over: delta has Apex but no discoverable tests → RunSpecifiedTests
+            # silently falls back to TEST_LEVEL and the targeted run never happens.
+            if find $SEARCH_DIRS -type f -iname '*.cls' | grep -q .; then
+              echo "::warning::Delta contains Apex classes but no test classes were discovered; RunSpecifiedTests will fall back to TEST_LEVEL. Name test classes '*Test.cls' so coverage gates can confirm them."
+            fi
+            echo "has_tests=false" >> "$GITHUB_OUTPUT"
+            echo "test_classes=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          test_classes=$(printf '%s\n' "${test_files[@]}" \
+            | sed -E 's|.*/([^/]+)\.cls$|\1|' \
+            | paste -sd, -)
+
+          echo "Found Apex test classes: $test_classes"
+          echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          echo "test_classes=$test_classes" >> "$GITHUB_OUTPUT"
+
+      - name: Validate build
+        env:
+          PKG_DIRS: ${{ steps.resolve-dirs.outputs.pkg_dirs }}
+          SCOPE_ALL: ${{ steps.resolve-dirs.outputs.scope_all }}
+        run: |
+          full_build_flag="$(printf '%s' "${{ vars.FULL_BUILD }}" | tr '[:upper:]' '[:lower:]')"
+
+          if [ "$full_build_flag" = "true" ]; then
+            # scope_all → no --source-dir, so sf validates the project's own
+            # packageDirectories (correct for a root/whole-repo package).
+            src_args=()
+            if [ "$SCOPE_ALL" != "true" ]; then
+              for d in $PKG_DIRS; do
+                src_args+=(--source-dir "$d")
+              done
+            fi
+            deploy_cmd=(sf project deploy start --dry-run --target-org sandbox "${src_args[@]}")
+          else
+            if [ "${{ steps.delta-package.outputs.has_delta }}" != "true" ]; then
+              echo "Skipping validation because there are no delta changes."
+              exit 0
+            fi
+
+            deploy_cmd=(sf project deploy start --dry-run --target-org sandbox --manifest "${{ steps.delta-package.outputs.manifest_path }}")
+
+            if [ -n "${{ steps.delta-package.outputs.post_destructive_path }}" ]; then
+              deploy_cmd+=(--post-destructive-changes "${{ steps.delta-package.outputs.post_destructive_path }}")
+            fi
+          fi
+
+          if [ "${{ vars.TEST_LEVEL }}" = "RunSpecifiedTests" ]; then
+            if [ "${{ steps.apex-tests.outputs.has_tests }}" = "true" ]; then
+              deploy_cmd+=(--test-level RunSpecifiedTests --tests "${{ steps.apex-tests.outputs.test_classes }}")
+            else
+              echo "::warning::TEST_LEVEL is RunSpecifiedTests but no test classes were found in the delta. Falling back to RunLocalTests."
+              deploy_cmd+=(--test-level RunLocalTests)
+            fi
+          else
+            deploy_cmd+=(--test-level "${{ vars.TEST_LEVEL }}")
+          fi
+
+          "${deploy_cmd[@]}"

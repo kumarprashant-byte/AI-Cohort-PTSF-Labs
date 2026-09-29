@@ -1,0 +1,229 @@
+#!/usr/bin/env node
+// Deterministic renderer for the Employee-agent create/activate report.
+//
+// Composing the report from phase state in model prose is unreliable
+// (authoring standard A9) — the layout, field placement, and next-step
+// wording all belong in a script that emits byte-identical output for a
+// given state input. This helper is the single source of report text for
+// both the chat-turn response and the harness's ${outputDir}/report.md
+// file, so the two never diverge.
+//
+// Usage:
+//   node render-report.mjs <state.json> [outPath]
+//
+// state.json shape (all fields optional except `verdict`):
+//   {
+//     "org":          string,
+//     "template":     { "masterLabel": string, "id": string, "kind": "broad" | "specialized" },
+//     "developerName":string,
+//     "label":        string,
+//     "preflight":    { "studioHasAccess": "true" | "false" | "cannot-confirm",
+//                       "templateAgentScriptPresent": "yes" | "no" | "pending" },
+//     "enumerate":    { "existsBeforeWrite": "yes" | "no" | "pending",
+//                       "latestVersionStatus": "Active" | "Inactive" | "n/a" | "pending" },
+//     "confirmToWrite": "true" | "false" | "pending",
+//     "createBundle": string,
+//     "publish":      string,
+//     "activate":     string,
+//     "verify":       string,
+//     "verdict":      "CREATED" | "ALREADY-CREATED" | "ACTIVATED" |
+//                     "PENDING CONFIRMATION" | "DECLINED" | "FAILED",
+//     "reason":       string
+//   }
+//
+// If `outPath` is provided, writes to that path; otherwise emits to stdout.
+// The rendered report is always ~30 lines and shape-identical run to run.
+
+import { readFileSync, writeFileSync } from 'node:fs';
+
+const [statePath, outPath] = process.argv.slice(2);
+if (!statePath) {
+  process.stderr.write('usage: node render-report.mjs <state.json> [outPath]\n');
+  process.exit(2);
+}
+
+let state;
+try {
+  state = JSON.parse(readFileSync(statePath, 'utf8'));
+} catch (err) {
+  process.stderr.write(`error: could not read/parse ${statePath}: ${err.message}\n`);
+  process.exit(3);
+}
+
+const VALID_VERDICTS = new Set([
+  'CREATED', 'ALREADY-CREATED', 'ACTIVATED',
+  'PENDING CONFIRMATION', 'DECLINED', 'FAILED',
+]);
+const verdict = String(state?.verdict ?? '').trim();
+if (!VALID_VERDICTS.has(verdict)) {
+  process.stderr.write(`error: verdict "${verdict}" is not one of: ${[...VALID_VERDICTS].join(', ')}\n`);
+  process.exit(3);
+}
+
+function field(v, fallback = 'pending') {
+  const s = v === undefined || v === null ? '' : String(v).trim();
+  return s === '' ? fallback : s;
+}
+
+const org = field(state.org, '<unspecified>');
+const tmplLabel = field(state?.template?.masterLabel, 'IT Service Employee');
+const tmplId = field(state?.template?.id, 'svc_emp_intelligence__ItEmployeeAssistance');
+const tmplKind = field(state?.template?.kind, 'broad umbrella');
+const devName = field(state.developerName, '<pending>');
+const label = field(state.label, '<pending>');
+
+const preStudio = field(state?.preflight?.studioHasAccess, 'pending');
+const preTmpl = field(state?.preflight?.templateAgentScriptPresent, 'pending');
+const enumExists = field(state?.enumerate?.existsBeforeWrite, 'pending');
+const enumVer = field(state?.enumerate?.latestVersionStatus, 'pending');
+
+function classifyPreflightVerdict() {
+  const explicit = field(state?.preflight?.verdict, '');
+  if (explicit !== 'pending' && explicit !== '') return explicit;
+  if (preStudio === 'false' || preTmpl === 'no') return 'NOT-READY';
+  const okStudio = preStudio === 'true';
+  const okTmpl = preTmpl === 'yes';
+  if (okStudio && okTmpl) return 'READY';
+  if (preStudio === 'cannot-confirm' || preTmpl === 'pending') return 'CANNOT-CONFIRM';
+  return 'pending';
+}
+function classifyEnumerate() {
+  const explicit = field(state?.enumerate?.verdict, '');
+  if (explicit !== 'pending' && explicit !== '') return explicit;
+  if (enumExists === 'yes') {
+    if (enumVer === 'Active') return 'exists:true, needsActivation:false';
+    if (enumVer === 'Inactive') return 'exists:true, needsActivation:true';
+    return 'exists:true';
+  }
+  if (enumExists === 'no') return 'exists:false';
+  return 'pending';
+}
+const preVerdict = classifyPreflightVerdict();
+const enumVerdict = classifyEnumerate();
+
+const confirm = field(state.confirmToWrite, 'pending');
+const isPending = verdict === 'PENDING CONFIRMATION';
+const isDeclined = verdict === 'DECLINED';
+const isCreated = verdict === 'CREATED';
+const isActivated = verdict === 'ACTIVATED';
+const isAlready = verdict === 'ALREADY-CREATED';
+const isFailed = verdict === 'FAILED';
+const gatedFallback = isPending
+  ? 'pending confirmation'
+  : isDeclined ? 'skipped'
+  : isAlready ? 'skipped (already exists)'
+  : isFailed ? 'skipped'
+  : 'pending';
+
+// Internal record IDs (bundleVersionId `1bZ…`, BotDefinition `0Xx…`, BotVersion
+// `0Xv…`) are meaningless to an admin and must never appear in the user-facing
+// report — they are captured only to drive the publish/activate/verify calls.
+// The stage rows carry status only; `scrubInternalIds` strips any ID a caller
+// passed inside a status string, so the "single source of report text" stays
+// ID-free regardless of input (belt-and-braces, like `cell` below).
+function scrubInternalIds(s) {
+  return String(s)
+    // "bundleVersionId=1bZ…", "on bundleVersionId 1bZ…", "publishedBotId=0Xx…", "BotDefinition 0Xx…", …
+    .replace(/\s*\b(?:on\s+)?(?:bundleVersionId|bundleId|publishedBotId|publishedBotVersionId|botDefinitionId|BotDefinition|BotVersion|agentId)\b\s*[:=]?\s*[a-zA-Z0-9]{15,18}\b/g, '')
+    // any remaining bare Salesforce-ID token (15/18 alphanumeric, must contain a digit)
+    .replace(/\s*\b(?=[a-zA-Z0-9]*[0-9])[a-zA-Z0-9]{15}(?:[a-zA-Z0-9]{3})?\b/g, '')
+    // tidy separators orphaned by the removals above
+    .replace(/\s*[;,]\s*(?=[;,])/g, '')
+    .replace(/[;,\s]+$/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+const createBundle = scrubInternalIds(field(state.createBundle, gatedFallback));
+const publish = scrubInternalIds(field(state.publish, gatedFallback));
+const activate = scrubInternalIds(field(state.activate, gatedFallback));
+const verifyFallback = isDeclined || isPending || isFailed
+  ? 'skipped'
+  : isAlready
+    ? `exists:true; latestVersionStatus=${enumVer}`
+    : 'pending';
+let verify = field(state.verify, verifyFallback);
+if (
+  (isCreated || isActivated) &&
+  verify !== 'pending' &&
+  !verify.startsWith('skipped') &&
+  !/exists\s*[:=]/i.test(verify)
+) {
+  verify = `${verify}; exists:true; latestVersionStatus=Active`;
+}
+verify = scrubInternalIds(verify);
+
+// `reason` is the FAILED/DECLINED-path field most likely to carry a raw upstream
+// platform error (e.g. an INSUFFICIENT_ACCESS message quoting a BotDefinitionId),
+// so it gets the same scrub as the stage rows above — an internal record ID must
+// never reach the user-facing report/chat (CWE-200/209). Scrubbing here, before
+// NEXT_STEPS, also keeps the FAILED next-step's `reason ? …` branch consistent
+// with what is actually shown in the Reason line.
+const reason = scrubInternalIds(String(state.reason ?? '').trim());
+
+// The "set up access" next step below is the handoff to the
+// `service-itsm-agentic-setup-agent-runtime-access-assign` skill (declared in
+// this skill's metadata.relatedSkills). We deliberately surface it in plain
+// admin language ("grant this agent's runtime access") rather than by raw skill
+// name — the routing metadata carries the linkage, so the user-facing report
+// stays friendly while the relationship remains discoverable.
+const NEXT_STEPS = {
+  'CREATED':
+    'The IT Service Employee agent is live as an NGA-native agent (no external-link icon in Agentforce Studio). No new agent was provisioned beyond the one just created. Verify end-to-end in Agentforce Studio\'s Agents list. **Next — set up access:** before anyone can use the agent, the user needs the runtime permissions the agent\'s actions use (Prompt Templates, Data Cloud, or Unified Catalog, depending on what is provisioned). Just ask to **grant this agent\'s runtime access** and those feature permissions — plus an "Agent Access" permission set covering the agent — will be set up for the user(s) you choose.',
+  'ALREADY-CREATED':
+    'The IT Service Employee agent was already present and active — no new agent was provisioned. Verify end-to-end in Agentforce Studio\'s Agents list. **Next — set up access:** before anyone can use the agent, the user needs the runtime permissions the agent\'s actions use (Prompt Templates, Data Cloud, or Unified Catalog, depending on what is provisioned). Just ask to **grant this agent\'s runtime access** and those feature permissions — plus an "Agent Access" permission set covering the agent — will be set up for the user(s) you choose.',
+  'ACTIVATED':
+    'The existing IT Service Employee agent was found inactive and has been activated — no new agent was provisioned. Verify end-to-end in Agentforce Studio\'s Agents list. **Next — set up access:** before anyone can use the agent, the user needs the runtime permissions the agent\'s actions use (Prompt Templates, Data Cloud, or Unified Catalog, depending on what is provisioned). Just ask to **grant this agent\'s runtime access** and those feature permissions — plus an "Agent Access" permission set covering the agent — will be set up for the user(s) you choose.',
+  'PENDING CONFIRMATION':
+    'The run is paused at the confirm-to-write gate. In this skill, create + publish + activate happen as one atomic sequence gated by a single confirmation — there is no supported create-only or publish-without-activate mode, and no partial "create-only" mode of any kind. Re-run and reply "yes" when you are ready for the agent to go live.',
+  'DECLINED':
+    'No write occurred. This skill\'s create + publish + activate run as one atomic sequence gated by a single confirmation; there is no supported create-only or publish-without-activate mode, and no partial "create-only" mode of any kind. The user\'s decline (or "hold off on activation") kept the run at the gate. Re-run and confirm when ready for the full sequence.',
+  'FAILED':
+    reason
+      ? `Review the Reason above and remediate. Enablement of missing prerequisites is a Setup-UI/admin action outside this skill's scope — use \`service-itsm-agentic-setup-agentforce-studio-validate\` or \`service-itsm-agentic-setup-agentforce-studio-configure\` to check/enable readiness first. Re-run this skill once the blocker is resolved.`
+      : 'Review the observed error and remediate. Enablement of missing prerequisites is a Setup-UI/admin action outside this skill\'s scope — use `service-itsm-agentic-setup-agentforce-studio-validate` or `service-itsm-agentic-setup-agentforce-studio-configure` to check/enable readiness first. Re-run this skill once the blocker is resolved.',
+};
+
+// Escape a value for a Markdown table cell — a literal pipe or newline would
+// break the row. The stage-detail values are enumerated/controlled, so this is
+// belt-and-braces, but it keeps the table well-formed against any future field.
+const cell = (v) => String(v).replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
+const confirmDetail =
+  confirm === 'true' && (devName !== '<pending>' || label !== '<pending>')
+    ? `; confirmed developerName=${devName}, label="${label}"`
+    : '';
+
+const report = `# Employee Agent — Create & Activate
+
+IT Service Employee Agent Creation (via service-itsm-agentic-setup-employee-agent-configure)
+
+Org:      ${org} (API v67.0)
+Template: ${tmplLabel} (id=${tmplId}) — ${tmplKind}
+Source:   ${tmplId} Agent Script
+Agent:    ${devName} ("${label}") — NGA-native bundle
+
+Stage 2 — install & activate the agent from its template:
+
+| Stage | Status |
+| --- | --- |
+| Preflight | ${cell(`Studio hasAccess=${preStudio}; template agentScript present=${preTmpl}; verdict=${preVerdict}`)} |
+| Enumerate | ${cell(`target agent exists before write=${enumExists}; latest version status=${enumVer}; verdict=${enumVerdict}`)} |
+| Confirm-to-write | ${cell(`user-confirmed=${confirm}${confirmDetail}`)} |
+| Create bundle | ${cell(createBundle)} |
+| Publish | ${cell(publish)} |
+| Activate | ${cell(activate)} |
+| Verify | ${cell(verify)} |
+
+Verdict: ${verdict}
+Reason:  ${reason}
+
+Next steps:
+  - ${NEXT_STEPS[verdict]}
+`;
+
+if (outPath) {
+  writeFileSync(outPath, report, 'utf8');
+  process.stdout.write(outPath + '\n');
+} else {
+  process.stdout.write(report);
+}

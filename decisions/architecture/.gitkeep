@@ -1,0 +1,6 @@
+Build-authored architecture ADRs live here (decisions/0009): standing architecture
+premises authored during the build, and deviation records that supersede an
+inherited premise. Numbered BLD-NNNN (a namespace separate from Scopezilla's
+inherited 00XX, so re-ingest can never collide). Default-zero — this folder stays
+empty unless the engagement is grounded / ARB-governed. Inherited premises are NOT
+here; they are read-only under scopezilla/decisions/ (Source: scopezilla-inherited).

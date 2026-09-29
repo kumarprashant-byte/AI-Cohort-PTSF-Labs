@@ -1,0 +1,93 @@
+[
+  {
+    "epic_id": "E01",
+    "epic_name": "Patient Onboarding & Portal",
+    "description": "Public-facing patient registration (email/password + Facebook), first-login onboarding wizard capturing personal profile, HIC-prefill, address validation, gated access to subsidy applications until profile complete, localized welcome email in preferred language. Delivered on Experience Cloud (LWR).",
+    "confidence": "Confirmed",
+    "kb_sources": []
+  },
+  {
+    "epic_id": "E02",
+    "epic_name": "Subsidy Application Lifecycle",
+    "description": "End-to-end application object model and lifecycle: create/edit application, treatment-type selection (500+), reason capture, medical-history re-verification, submission, status tracking, patient-side visibility. Feeds practitioner assignment (E04) and assessor review (E06).",
+    "confidence": "Confirmed",
+    "kb_sources": []
+  },
+  {
+    "epic_id": "E03",
+    "epic_name": "Health Insurance Checker Integration",
+    "description": "Asynchronous integration with the global HIC API (Platform Event / Queueable Apex). Prefill onboarding, verify entitlements at application submission, auto-reject applications where the HIC indicates travel is covered. Handles up-to-15s peak latency without blocking UI; retry, timeout, and idempotency policy.",
+    "confidence": "Confirmed",
+    "kb_sources": []
+  },
+  {
+    "epic_id": "E04",
+    "epic_name": "Medical Practitioner Community & Assignment",
+    "description": "Partner Experience Cloud community for 4,000 external practitioners: registration, treatment-type specialties, geolocation, assignment inbox. Apex-based auto-assignment on application insert (nearest practitioner registered for the treatment type). Scheduled Flow reassigns after 3 business days if no acceptance. Business-day calendar per region.",
+    "confidence": "Confirmed",
+    "kb_sources": []
+  },
+  {
+    "epic_id": "E05",
+    "epic_name": "Digital Assessment & Escalation",
+    "description": "Replace the PDF-email-scan flow with an in-platform digital assessment form for practitioners. Support practitioner requests for additional specialist assessments. Escalate assessments that remain 'pending' 15 days after assignment to Team Managers.",
+    "confidence": "Confirmed",
+    "kb_sources": []
+  },
+  {
+    "epic_id": "E06",
+    "epic_name": "Application Review, Approval & Subsidy Determination",
+    "description": "Assessor console (Service Cloud) for reviewing applications and assessments, approving/rejecting, entering subsidy amount. Decision-support for subsidy amount based on distance and transport type. Managerial approval hierarchy for higher-value subsidies.",
+    "confidence": "Confirmed",
+    "kb_sources": []
+  },
+  {
+    "epic_id": "E07",
+    "epic_name": "Chat, Messaging & Support Deflection",
+    "description": "Live chat between Patients/Practitioners and PTSF Assessors. Einstein Bots + Knowledge for common-question deflection. Channel selection TBC (Messaging for In-App/Web candidate).",
+    "confidence": "Assumed",
+    "kb_sources": []
+  },
+  {
+    "epic_id": "E08",
+    "epic_name": "Identity & Authentication",
+    "description": "Internal user SSO to three regional Active Directory instances (federated, per-region IdP). Patient login (email/password + Facebook social sign-on). Practitioner authentication method (federated or self-registration with vetting) — TBC.",
+    "confidence": "Assumed",
+    "kb_sources": []
+  },
+  {
+    "epic_id": "E09",
+    "epic_name": "Data Security & PHI Visibility Model",
+    "description": "Medical History as a separate object with Private OWD. Apex-managed sharing granted on assignment acceptance and revoked on assignment close (TTL model). Restriction Rules deny visibility to internal PTSF profiles. Field-level security, encryption evaluation (Shield). Cross-region residency model TBC.",
+    "confidence": "Confirmed",
+    "kb_sources": []
+  },
+  {
+    "epic_id": "E10",
+    "epic_name": "Data Migration from TAMS",
+    "description": "Migrate patients, historical subsidy applications, and assessments from 30 satellite-office TAMS instances. Dedup across offices. In-flight applications remain in TAMS to complete (~1 month). Cutover strategy: dual-run vs. big-bang per region.",
+    "confidence": "Confirmed",
+    "kb_sources": []
+  },
+  {
+    "epic_id": "E11",
+    "epic_name": "Reporting & Analytics",
+    "description": "Operational dashboards for Assessors/Managers (applications by region/treatment, cycle times, escalations, practitioner acceptance rates). Executive KPIs for the leadership team. Volume-aware design given 1M applications/year.",
+    "confidence": "Assumed",
+    "kb_sources": []
+  },
+  {
+    "epic_id": "E12",
+    "epic_name": "Platform Foundation & DevOps",
+    "description": "Org strategy (single global org vs per-region — see G0904), sandboxes, DevOps toolchain, release management, monitoring, LDV strategy (skinny tables, archiving) for the 5M-patient / 1M-application-per-year data volume.",
+    "confidence": "Assumed",
+    "kb_sources": []
+  },
+  {
+    "epic_id": "E13",
+    "epic_name": "Localization & Regional Configuration",
+    "description": "Translation Workbench for UI labels, patient-preference-driven email templates, per-region business-day calendars, per-region satellite-office data model, language-preference propagation to chat routing.",
+    "confidence": "Assumed",
+    "kb_sources": []
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "milestoneTypeId": "<milestoneTypeId from Phase 2 step 8>",
+  "businessHoursId": "<businessHoursId resolved in Phase 1>",
+  "timeTrigger": 60,
+  "order": 1,
+  "startTimeBasedOn": "MILESTONE_CRITERIA",
+  "milestoneCriteria": [
+    {
+      "milestoneState": "ACTIVE",
+      "milestoneAgreementType": "SLA",
+      "filterType": "RuleFilter",
+      "filterItems": [
+        {
+          "table": "Incident",
+          "column": "Status",
+          "operator": "NotEqual",
+          "order": 1,
+          "value": "Closed"
+        }
+      ]
+    }
+  ]
+}

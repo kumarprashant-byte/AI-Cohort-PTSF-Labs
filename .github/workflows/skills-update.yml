@@ -1,0 +1,117 @@
+name: Skills update (suspenders)
+
+# Belt-and-suspenders skill delivery (see the plugin's decisions/0012 + 0044):
+# the operating skills are VENDORED into .claude/skills/ and kept current two ways —
+#   • Belt: Claude Code users get a plugin SessionStart nudge (add for a new skill,
+#     update for a changed one).
+#   • Suspenders (THIS workflow): a scheduled job refreshes the vendored skills and,
+#     if anything changed, opens a PR. Works for ANY harness — no plugin, no local
+#     action needed. A human reviews and merges the PR (never applied silently; the
+#     merge is the gate — same posture as the rest of the pipeline).
+#
+# Two CLI verbs, because they do different things (decisions/0044):
+#   • `npx skills add <launchpad>` RE-SCANS the source and installs every current
+#     skill — this is the ONLY path that vendors a NET-NEW ql-* skill. `update`
+#     alone would silently never deliver a newly-added skill to existing repos.
+#   • `npx skills update` reads skills-lock.json and refreshes/prunes every tracked
+#     source in place (the launchpad ql-* skills AND forcedotcom/sf-skills) — it
+#     catches changed + deleted skills, across all sources, but never new ones.
+# So we run add (new + refresh, launchpad) THEN update (refresh + prune, all sources).
+
+on:
+  schedule:
+    - cron: "52 12 * * 1" # Weekly, Monday. `/ql-init-engagement` jitters this minute+hour
+                         # per repo so the fleet doesn't all hit the git host at once. Adjust to taste.
+  workflow_dispatch: {} # allow a manual run from the Actions tab.
+
+# Least privilege: write code (the branch) + open PRs. Nothing else.
+permissions:
+  contents: write
+  pull-requests: write
+
+# Never let two update runs race to open competing PRs.
+concurrency:
+  group: skills-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Don't leave the push token in the local git config where the third-party
+          # `skills` CLI (run below via npx) could read it. The PR step re-auths via GH_TOKEN.
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Refresh + vendor new launchpad skills
+        # Two verbs (decisions/0044). Only for repos already on the vendored model
+        # (skills-lock.json present); a copy-mode repo is left alone.
+        #   1. `add <launchpad> --yes` re-scans the launchpad source and installs
+        #      every current ql-* skill — the ONLY path that picks up a NET-NEW one
+        #      (update can't). Idempotent: re-installs identical content as a no-op.
+        #      URL mirrors /ql-resync's bootstrap; update if the plugin repo moves.
+        #   2. `update --yes` then refreshes + prunes every tracked source in place
+        #      (launchpad + forcedotcom/sf-skills) — catches changed + deleted skills.
+        run: |
+          if [ ! -f skills-lock.json ]; then
+            echo "No skills-lock.json — skills aren't lock-tracked; nothing to update."
+            exit 0
+          fi
+          npx -y skills@1.5.25 add https://git.soma.salesforce.com/dgerow/quantum-leap-launchpad.git --yes
+          npx -y skills@1.5.25 update --yes
+
+      - name: Open a PR if anything changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Only the vendored skill trees and the lock file are in scope — never
+          # sweep unrelated working-tree changes into the update PR. Skill CONTENT
+          # lives in the canonical .agents/skills/ (the harness dirs symlink to it),
+          # so it must be in scope too — otherwise an update bumps the lock without
+          # the actual changed files. A repo may have only one of the skill dirs
+          # (copy-mode / single-harness), so build the pathspec from what exists —
+          # `git add` is fatal on a pathspec that matches nothing.
+          paths=(skills-lock.json)
+          [ -d .agents/skills ] && paths+=(.agents/skills)
+          [ -d .claude/skills ] && paths+=(.claude/skills)
+          if git diff --quiet -- "${paths[@]}"; then
+            echo "Vendored skills already current — no PR needed."
+            exit 0
+          fi
+
+          # Unique branch per run (run_id) so a manual re-run on the same day as
+          # the scheduled run doesn't collide with an existing branch.
+          branch="skills-update/${GITHUB_RUN_ID}"
+          base="${GITHUB_REF_NAME:-main}"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add -- "${paths[@]}"
+          git commit -m "Update vendored agent skills (npx skills update)"
+          # Auth the push via GH_TOKEN just-in-time (checkout used persist-credentials:false,
+          # so no token sits in git config while the third-party skills CLI runs above).
+          git -c http.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')" push -u origin "$branch"
+
+          # PR body as a plain string — no heredoc (leading-whitespace/terminator
+          # pitfalls under YAML block indentation). $'…' keeps the newlines.
+          body=$'Automated by the **Skills update (suspenders)** workflow.\n\n'
+          body+=$'`npx skills add` + `npx skills update` refreshed the vendored skills '
+          body+=$'(`.claude/skills/`) from their upstream sources — the launchpad\'s `ql-*` '
+          body+=$'skills and/or `forcedotcom/sf-skills`. This may include a **newly added** '
+          body+=$'skill (only `add` vendors those) as well as updated or removed ones. '
+          body+=$'Review the diff and merge to adopt.\n\n'
+          body+=$'Nothing was applied to the base branch; the merge is the gate. '
+          body+=$'If you don\'t want an update, close this PR.'
+
+          gh pr create \
+            --title "Update vendored agent skills" \
+            --body "$body" \
+            --base "$base" \
+            --head "$branch"

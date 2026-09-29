@@ -1,0 +1,46 @@
+# Salesforce DX
+.sfdx/
+.sf/
+.localdevserver/
+deploy-options.json
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editors
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# Bootstrap state
+.bootstrap-state
+
+# Per-machine local Claude settings (never tracked).
+.claude/settings.local.json
+
+# Per-machine debounce stamps for the SessionStart nudges (install / drift).
+.claude/.skills-freshness-check
+.claude/.skills-drift-check
+.claude/.plugin-install-check
+.claude/.resync-drift-check
+
+# Note: .agents/ and .claude/skills/* ARE tracked once a consultant
+# intentionally adds them (e.g. via `npx skills add forcedotcom/sf-skills`).
+# That way the engagement repo distributes the skill bodies the pod is
+# actually using, not just skills-lock.json. Keep them out of .gitignore.

@@ -1,0 +1,306 @@
+name: feature-ci_pr-validation
+
+on:
+  pull_request:
+    branches:
+      - "develop"
+
+jobs:
+  pr-validation:
+    runs-on: ubuntu-latest
+    environment: CI
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Resolve the deployable package directories ONCE from sfdx-project.json so
+      # the deploy-relevant detector and the delta --source-dir agree instead of
+      # each hardcoding force-app/ (issue #64). A repo whose packageDirectories name
+      # a different path (src/, packaged/) — or several — would otherwise have its
+      # deployable changes misclassified deploy=false and the whole build gauntlet
+      # silently skipped while the job reports green.
+      #
+      # FAIL CLOSED, correctly: when we CAN'T scope to specific subdirs — the file
+      # is missing/unparseable, declares no packageDirectories, or declares a ROOT
+      # package ("." / "./") — we do NOT guess force-app/ (that's fail-OPEN for a
+      # custom-dir repo). Instead scope_all=true tells consumers to treat the WHOLE
+      # repo as deployable: the detector forces deploy=true, and the delta/deploy
+      # steps pass no --source-dir (sgd scans the whole repo; sf uses the project's
+      # own packageDirectories). Emitted via GITHUB_OUTPUT and consumed through
+      # `env:` (not `${{ }}` interpolation) so a path never lands in shell as source.
+      - name: Resolve package directories
+        id: resolve-dirs
+        run: |
+          node -e '
+            const fs = require("fs");
+            let dirs = null;
+            try {
+              const p = JSON.parse(fs.readFileSync("sfdx-project.json", "utf8"));
+              dirs = (p.packageDirectories || [])
+                .map(d => String((d && d.path) || "").replace(/^\.\//, "").replace(/\/+$/, ""))
+                .filter(s => s !== "");
+            } catch (e) { dirs = null; }
+            const out = process.env.GITHUB_OUTPUT;
+            const scopeAll = dirs === null || dirs.length === 0 || dirs.some(d => d === ".");
+            if (scopeAll) {
+              if (dirs === null) console.log("::warning::Could not read/parse sfdx-project.json — scoping CI to the whole repo (fail-closed).");
+              else if (!dirs.length) console.log("::warning::No packageDirectories in sfdx-project.json — scoping CI to the whole repo.");
+              else console.log("::notice::Root package directory (\".\") — scoping CI to the whole repo.");
+              fs.appendFileSync(out, "scope_all=true\npkg_dirs=\ndetect_regex=\n");
+              console.log("Package directories: <whole repo>");
+              process.exit(0);
+            }
+            const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            const regex = "^(" + dirs.map(d => esc(d) + "/").concat(["sfdx-project\\.json", "config/"]).join("|") + ")";
+            fs.appendFileSync(out, `scope_all=false\npkg_dirs=${dirs.join(" ")}\ndetect_regex=${regex}\n`);
+            console.log("Resolved package directories: " + dirs.join(" "));
+          '
+
+      # Two-speed lane (plugin decisions/0014): an intent-only PR — one that touches
+      # only intents/decisions/docs and no deployable metadata — should NOT drag the
+      # full org-authed build gauntlet (SF CLI install, org auth, delta validate).
+      # Detect deploy-relevant changes up front and gate the Salesforce steps on it,
+      # so an intent PR finishes in seconds. The job STILL RUNS and reports green (so
+      # a required-status-check on `develop` is satisfied — we deliberately do NOT use
+      # paths-ignore, which would leave a required check pending forever). A PR that
+      # touches BOTH intents and force-app still validates: any deployable file flips
+      # this to true. The Intent trust chain (validate/drift/coverage) runs regardless.
+      - name: Detect deploy-relevant changes
+        id: changes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          SCOPE_ALL: ${{ steps.resolve-dirs.outputs.scope_all }}
+          DETECT_REGEX: ${{ steps.resolve-dirs.outputs.detect_regex }}
+        run: |
+          # FAIL CLOSED. This gate decides whether to skip the Salesforce build
+          # validation, so if we CAN'T compute the diff we must run the full
+          # validation, never skip it. Capture git's own exit status explicitly —
+          # do NOT fold `git diff` into an `if ... | grep` pipeline, where a git
+          # failure (orphaned base after a force-push, trimmed fetch-depth, a fork
+          # ref) reads as "no match" → deploy=false → validation silently skipped
+          # on deployable code, job still green. The classifier can't tell "nothing
+          # deployable changed" from "I couldn't tell", so an error resolves to
+          # deploy=true. Same from/to range the delta build validates (below), so
+          # the gate reasons over exactly what gets deployed.
+          if ! files=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" 2>/dev/null); then
+            echo "::warning::Could not compute the PR diff (base/head commit missing?) — validating conservatively (full build)."
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Can't scope to specific package dirs (unresolved / whole-repo, see
+          # resolve-dirs) → validate everything. Fail-closed, not a force-app guess.
+          if [ "$SCOPE_ALL" = "true" ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+            echo "Package dirs unresolved or whole-repo — running full build validation (fail-closed)."
+            exit 0
+          fi
+          # Deployable = anything the delta build could deploy. The pattern is
+          # derived from sfdx-project.json's packageDirectories (resolve-dirs step)
+          # and fed to BOTH this detector and the delta --source-dir, so they can't
+          # drift and no package dir is hardcoded (issue #64). Match with a here-string,
+          # NOT `printf | grep -q`: grep -q closes the pipe on its first match and the
+          # piped printf can take SIGPIPE (141) under the runner's default `-o pipefail`,
+          # flipping a real match to the deploy=false branch on a large file list.
+          if grep -qE "$DETECT_REGEX" <<< "$files"; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+            echo "Deploy-relevant changes detected — running full build validation."
+          else
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Intent-only PR (no deployable metadata) — skipping Salesforce build validation. The Intent trust chain still runs."
+          fi
+
+      - name: Install Salesforce CLI
+        if: steps.changes.outputs.deploy == 'true'
+        run: npm install --global @salesforce/cli
+
+      - name: Install code-analyzer plugin
+        if: steps.changes.outputs.deploy == 'true'
+        run: sf plugins install code-analyzer
+
+      - name: Install sfdx-git-delta plugin
+        if: steps.changes.outputs.deploy == 'true'
+        run: echo 'y' | sf plugins install sfdx-git-delta
+
+      - name: Authenticate to sandbox org (SFDX URL)
+        if: steps.changes.outputs.deploy == 'true'
+        env:
+          SFDX_URL: ${{ secrets.SFDX_URL }}
+        run: |
+          if [ -z "$SFDX_URL" ]; then
+            echo "Missing required secret: SFDX_URL"
+            exit 1
+          fi
+
+          echo "$SFDX_URL" > ./sfdx_auth_url.txt
+          sf org login sfdx-url \
+            --sfdx-url-file ./sfdx_auth_url.txt \
+            --alias sandbox \
+            --set-default
+          rm -f ./sfdx_auth_url.txt
+
+      - name: Verify authenticated org
+        if: steps.changes.outputs.deploy == 'true'
+        run: sf org list --all
+
+      - name: Build delta package
+        id: delta-package
+        if: steps.changes.outputs.deploy == 'true'
+        env:
+          PKG_DIRS: ${{ steps.resolve-dirs.outputs.pkg_dirs }}
+          SCOPE_ALL: ${{ steps.resolve-dirs.outputs.scope_all }}
+        run: |
+          mkdir -p delta
+          # One --source-dir per resolved package dir: sfdx-git-delta's flag is
+          # repeatable and it does NOT read packageDirectories itself (its default
+          # is the whole repo), so we must feed each declared dir (issue #64).
+          # scope_all → pass none, so sgd scans the whole repo. PKG_DIRS comes via
+          # env (data), not `${{ }}` (shell source) — so a path can't inject.
+          src_args=()
+          if [ "$SCOPE_ALL" != "true" ]; then
+            for d in $PKG_DIRS; do
+              src_args+=(--source-dir "$d")
+            done
+          fi
+          sf sgd source delta \
+            --from "${{ github.event.pull_request.base.sha }}" \
+            --to "${{ github.event.pull_request.head.sha }}" \
+            --output-dir delta \
+            "${src_args[@]}" \
+            --generate-delta
+
+          manifest_path="delta/package/package.xml"
+          # --generate-delta mirrors each changed file under delta/<repo-relative
+          # path>, so the delta output root covers every package dir (not just
+          # force-app/). Downstream test-discovery/analysis scan from here.
+          search_dirs="delta"
+          post_destructive_path="delta/destructiveChanges/destructiveChanges.xml"
+
+          has_delta=false
+
+          if [ -f "$manifest_path" ] && grep -q "<types>" "$manifest_path"; then
+            has_delta=true
+          fi
+
+          if [ -f "$post_destructive_path" ] && grep -q "<types>" "$post_destructive_path"; then
+            has_delta=true
+          else
+            post_destructive_path=""
+          fi
+
+          if [ "$has_delta" != "true" ]; then
+            echo "No metadata changes detected in delta package."
+          fi
+
+          echo "has_delta=$has_delta" >> "$GITHUB_OUTPUT"
+          echo "manifest_path=$manifest_path" >> "$GITHUB_OUTPUT"
+          echo "search_dirs=$search_dirs" >> "$GITHUB_OUTPUT"
+          echo "post_destructive_path=$post_destructive_path" >> "$GITHUB_OUTPUT"
+
+      - name: Build Apex test class list
+        id: apex-tests
+        if: steps.changes.outputs.deploy == 'true' && vars.TEST_LEVEL == 'RunSpecifiedTests'
+        env:
+          SEARCH_DIRS: ${{ steps.delta-package.outputs.search_dirs }}
+        run: |
+          if [ "${{ steps.delta-package.outputs.has_delta }}" != "true" ]; then
+            echo "No delta changes to validate."
+            echo "has_tests=false" >> "$GITHUB_OUTPUT"
+            echo "test_classes=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # SEARCH_DIRS via env (data, not shell source); unquoted so multiple roots
+          # word-split into separate find path args. Here it's the single "delta".
+          mapfile -t test_files < <(find $SEARCH_DIRS -type f -iname '*test*.cls' | sort)
+
+          if [ "${#test_files[@]}" -eq 0 ]; then
+            echo "No Apex test classes matching '*Test*.cls' (case-insensitive) were found in $SEARCH_DIRS."
+            # Surface, don't smooth over: delta has Apex but no discoverable tests → RunSpecifiedTests
+            # silently falls back to TEST_LEVEL and the targeted run never happens.
+            if find $SEARCH_DIRS -type f -iname '*.cls' | grep -q .; then
+              echo "::warning::Delta contains Apex classes but no test classes were discovered; RunSpecifiedTests will fall back to TEST_LEVEL. Name test classes '*Test.cls' so coverage gates can confirm them."
+            fi
+            echo "has_tests=false" >> "$GITHUB_OUTPUT"
+            echo "test_classes=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          test_classes=$(printf '%s\n' "${test_files[@]}" \
+            | sed -E 's|.*/([^/]+)\.cls$|\1|' \
+            | paste -sd, -)
+
+          echo "Found Apex test classes: $test_classes"
+          echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          echo "test_classes=$test_classes" >> "$GITHUB_OUTPUT"
+
+      - name: Run Code Analyzer
+        if: steps.changes.outputs.deploy == 'true'
+        env:
+          SEARCH_DIRS: ${{ steps.delta-package.outputs.search_dirs }}
+        run: |
+          if [ "${{ steps.delta-package.outputs.has_delta }}" != "true" ]; then
+            echo "Skipping validation because there are no delta changes."
+            exit 0
+          fi
+
+          sf code-analyzer run --workspace "$SEARCH_DIRS" --config-file code-analyzer.yml --severity-threshold 2
+
+      - name: Validate build
+        id: validate_build
+        if: steps.changes.outputs.deploy == 'true'
+        run: |
+          if [ "${{ steps.delta-package.outputs.has_delta }}" != "true" ]; then
+            echo "Skipping validation because there are no delta changes."
+            exit 0
+          fi
+
+          deploy_cmd=(sf project deploy start --dry-run --target-org sandbox --manifest "${{ steps.delta-package.outputs.manifest_path }}")
+
+          if [ -n "${{ steps.delta-package.outputs.post_destructive_path }}" ]; then
+            deploy_cmd+=(--post-destructive-changes "${{ steps.delta-package.outputs.post_destructive_path }}")
+          fi
+
+          if [ "${{ vars.TEST_LEVEL }}" = "RunSpecifiedTests" ]; then
+            if [ "${{ steps.apex-tests.outputs.has_tests }}" = "true" ]; then
+              deploy_cmd+=(--test-level RunSpecifiedTests --tests "${{ steps.apex-tests.outputs.test_classes }}")
+            else
+              echo "::warning::TEST_LEVEL is RunSpecifiedTests but no test classes were found in the delta. Falling back to RunLocalTests."
+              deploy_cmd+=(--test-level RunLocalTests)
+            fi
+          else
+            deploy_cmd+=(--test-level "${{ vars.TEST_LEVEL }}")
+          fi
+
+          # --json captures runTestResult so the coverage step can confirm each ✅
+          # criterion's named test actually ran green. Tee to a file AND keep the
+          # command's exit status (pipefail) so a real validation failure still fails
+          # the build; the coverage step runs with always() to name the criterion that broke.
+          deploy_cmd+=(--json)
+          set -o pipefail
+          "${deploy_cmd[@]}" | tee apex-test-results.json
+
+      # Turns ✅ from the author's assertion into a CI-confirmed proof: each ✅
+      # criterion's named Class.method test must be GREEN in the validated run.
+      # NOTE: no --tests-complete here — a delta RunSpecifiedTests run is NOT
+      # exhaustive, so an ABSENT ✅ test is warned (not failed); a RED named test
+      # still fails the gate. Runs even when validate failed (always()) so the
+      # output names the criterion whose proof broke. Skips cleanly when no results
+      # were produced (intent-only PR, or no delta) — the STRUCTURAL coverage gate
+      # already ran in intent-trust-chain.yml regardless.
+      - name: Confirm ✅ criteria against CI test results
+        if: always() && steps.changes.outputs.deploy == 'true' && hashFiles('scripts/intent-ledger.mjs') != ''
+        run: |
+          if [ -d intents ] && [ -f delivery/intent-ledger.md ] && [ -s apex-test-results.json ]; then
+            node scripts/intent-ledger.mjs coverage --gate --results apex-test-results.json
+          else
+            echo "No test results (intent-only PR or no delta) — CI-proof confirmation not run; the structural coverage gate already ran in intent-trust-chain.yml."
+          fi

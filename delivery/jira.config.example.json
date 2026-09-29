@@ -1,0 +1,42 @@
+{
+  "_comment": "Project-tracker projection mappings for /ql-sync-jira. Copy to jira.config.json (or let /ql-sync-jira create it on first run, discovering custom-field IDs). Commit jira.config.json — it holds NO secrets and NO auth. The projection flow is tracker-neutral behind a per-tracker adapter (see decisions/0046); Jira is the adapter shipped today. Jira has two transports (see decisions/0011): the Atlassian Remote MCP (OAuth, browser login — the default) or an API token (for customers who block third-party MCP OAuth but allow create-your-own tokens). The API token itself NEVER goes here — it comes from the JIRA_EMAIL/JIRA_API_TOKEN env vars.",
+
+  "_tracker": "Which project-tracker adapter drives the projection. \"jira\" is the only adapter shipped today (default when absent); a new tracker is a drop-in adapter per the contract in the ql-sync-jira skill's references/adapter-contract.md — no change to the sync flow. Every other key below (transport, base_url, project_key, issue_types, status_map, fields, labels) is Jira-adapter config; a different adapter documents its own keys.",
+  "tracker": "jira",
+
+  "_transport": "Which pen /ql-sync-jira uses to write the SAME projection: \"mcp\" (Atlassian Remote MCP, OAuth) or \"api\" (Jira Cloud REST v3, API token via scripts/jira-rest.mjs). /ql-setup probes MCP first and records the reachable one. Default \"mcp\".",
+  "transport": "mcp",
+
+  "_base_url": "API transport ONLY — the customer's Jira site, e.g. https://acme.atlassian.net. Omit/blank for the MCP transport (OAuth resolves the site). Non-secret; the token lives in JIRA_API_TOKEN, never here.",
+  "base_url": "",
+
+  "project_key": "ABC",
+
+  "_issue_types": "Jira issue-type NAMES for each projected level. Vary per project.",
+  "issue_types": {
+    "epic": "Epic",
+    "intent": "Story",
+    "open_question": "Sub-task"
+  },
+
+  "_status_map": "Ledger status token (emoji) -> Jira workflow status NAME. Names are per-project. The repo/ledger is the only writer of delivery status — this just mirrors it.",
+  "status_map": {
+    "⬜": "To Do",
+    "🔧": "In Progress",
+    "✅": "Done",
+    "🔄": "To Do",
+    "🚫": "Won't Do"
+  },
+
+  "_fields": "Per-instance custom-field IDs (e.g. customfield_10014). /ql-sync-jira discovers these by field name via the MCP's getJiraIssueTypeMetaWithFields; leave blank to let it fill them. scope_hash/intent_id are optional stamps — identity still works via the intent:<id> label without them. (No epic_link here: stories are linked to epics via the issue parent in the create call.)",
+  "fields": {
+    "scope_hash": "",
+    "intent_id": ""
+  },
+
+  "labels": {
+    "intent_prefix": "intent:",
+    "open_question_prefix": "open-question:",
+    "scope_drift": "scope-drift"
+  }
+}

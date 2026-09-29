@@ -1,0 +1,50 @@
+{
+  "project_name": "PTSF Patient Travel Support",
+  "created_at": "2026-09-29",
+  "depth_mode": "epic-level",
+  "vertical": null,
+  "rfp_tier": null,
+  "engagement_type": "standard",
+  "benchmark_source": "model-training-data",
+  "layout_version": 2,
+  "completion_status": {
+    "tutorial": "not-started",
+    "discover": "complete",
+    "strategy": "not-started",
+    "requirements": "complete",
+    "design": "complete",
+    "roadmap": "complete",
+    "efficiency": "not-started",
+    "estimate": "not-started",
+    "commercials": "not-started",
+    "validate": "not-started",
+    "narratives": "not-started",
+    "export": "not-started",
+    "backlog": "not-started",
+    "quantum-leap": "complete",
+    "slides": "not-started",
+    "rfp": "not-started",
+    "illuminate": "not-started"
+  },
+  "timeline": {
+    "client_target": null,
+    "user_commitment": null
+  },
+  "target_org": {
+    "name": "PTSF Build Sandbox",
+    "type": "sandbox",
+    "state": "greenfield"
+  },
+  "quantum_leap_blueprint": "Custom",
+  "salesforce_link": {
+    "status": "deferred",
+    "opportunity_id": null,
+    "opportunity_url": null,
+    "licensing_opportunity_id": null,
+    "dsr_id": null,
+    "dsr_url": null,
+    "account_name": null,
+    "linked_at": null,
+    "last_nudged_at": null
+  }
+}

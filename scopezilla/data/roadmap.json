@@ -1,0 +1,57 @@
+[
+  {
+    "phase_number": 0,
+    "phase_name": "Discovery-Deep & Architecture Lock",
+    "objectives": "Close the load-bearing open forks before design lock: F1/G0904 (org residency), G0101 (cloud + license mix), G0301/G0302 (HIC contract + payload), G0401 (practitioner auth), G0601 (subsidy decision-support tool), G0901-G0903 (PHI classification, audit exceptions, Shield), G1001 (migration data quality baseline).",
+    "epics_included": "",
+    "success_criteria": "Ratified architecture decisions recorded as ADRs; signed license and residency posture; HIC integration contract signed off; migration profiling report on 2-3 sample TAMS instances.",
+    "dependencies": "None (this phase resolves them).",
+    "risks": "If skipped or under-resourced, downstream re-architecture cost is high — particularly the org fork."
+  },
+  {
+    "phase_number": 1,
+    "phase_name": "Platform Foundation, Identity & PHI Security",
+    "objectives": "Establish the org(s), DevOps toolchain, LDV design, all three regional AD federations, patient/practitioner auth patterns, and the Medical History security model (Private OWD + Apex-managed sharing + Restriction Rules + break-glass audit).",
+    "epics_included": "E12,E08,E09",
+    "success_criteria": "Production and lower sandboxes stood up; CI/CD flowing; internal users SSO from all three ADs; patient email/pw + Facebook login works in a lower env; Medical_History__c object exists with sharing lifecycle proven end-to-end; break-glass procedure documented and tested; Restriction Rules verified against internal admins.",
+    "dependencies": "Phase 0 architecture locks.",
+    "risks": "Restriction Rule + break-glass model is subtle — needs a compliance signoff before dependent phases start writing PHI. LDV design (skinny tables, indexes) has to be right first time given target volumes."
+  },
+  {
+    "phase_number": 2,
+    "phase_name": "Patient Journey MVP",
+    "objectives": "Patient portal live: registration, onboarding wizard, HIC prefill, address validation, gated subsidy application intake, async HIC entitlement check + auto-reject, localized welcome email. First visible business value.",
+    "epics_included": "E01,E02,E03,E13",
+    "success_criteria": "A patient in each of the three regions can register, complete onboarding, submit a subsidy application in their language, and see it enter the 'HIC-check pending' → 'awaiting practitioner' pipeline. Auto-reject fires when HIC indicates insurance covers travel.",
+    "dependencies": "Phase 1 (identity, security model).",
+    "risks": "HIC 15s latency at peak has to be truly non-blocking to the wizard — test at scale, not just functionally. Translation Workbench coverage may lag; keep a plan for missing-language fallback."
+  },
+  {
+    "phase_number": 3,
+    "phase_name": "Practitioner Community & Assignment",
+    "objectives": "Bring the 4,000-practitioner surface online: partner community, geolocation-based auto-assignment on submission, 3-business-day accept-or-reassign SLA, digital assessment form (replacing the PDF flow), specialist re-referral, 15-day escalation to Team Managers.",
+    "epics_included": "E04,E05",
+    "success_criteria": "In a lower env: application submitted → practitioner selected by DISTANCE() within the treatment specialty → practitioner accepts or lapses → reassignment fires on business-day boundary → assessment completed digitally → 15-day escalation demoed. Partner Community license procurement complete for target rollout region(s).",
+    "dependencies": "Phase 2 (Subsidy_Application__c exists); Phase 1 (security).",
+    "risks": "4,000 external users is a material license commitment and adoption problem — practitioner onboarding UX and training plan are program risks, not just build risks. Assignment fairness rules must be resolved (G0402)."
+  },
+  {
+    "phase_number": 4,
+    "phase_name": "Assessor Review, Approval & Support",
+    "objectives": "Internal workflow live: Service Console for Assessors, subsidy-amount decision-support, managerial approval hierarchy, live chat + Einstein Bot deflection, operational and executive reporting.",
+    "epics_included": "E06,E07,E11",
+    "success_criteria": "Assessor works an application end-to-end in Service Console, sees no medical history, invokes the determination Flow, submits for approval where required, and approves. Chat is available on both surfaces with bot deflection. Regional Ops Manager sees a dashboard of cycle-time and SLA metrics.",
+    "dependencies": "Phase 3 (assessments exist to review).",
+    "risks": "Reporting volume at 1M/year may push to CRM Analytics — decide during Phase 4 build, don't wait for the pilot."
+  },
+  {
+    "phase_number": 5,
+    "phase_name": "Data Migration & Regional Cutover",
+    "objectives": "Migrate the 3.5M patients + historical applications + historical assessments from 30 TAMS instances into the new platform. Execute a per-region cutover with a 4-week dual-run tail; in-flight apps stay in TAMS.",
+    "epics_included": "E10",
+    "success_criteria": "Each region cuts over on plan, with reconciliation reports proving completeness and integrity. TAMS becomes read-only per region as cutover completes. Practitioners and Assessors continue working without material disruption.",
+    "dependencies": "Phase 4 (target system fully functional).",
+    "risks": "Dedup across offices is the single biggest data-quality risk. PDF-only historical assessments may need OCR to be searchable — decide early. Cutover sequence (which region first, dual-run duration) needs stakeholder sign-off per region.",
+    "parallel_track": false
+  }
+]

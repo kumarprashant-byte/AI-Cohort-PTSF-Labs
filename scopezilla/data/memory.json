@@ -1,0 +1,72 @@
+{
+  "sessions": [
+    {
+      "date": "2026-09-29",
+      "skills_used": ["setup", "discover"],
+      "summary": "Initialized PTSF Patient Travel Support scoping project from the lab brief. Extracted 16-area audit, resolved 3 flagged ambiguities via adaptive interview (HIC async, geolocation-Apex assignment, private OWD med-history with Apex-managed sharing).",
+      "friction": [],
+      "decisions": [
+        "HIC integration is async (Platform Event/Queueable)",
+        "Practitioner auto-assignment: Apex + Geolocation + Scheduled Flow reassignment",
+        "Medical History is a separate object with Private OWD + Apex-managed sharing + Restriction Rules"
+      ],
+      "open_threads": [
+        "Salesforce cloud/license mix unconfirmed",
+        "Practitioner authentication method unstated",
+        "Chat channel unspecified",
+        "Address validation service unspecified",
+        "Subsidy amount decision-support mechanism",
+        "Payment/disbursement out of scope? TBC",
+        "Escalation channel at 15 days",
+        "Data residency: single global org vs. per-region",
+        "PHI classification + audit exception path",
+        "Shield encryption in scope?",
+        "Migration data quality: dedup + PDF text-extractability",
+        "Practitioner tie-breakers + capacity + leave",
+        "Business-day definition per region",
+        "HIC SLA (p50/p99) and rate limits",
+        "Patient portal SLOs",
+        "Treatment-type picker (500+) structure",
+        "Timeline / go-live target",
+        "Budget envelope",
+        "Success metrics",
+        "Office-specific customization to preserve?"
+      ],
+      "next_steps": ["Run requirements to shape epics and gap analysis"]
+    }
+  ],
+  "preferences": {
+    "terminology": {
+      "TAMS": "Travel Application Management System (bespoke legacy)",
+      "HIC": "Health Insurance Checker (global API)",
+      "satellite office": "regional branch that receives/approves/books applications",
+      "Medical Practitioner": "external clinician who assesses subsidy candidates",
+      "Assessor": "internal PTSF reviewer of applications",
+      "subsidy": "travel-cost assistance PTSF grants to a patient"
+    },
+    "audience_default": "client-and-internal"
+  },
+  "decision_log": [
+    {
+      "date": "2026-09-29",
+      "area": "Integration architecture",
+      "decision": "HIC integration is asynchronous (Platform Event/Queueable)",
+      "rationale": "15s peak latency would block UI threads; async keeps perceived latency low",
+      "rejected": ["Sync with spinner + timeout", "Cache-only"]
+    },
+    {
+      "date": "2026-09-29",
+      "area": "Assignment logic",
+      "decision": "Apex + Geolocation on insert; Scheduled Flow reassigns after 3 business days",
+      "rationale": "Deterministic, testable, uses standard DISTANCE(); handles 4,000 external practitioners without forcing Omni-Channel licensing",
+      "rejected": ["Omni-Channel routing", "External matching service"]
+    },
+    {
+      "date": "2026-09-29",
+      "area": "Security model",
+      "decision": "Medical History is separate object with Private OWD; Apex-managed sharing tied to assignment lifecycle; Restriction Rules block internal profiles",
+      "rationale": "Meets 'only while open' TTL requirement and 'internal users never see' rule with auditable enforcement",
+      "rejected": ["FLS/Shield only", "Off-platform storage"]
+    }
+  ]
+}

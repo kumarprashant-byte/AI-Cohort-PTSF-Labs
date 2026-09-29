@@ -1,0 +1,29 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "salesforce-dx": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@salesforce/mcp",
+        "--orgs",
+        "DEFAULT_TARGET_ORG",
+        "--toolsets",
+        "orgs,metadata,data,users,testing",
+        "--allow-non-ga-tools"
+      ],
+      "enabled": true
+    },
+    "atlassian": {
+      "type": "remote",
+      "url": "https://mcp.atlassian.com/v1/mcp",
+      "enabled": true
+    },
+    "salesforce-docs": {
+      "type": "remote",
+      "url": "https://mcp.docs.salesforce.com/",
+      "enabled": true
+    }
+  }
+}

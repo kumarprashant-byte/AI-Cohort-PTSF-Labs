@@ -1,0 +1,32 @@
+[
+  {
+    "ConfigurationName": "OutboundMessages",
+    "Label": "<OBM DeveloperName exactly as in the SOP>",
+    "Fields": {
+      "EndpointUrl": "<literal post-refresh URL from the SOP>",
+      "Object": "<target SObject, e.g. Account / Contact / Asset>"
+    },
+    "IsActive": true,
+    "ExecutionOrder": 1
+  },
+  {
+    "ConfigurationName": "RemoteSiteSettings",
+    "Label": "<Remote Site name exactly as in the SOP>",
+    "Fields": {
+      "RemoteSiteUrl": "<literal post-refresh URL from the SOP>"
+    },
+    "IsActive": true,
+    "ExecutionOrder": 2
+  },
+  {
+    "ConfigurationName": "ScheduledApex",
+    "Label": "<Human-readable job name from the SOP — typically the Setup > Scheduled Jobs display name>",
+    "Fields": {
+      "ApexClassName": "<Bare Apex identifier of the Schedulable class, e.g. NightlyDataSyncScheduler>",
+      "CronExpression": "<6- or 7-field Salesforce cron expression, e.g. 0 0 2 * * ?>",
+      "JobName": "<Setup > Scheduled Jobs display name, must equal CronJobDetail.Name post-schedule>"
+    },
+    "IsActive": true,
+    "ExecutionOrder": 3
+  }
+]

@@ -1,0 +1,146 @@
+name: SF Validate
+
+# Salesforce deploy VALIDATION for the SIMPLE pipeline (feature → main).
+#
+# This is one of TWO deploy-pipeline options the scaffold ships — see
+# .github/workflows/README.md. Use this pair (sf-validate + sf-deploy) for a
+# lightweight feature→main flow; use the feature-ci_* / feature-release-test_*
+# set instead for the multi-stage develop→release/*→main flow. Pick ONE and
+# delete the other set. The trust-chain gates (intent validate / drift / README
+# index / test-script coverage / FLS) are NOT here — they live in
+# intent-trust-chain.yml and ship in EVERY repo regardless of this choice (#57).
+#
+# On a PR, this runs a check-only deploy (--dry-run) against the integration org
+# and confirms each ✅ criterion's named test actually ran green.
+
+# Trigger via `paths-ignore` so ANY package directory triggers validation without
+# hardcoding force-app/ (issue #64) — a repo whose packageDirectories is src/,
+# packaged/, or a custom name is covered for free, because those dirs simply aren't
+# in the ignore list below. The rule for this list: only omit paths that can NEVER
+# hold deployable Salesforce metadata — omitting a real source dir would let a PR
+# merge unvalidated (the bug this fixes). When unsure, DON'T add it here: an
+# un-omitted path just triggers a runner that no-ops. `*.md` is root-only on
+# purpose (a `.md` could be a static resource inside a package dir, which must
+# still trigger). The validate step itself resolves the real dirs to deploy.
+# Edge: these are Launchpad/tooling dirs that in practice never hold SF metadata;
+# in the unusual case a repo declares one of them as a `packageDirectories` path,
+# drop that entry from this list so its metadata PRs still validate.
+on:
+  pull_request:
+    paths-ignore:
+      - "intents/**"        # Intent statements — not metadata
+      - "delivery/**"       # ledger, runbooks, jira config — not metadata
+      - "decisions/**"      # ADRs — not metadata
+      - "scopezilla/**"     # read-only upstream mirror — not metadata
+      - ".claude/**"        # skills, settings — not metadata
+      - ".agents/**"        # vendored skills — not metadata
+      - ".cursor/**"        # harness config
+      - ".vscode/**"        # editor config
+      - "skills-lock.json"  # so a skills-update PR doesn't spin a deploy
+      - "*.md"              # root-level docs only (README, …)
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Resolve the deployable package directories from sfdx-project.json so the
+      # check-only deploy below isn't hardcoded to force-app/ (issue #64).
+      # FAIL CLOSED, correctly: when we can't scope to specific subdirs (missing/
+      # unparseable file, no packageDirectories, or a ROOT "." package),
+      # scope_all=true → pass no --source-dir so sf validates the project's own
+      # packageDirectories, rather than guessing force-app/ (fail-OPEN for a
+      # custom-dir repo).
+      - name: Resolve package directories
+        id: resolve-dirs
+        run: |
+          node -e '
+            const fs = require("fs");
+            let dirs = null;
+            try {
+              const p = JSON.parse(fs.readFileSync("sfdx-project.json", "utf8"));
+              dirs = (p.packageDirectories || [])
+                .map(d => String((d && d.path) || "").replace(/^\.\//, "").replace(/\/+$/, ""))
+                .filter(s => s !== "");
+            } catch (e) { dirs = null; }
+            const out = process.env.GITHUB_OUTPUT;
+            const scopeAll = dirs === null || dirs.length === 0 || dirs.some(d => d === ".");
+            if (scopeAll) {
+              console.log("::warning::Could not scope to package directories — validating the project default (fail-closed).");
+              fs.appendFileSync(out, "scope_all=true\npkg_dirs=\n");
+              console.log("Package directories: <project default>");
+              process.exit(0);
+            }
+            fs.appendFileSync(out, `scope_all=false\npkg_dirs=${dirs.join(" ")}\n`);
+            console.log("Resolved package directories: " + dirs.join(" "));
+          '
+
+      - name: Install sf CLI
+        run: npm install -g @salesforce/cli@latest
+
+      - name: Authenticate to integration org
+        id: auth
+        env:
+          SFDX_URL: ${{ secrets.SFDX_URL }}
+        run: |
+          if [ -z "$SFDX_URL" ]; then
+            echo "::warning::SFDX_URL secret not set — skipping validation."
+            echo "skipped=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          printf '%s' "$SFDX_URL" > /tmp/sfdx-auth.txt
+          sf org login sfdx-url --sfdx-url-file /tmp/sfdx-auth.txt --alias integration --set-default
+          rm /tmp/sfdx-auth.txt
+
+      # Gated on the auth step actually running: with no SFDX_URL secret the org
+      # was never authed, so a check-only deploy would fail against a nonexistent
+      # `integration` alias instead of skipping cleanly. The coverage step below
+      # runs with always() and already no-ops when no results file is produced.
+      - name: Validate metadata (check-only deploy)
+        id: deploy_validate
+        if: steps.auth.outputs.skipped != 'true'
+        env:
+          PKG_DIRS: ${{ steps.resolve-dirs.outputs.pkg_dirs }}
+          SCOPE_ALL: ${{ steps.resolve-dirs.outputs.scope_all }}
+        run: |
+          # --json captures the full run (incl. runTestResult) so the coverage
+          # step can confirm each ✅ criterion's named test actually ran green.
+          # Tee to a file AND keep the command's exit status (pipefail) so a real
+          # validation failure still fails the build; the coverage step below runs
+          # with always() so a red test is reported as the specific criterion that
+          # broke, not just an opaque deploy error.
+          set -o pipefail
+          # One --source-dir per resolved package dir (repeatable flag) — issue #64.
+          # scope_all → none, so sf validates the project's own packageDirectories.
+          # PKG_DIRS via env (data), not `${{ }}` (shell source) — so a path can't inject.
+          src_args=()
+          if [ "$SCOPE_ALL" != "true" ]; then
+            for d in $PKG_DIRS; do
+              src_args+=(--source-dir "$d")
+            done
+          fi
+          sf project deploy validate \
+            --target-org integration \
+            "${src_args[@]}" \
+            --test-level RunLocalTests \
+            --json | tee apex-test-results.json
+
+      # Turns ✅ from the author's assertion into a CI-confirmed proof: each ✅
+      # criterion's named Class.method test must be GREEN in the RunLocalTests run
+      # above. A red test, or (since RunLocalTests is exhaustive) a ✅ whose named
+      # test is absent, fails the gate for a Delivered intent. Runs even when the
+      # deploy-validate step failed (always()), so the output names the criterion
+      # whose proof broke. Skips cleanly if results weren't produced (no org secret,
+      # so validation was skipped) — the structural coverage gate already ran in
+      # intent-trust-chain.yml regardless.
+      - name: Confirm ✅ criteria against CI test results
+        if: always() && hashFiles('scripts/intent-ledger.mjs') != ''
+        run: |
+          if [ -d intents ] && [ -f delivery/intent-ledger.md ] && [ -s apex-test-results.json ]; then
+            node scripts/intent-ledger.mjs coverage --gate --results apex-test-results.json --tests-complete
+          else
+            echo "No test results (validation may have been skipped) — CI-proof confirmation not run; the structural coverage gate already ran in intent-trust-chain.yml."
+          fi

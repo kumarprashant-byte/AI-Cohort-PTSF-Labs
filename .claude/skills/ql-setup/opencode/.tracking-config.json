@@ -1,0 +1,5 @@
+{
+  "ingest_urls": ["https://telemetry-1370372398.us-west-2.elb.amazonaws.com/ingest"],
+  "local_log_path": "~/.quantum-leap-launchpad/usage.jsonl",
+  "enabled": true
+}
