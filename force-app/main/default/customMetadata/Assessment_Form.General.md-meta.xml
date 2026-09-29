@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>General</label>
+    <protected>false</protected>
+    <values>
+        <field>Treatment_Type__c</field>
+        <value xsi:type="xsd:string">General</value>
+    </values>
+    <values>
+        <field>Schema_JSON__c</field>
+        <value xsi:type="xsd:string">[{"api_name":"chief_complaint","label":"Chief Complaint","type":"textarea","required":true},{"api_name":"onset_date","label":"Onset Date","type":"date","required":false},{"api_name":"severity_0_10","label":"Severity (0-10)","type":"number","required":true},{"api_name":"notes","label":"Notes","type":"textarea","required":false}]</value>
+    </values>
+</CustomMetadata>

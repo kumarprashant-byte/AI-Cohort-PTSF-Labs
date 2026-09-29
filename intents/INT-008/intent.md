@@ -20,7 +20,7 @@ A patient submits a subsidy application, picks a treatment from a hierarchy of 5
 - Medical_History__c snapshot mechanism captured at submission time
 - On-submit Flow that fires `HIC_Entitlement_Requested__e` (INT-007) and moves status to HIC-check pending
 - On HIC completion: if entitlement covers travel, auto-reject Flow generates a localized explanation and emails the patient; else move to Awaiting Practitioner (INT-009 picks it up)
-- Skinny table + selective indexes on Status + Region + Created_Date
+- Selective indexes on Status + Region + Created_Date (the skinny table is deferred to the design record INT-001 carries — a Support case can't be filed against the capstone org)
 
 ## Guardrails
 

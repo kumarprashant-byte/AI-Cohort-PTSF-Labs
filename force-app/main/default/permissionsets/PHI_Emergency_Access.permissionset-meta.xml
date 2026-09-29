@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Break-glass access to PHI for Compliance Officers. Grants Read on Medical_History__c and FLS Read on encrypted-PHI fields; Restriction Rule exception is applied via the rule's userCriteria.</description>
+    <hasActivationRequired>true</hasActivationRequired>
+    <label>PHI Emergency Access</label>
+    <license>Salesforce</license>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Medical_History__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Audit_Log__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <fieldPermissions><editable>false</editable><field>Medical_History__c.Diagnosis__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Medical_History__c.Diagnosis_Code__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Medical_History__c.Medication__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Medical_History__c.Allergy__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Medical_History__c.Notes__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Medical_History__c.Encounter_Date__c</field><readable>true</readable></fieldPermissions>
+</PermissionSet>

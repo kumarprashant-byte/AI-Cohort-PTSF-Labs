@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSetGroup xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>INT-005 — AMER region × Team Manager composite. Assigns the role's baseline access plus the AMER region marker.</description>
+    <label>AMER Team Manager</label>
+    <permissionSets>Team_Manager_Base</permissionSets>
+    <permissionSets>Region_AMER</permissionSets>
+    <status>Updated</status>
+</PermissionSetGroup>

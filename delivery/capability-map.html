@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capability Map — PTSF Patient Travel Support</title>
+<style>
+
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --card:#ffffff; --line:#dde2ea; --ink:#1f2530; --muted:#5f6b7a;
+  --accent:#2563eb;
+  --p0:#64748b; --p1:#4f46e5; --p2:#0d9488; --p3:#d97706; --p4:#9333ea; --pX:#64748b;
+  --conf-confirmed:#16a34a; --conf-assumed:#d97706; --conf-unknown:#dc2626; --conf-draft:#94a3b8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em}
+.muted{color:var(--muted)}
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding:18px 22px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
+.title h1{margin:0;font-size:20px;letter-spacing:.2px}
+.title .sub{margin-top:4px;color:var(--muted);font-size:12.5px}
+.stats{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.stat{text-align:center}
+.stat b{display:block;font-size:20px;line-height:1}
+.stat span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.controls{display:flex;gap:10px;align-items:center;padding:12px 22px;border-bottom:1px solid var(--line);flex-wrap:wrap;position:sticky;top:0;background:var(--bg);z-index:5}
+#search{flex:1;min-width:220px;background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 12px;font-size:13px}
+.chipset{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:6px 11px;font-size:12.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;user-select:none}
+.chip:hover{border-color:#aeb7c4}
+.chip.off{opacity:.45;text-decoration:line-through}
+.chip.on{background:#e7edff;border-color:var(--accent);color:#1e3a8a;font-weight:600;box-shadow:inset 0 0 0 1px var(--accent)}
+.chip.ghost{background:transparent}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.conf-confirmed{background:var(--conf-confirmed)} .conf-assumed{background:var(--conf-assumed)}
+.conf-unknown{background:var(--conf-unknown)} .conf-draft{background:var(--conf-draft)}
+.grid{display:grid;column-gap:14px;row-gap:10px;padding:18px 22px 48px;overflow-x:auto;align-items:start;justify-content:start}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.band{border-radius:9px;padding:9px 13px;font-size:12px;font-weight:700;letter-spacing:.3px;color:#fff;display:flex;align-items:center;box-shadow:0 1px 2px #0000001a;min-height:38px;box-sizing:border-box}
+.band .bphase{flex:none;font-size:11px;opacity:.9;text-transform:uppercase;letter-spacing:.6px;margin-right:9px;padding-right:9px;border-right:1px solid #ffffff66}
+.band .bname{font-weight:600;letter-spacing:.1px;line-height:1.25}
+.col-head{border-radius:9px;padding:10px 11px;border:1px solid var(--line);border-top:3px solid var(--c);background:color-mix(in srgb, var(--c) 9%, #fff)}
+.col-head .eid{font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--c)}
+.col-head .ename{font-size:13px;font-weight:600;margin-top:2px;cursor:pointer;color:var(--ink)}
+.col-head .ename:hover{text-decoration:underline}
+.col-head .erow{display:flex;gap:8px;margin-top:7px;flex-wrap:wrap;align-items:center}
+.tag{font-size:10.5px;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:#fff}
+.cell{border:1px solid var(--line);border-left-width:4px;border-radius:8px;padding:9px 10px;background:color-mix(in srgb, var(--c) 5%, #fff);cursor:pointer;transition:transform .06s,box-shadow .12s,border-color .12s}
+.cell:hover{transform:translateY(-1px);border-color:#aeb7c4;box-shadow:0 3px 10px #0000001f}
+.cell.dim{opacity:.28;filter:saturate(.5)}
+.col-head.dim{opacity:.32;filter:saturate(.45)}
+.band.dim{opacity:.34;filter:saturate(.45)}
+.cell .cid{font-size:10.5px;font-weight:700;letter-spacing:.4px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:6px}
+.cell .ctitle{font-size:12.5px;margin-top:3px;font-weight:500;color:var(--ink)}
+.cell .crow{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.badge{font-size:10.5px;padding:1px 6px;border-radius:6px;background:#fff;border:1px solid var(--line);color:var(--muted);display:inline-flex;gap:3px;align-items:center}
+.badge.warn{color:#b45309;border-color:#fcd9a8;background:#fff7ed}
+.badge.dep{color:#0369a1;border-color:#bae6fd;background:#f0f9ff}
+.status{font-size:11px}
+.empty{padding:40px 22px;color:var(--muted)}
+.panel{position:fixed;top:0;right:0;width:min(560px,94vw);height:100vh;background:var(--panel);border-left:1px solid var(--line);box-shadow:-12px 0 40px #00000026;overflow-y:auto;z-index:20;padding:22px 24px 60px}
+.panel-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);font-size:26px;cursor:pointer;line-height:1}
+.panel h2{margin:2px 0 2px;font-size:18px;padding-right:30px}
+.panel .pmeta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+.panel h3{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:18px 0 6px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.panel p{margin:0 0 8px}
+.panel ul{margin:0;padding-left:18px}
+.panel li{margin:3px 0}
+.panel .q{margin:6px 0;padding:8px 10px;border-radius:6px;background:#f6f8fb;border:1px solid var(--line)}
+.panel .q.unanswered{border-left:3px solid var(--conf-assumed)}
+.panel .q.answered{border-left:3px solid var(--conf-confirmed)}
+.panel .qid{font-weight:700;font-size:11px;color:var(--muted)}
+.panel .ext{margin:6px 0;padding:8px 10px;border-radius:6px;background:#f6f8fb;border:1px solid var(--line)}
+.panel .ext .sys{font-weight:600}
+.panel .ext .owner{font-size:11.5px;color:var(--muted)}
+.panel .kb{font-size:11.5px;color:var(--muted);font-family:ui-monospace,monospace}
+.panel .governed{margin-top:22px;padding:11px 13px;border-radius:8px;background:#eef2f7;border:1px dashed var(--line);font-size:12px;color:var(--muted)}
+.panel .governed code{color:var(--ink)}
+.backdrop{position:fixed;inset:0;background:#00000040;z-index:15}
+.footer{padding:12px 22px 30px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+.footer .warn{color:#b45309}
+.p0{--c:var(--p0)} .p1{--c:var(--p1)} .p2{--c:var(--p2)} .p3{--c:var(--p3)} .p4{--c:var(--p4)} .pX{--c:var(--pX)}
+.band.pc{background:var(--c)}
+.cell.pc{border-left-color:var(--c)}
+
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="title">
+    <h1>Capability Map</h1>
+    <div class="sub">PTSF Patient Travel Support · Phase → Epic → Intent · <span class="muted">refreshed 2026-09-29 17:11 GMT+5:30</span></div>
+  </div>
+  <div class="stats" id="stats"></div>
+</header>
+
+<section class="controls">
+  <input type="search" id="search" placeholder="Filter capabilities (title, id, system)…" autocomplete="off">
+  <div class="chipset" id="confFilters" aria-label="Confidence filters">
+    <button class="chip" data-conf="confirmed"><span class="dot conf-confirmed"></span>Confirmed</button>
+    <button class="chip" data-conf="assumed"><span class="dot conf-assumed"></span>Assumed</button>
+    <button class="chip" data-conf="unknown"><span class="dot conf-unknown"></span>Unknown</button>
+    <button class="chip" data-conf="draft"><span class="dot conf-draft"></span>Draft</button>
+  </div>
+  <div class="chipset" aria-label="Attribute filters">
+    <button class="chip" id="fOpen">❓ Has open questions</button>
+    <button class="chip" id="fDep">🔗 Has external deps</button>
+  </div>
+  <button class="chip ghost" id="reset">Reset</button>
+</section>
+
+<main id="grid" class="grid" role="grid" aria-label="Capability map"></main>
+<div id="empty" class="empty" hidden>No capabilities match the current filters.</div>
+
+<aside id="panel" class="panel" hidden aria-live="polite">
+  <button class="panel-close" id="panelClose" aria-label="Close">×</button>
+  <div id="panelBody"></div>
+</aside>
+<div id="backdrop" class="backdrop" hidden></div>
+
+<footer class="footer" id="warnings"></footer>
+
+<script>
+const MODEL = {"title":"PTSF Patient Travel Support","phases":[{"number":1,"name":"Platform Foundation, Identity & PHI Security","objectives":"Establish the org(s), DevOps toolchain, LDV design, all three regional AD federations, patient/practitioner auth patterns, and the Medical History security model (Private OWD + Apex-managed sharing + Restriction Rules + break-glass audit)."},{"number":2,"name":"Patient Journey MVP","objectives":"Patient portal live: registration, onboarding wizard, HIC prefill, address validation, gated subsidy application intake, async HIC entitlement check + auto-reject, localized welcome email. First visible business value."},{"number":3,"name":"Practitioner Community & Assignment","objectives":"Bring the 4,000-practitioner surface online: partner community, geolocation-based auto-assignment on submission, 3-business-day accept-or-reassign SLA, digital assessment form (replacing the PDF flow), specialist re-referral, 15-day escalation to Team Managers."},{"number":4,"name":"Assessor Review, Approval & Support","objectives":"Internal workflow live: Service Console for Assessors, subsidy-amount decision-support, managerial approval hierarchy, live chat + Einstein Bot deflection, operational and executive reporting."},{"number":5,"name":"Data Migration & Regional Cutover","objectives":"Migrate the 3.5M patients + historical applications + historical assessments from 30 TAMS instances into the new platform. Execute a per-region cutover with a 4-week dual-run tail; in-flight apps stay in TAMS."}],"columns":[{"phase":1,"epic":"E12","name":"Platform Foundation & DevOps","description":"Org strategy (single global org vs per-region — see G0904), sandboxes, DevOps toolchain, release management, monitoring, LDV strategy (skinny tables, archiving) for the 5M-patient / 1M-application-per-year data volume.","confidence":"Assumed","kb_sources":[],"intents":[{"id":"INT-001","phase":1,"epic":"E12","confidence":"Confirmed","origin":"scopezilla","title":"Provision capstone org and DevOps pipeline","build_target":"- A single capstone org exists and is authenticated as the engagement's default target (alias `ptsf-lab`)\n- Source repo holds the base metadata (profiles, permission sets, custom settings, base custom objects)\n- CI/CD pipeline deploys a change from a feature branch, through `develop`, into the capstone org\n- LDV baseline is captured as a design record — skinny-table + selective-index approach for the future Subsidy_Application__c, and Big Object archival design — no metadata is deployed for this bullet\n- Business Hours records exist in the capstone org per region (APAC, EMEA, AMER) for downstream SLA math","guardrails":["Must not create org-wide sharing rules or Restriction Rules (INT-004 owns PHI security)","Must not create the Subsidy_Application__c or Assignment__c objects (INT-008/INT-009 own them)","Must not enable Shield Platform Encryption without the Phase 0 PHI classification signoff"],"out_of_scope":["Must not stand up separate Production / Full / Partial / Developer Pro tenants — the capstone org plays all roles (deferred to a real-licensed-tenant engagement)","Must not execute the LDV skinny-table request against Salesforce Support — Support cases against production require a real production tenant; captured as design only","Must not stand up per-region orgs (deferred to G0904 resolution)","Must not procure Partner Community licenses (belongs to INT-009)"],"acceptance":"A DevOps engineer merges a trivial custom-label change on a feature branch, watches CI deploy it into the capstone org, and confirms the label appears in Setup.","success_criteria":[],"dependencies":{"internal":[],"external":[{"system":"Salesforce Licensing","need":"Capstone org access (orgfarm lab is sufficient; licensed tenants deferred)","owner":"PTSF IT"}]},"open_questions":[{"question":"surface: devops","status":"UNANSWERED"}],"status":"in-progress","confidenceKey":"confirmed","openCount":1,"openTotal":1,"extDepCount":1,"intDepCount":0}]},{"phase":1,"epic":"E08","name":"Identity & Authentication","description":"Internal user SSO to three regional Active Directory instances (federated, per-region IdP). Patient login (email/password + Facebook social sign-on). Practitioner authentication method (federated or self-registration with vetting) — TBC.","confidence":"Assumed","kb_sources":[],"intents":[{"id":"INT-002","phase":1,"epic":"E08","confidence":"Assumed","origin":"scopezilla","title":"Federate three regional Active Directories with JIT provisioning","build_target":"- Three SAML Single Sign-On configurations (one per regional AD: APAC, EMEA, AMER)\n- JIT provisioning handler that creates the User with Profile, Region__c, and Language attributes from the SAML assertion\n- MyDomain configured; login page routes each region to the correct IdP\n- Named permission set for each region grants regional data-scope access","guardrails":["Must not federate patient or practitioner logins (INT-003 owns those)","Must not grant a JIT-provisioned user any PHI-access permission set"],"out_of_scope":["Must not build a global AD federation (three regional trusts is the ratified design)"],"acceptance":"An Assessor in EMEA authenticates against the EMEA AD, lands in Salesforce with Region__c = EMEA and Language = French pre-set, and can open a French-locale application list view.","success_criteria":[],"dependencies":{"internal":[],"external":[{"system":"PTSF Regional AD (APAC/EMEA/AMER)","need":"SAML metadata + JIT attribute contract","owner":"PTSF IT / regional AD admins"}]},"open_questions":[{"question":"surface: security","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"assumed","openCount":1,"openTotal":1,"extDepCount":1,"intDepCount":0},{"id":"INT-003","phase":1,"epic":"E08","confidence":"Assumed","origin":"scopezilla","title":"Patient and practitioner login (email/password, Facebook, and partner path)","build_target":"- Experience Cloud login pages for Patient Portal (email/password + Facebook Auth Provider) and Practitioner Community (partner path per G0401 resolution)\n- Self-registration for patients; admin-vetting queue for practitioner registrations (strawman)\n- Password/reset flows in each site's supported languages\n- Auth Provider config for Facebook, tested against a real developer app","guardrails":["Must not merge patient and practitioner Contact records — RecordType keeps them distinct","Must not provision a Partner Community license until admin vetting completes"],"out_of_scope":["Must not build passwordless / magic-link auth (not requested)"],"acceptance":"A patient registers with Facebook, lands on the onboarding wizard entry screen; separately, a practitioner self-registers, waits for admin approval, and then logs in to a practitioner-community home page.","success_criteria":[],"dependencies":{"internal":[],"external":[]},"open_questions":[{"id":"Q-003","question":"-1: Is the practitioner auth path self-registration-with-vetting, or federated against a professional-registry IdP? (Resolver: PTSF Program Sponsor + IA)","status":"UNANSWERED"},{"question":"surface: experience-cloud","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"assumed","openCount":2,"openTotal":2,"extDepCount":0,"intDepCount":0}]},{"phase":1,"epic":"E09","name":"Data Security & PHI Visibility Model","description":"Medical History as a separate object with Private OWD. Apex-managed sharing granted on assignment acceptance and revoked on assignment close (TTL model). Restriction Rules deny visibility to internal PTSF profiles. Field-level security, encryption evaluation (Shield). Cross-region residency model TBC.","confidence":"Confirmed","kb_sources":[],"intents":[{"id":"INT-004","phase":1,"epic":"E09","confidence":"Confirmed","origin":"scopezilla","title":"PHI security foundation — Medical_History__c Private OWD, Restriction Rule, break-glass permission set","build_target":"- Medical_History__c custom object as child of Contact, OWD Private\n- Restriction Rule on Medical_History__c blocking all internal profiles (Assessor, Team Manager, Regional Ops, System Administrator)\n- 'PHI Emergency Access' permission set — Compliance-Officer-assigned only — granting the Restriction Rule exception\n- Audit_Log__c custom object capturing every break-glass grant with reason\n- Shield Platform Encryption applied per the classification matrix (deterministic on searchable fields, probabilistic on free-text)","guardrails":["Must not use standard sharing rules or role-hierarchy grants on Medical_History__c — the only permitted access channel is manual shares (owned by INT-019 once Assignment__c exists)","Must not expose Medical_History__c through any report, list view, or related list on an internal profile","Must not defer break-glass audit logging — the grant and the log write are the same transaction"],"out_of_scope":["Must not build the practitioner temporary-access mechanism — INT-019 owns Apex-managed sharing on Assignment__c","Must not encrypt attachments (E10 migration will decide separately)"],"acceptance":"A compliance-officer test: log in as a System Administrator with View All on Contact, open a patient record, try to reach Medical_History__c — no records visible, no error, no leak. Then flip on the 'PHI Emergency Access' permission set for the same user, retry, and the records become visible with an Audit_Log__c row written.","success_criteria":[],"dependencies":{"internal":[],"external":[]},"open_questions":[{"question":"decision: Private OWD Medical History with Apex-managed sharing (scopezilla/data/memory.json#decision_log)","status":"UNANSWERED"},{"question":"surface: security","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"confirmed","openCount":2,"openTotal":2,"extDepCount":0,"intDepCount":0},{"id":"INT-005","phase":1,"epic":"E09","confidence":"Assumed","origin":"scopezilla","title":"Regional user model and role hierarchy","build_target":"- Region__c on User and Contact\n- Role hierarchy modeled per region (Regional Ops Manager → Team Manager → Assessor)\n- Permission set groups per Profile × Region combination","guardrails":["Must not apply this pattern to Medical_History__c (INT-004 owns it)","Must not let a role-hierarchy grant cross regions"],"out_of_scope":["Must not add Region__c to Subsidy_Application__c / Assignment__c / Assessment__c — those objects don't exist yet; INT-020 owns Region on them (with the OWD + criteria sharing rules) once they're created","Must not build cross-region reporting overrides (Reporting phase decides)"],"acceptance":"An APAC Assessor and an EMEA Regional Ops Manager both log in; each User record carries the correct Region__c value; each user's role sits in the expected regional branch of the hierarchy; each user has the Profile × Region permission-set group assigned.","success_criteria":[],"dependencies":{"internal":[],"external":[]},"open_questions":[{"question":"surface: security","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"assumed","openCount":1,"openTotal":1,"extDepCount":0,"intDepCount":0}]},{"phase":2,"epic":"E01","name":"Patient Onboarding & Portal","description":"Public-facing patient registration (email/password + Facebook), first-login onboarding wizard capturing personal profile, HIC-prefill, address validation, gated access to subsidy applications until profile complete, localized welcome email in preferred language. Delivered on Experience Cloud (LWR).","confidence":"Confirmed","kb_sources":[],"intents":[{"id":"INT-006","phase":2,"epic":"E01","confidence":"Confirmed","origin":"scopezilla","title":"Patient portal + onboarding wizard with async HIC prefill","build_target":"- Experience Cloud LWR site 'Patient Portal' with localized templates per region\n- LWC wizard capturing name, DOB, address, language preference, insurance details\n- Onboarding__c staging record persisted per wizard step\n- Platform Event `HIC_Prefill_Requested__e` fired on wizard entry; UI shows a non-blocking 'checking coverage' state\n- Address validation callout to Loqate (strawman) on address entry\n- Localized welcome email template set, keyed by Contact.Language_Preference__c\n- Contact.Onboarding_Complete__c gate that blocks the subsidy application journey until onboarding is finished","guardrails":["Must not block wizard progression on the HIC callout returning — the wizard advances, HIC fills in later","Must not send unlocalized emails — every template exists in every supported language","Must not write insurance detail to a Contact field cleartext where it should live encrypted on Medical_History__c (INT-004)"],"out_of_scope":["Must not build the subsidy application form (INT-008 owns it)","Must not build the HIC entitlement-check pattern for submissions (INT-007 owns the shared pattern)"],"acceptance":"A patient in Singapore registers with Facebook, enters the wizard in English, submits an address that Loqate corrects, sees the 'coverage check pending' pill, continues to the language step, and by the time they reach the summary the insurance details have prefilled from HIC. A localized welcome email lands in their inbox.","success_criteria":[],"dependencies":{"internal":["INT-003","INT-007"],"external":[]},"open_questions":[{"question":"surface: experience-cloud","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"confirmed","openCount":1,"openTotal":1,"extDepCount":0,"intDepCount":2}]},{"phase":2,"epic":"E02","name":"Subsidy Application Lifecycle","description":"End-to-end application object model and lifecycle: create/edit application, treatment-type selection (500+), reason capture, medical-history re-verification, submission, status tracking, patient-side visibility. Feeds practitioner assignment (E04) and assessor review (E06).","confidence":"Confirmed","kb_sources":[],"intents":[{"id":"INT-008","phase":2,"epic":"E02","confidence":"Confirmed","origin":"scopezilla","title":"Subsidy application lifecycle with treatment picker and auto-reject","build_target":"- Subsidy_Application__c custom object with status state machine (Draft → Submitted → HIC-check pending → Awaiting Practitioner → Assessment → Approved/Rejected)\n- Treatment_Type__c hierarchical object with a metadata-driven picker component\n- Medical_History__c snapshot mechanism captured at submission time\n- On-submit Flow that fires `HIC_Entitlement_Requested__e` (INT-007) and moves status to HIC-check pending\n- On HIC completion: if entitlement covers travel, auto-reject Flow generates a localized explanation and emails the patient; else move to Awaiting Practitioner (INT-009 picks it up)\n- Selective indexes on Status + Region + Created_Date (the skinny table is deferred to the design record INT-001 carries — a Support case can't be filed against the capstone org)","guardrails":["Must not allow submission before Contact.Onboarding_Complete__c","Must not let a patient edit an application after submission (a corrections workflow is out of scope this phase)"],"out_of_scope":["Must not assign a practitioner (INT-009 owns assignment)","Must not decide subsidy amount (INT-014 owns determination)"],"acceptance":"A patient completes onboarding, opens a new application, picks 'Oncology → Radiation Therapy' from the hierarchical picker, submits; HIC returns 'covered by insurance' in 6 seconds; the patient sees an auto-reject screen in their language with the reason and a localized rejection email arrives.","success_criteria":[],"dependencies":{"internal":[],"external":[]},"open_questions":[{"question":"surface: screen-flow","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"confirmed","openCount":1,"openTotal":1,"extDepCount":0,"intDepCount":0}]},{"phase":2,"epic":"E03","name":"Health Insurance Checker Integration","description":"Asynchronous integration with the global HIC API (Platform Event / Queueable Apex). Prefill onboarding, verify entitlements at application submission, auto-reject applications where the HIC indicates travel is covered. Handles up-to-15s peak latency without blocking UI; retry, timeout, and idempotency policy.","confidence":"Confirmed","kb_sources":[],"intents":[{"id":"INT-007","phase":2,"epic":"E03","confidence":"Confirmed","origin":"scopezilla","title":"Health Insurance Checker async integration pattern (Platform Event → Queueable → callback)","build_target":"- Platform Event `HIC_Prefill_Requested__e` and `HIC_Entitlement_Requested__e`\n- Queueable Apex `HICQueueable` calling HIC via Named Credential, 20s callout timeout, exponential backoff up to 3 attempts\n- HIC_Check__c custom object linked to the source record (Onboarding__c or Subsidy_Application__c)\n- Completion Platform Events (`HIC_Prefill_Completed__e`, `HIC_Entitlement_Completed__e`) with the result payload\n- Scheduled Flow retrying HIC_Check__c rows in 'pending' state hourly for 24 hours\n- Idempotency key `SHA(record_id, submitted_at)` on every request","guardrails":["Must not call HIC synchronously from a Flow, LWC, or trigger — every call goes through the Queueable","Must not exceed 3 retry attempts before deferring to the Scheduled Flow","Must not create duplicate HIC_Check__c rows for the same idempotency key"],"out_of_scope":["Must not decide the business rules for auto-reject (INT-008 owns the Flow that acts on the completion event)"],"acceptance":"A Subsidy Application is submitted with a mock HIC that takes 14 seconds; the user sees 'pending' in the wizard and can navigate away. Fourteen seconds later, HIC_Check__c is populated with the result, the completion event fires, and the application status advances. A second submission with the same idempotency key does not create a second HIC_Check__c row.","success_criteria":[],"dependencies":{"internal":[],"external":[{"system":"Health Insurance Checker (HIC) API","need":"Named Credential endpoint, contract SLA (p50/p99), payload schema","owner":"PTSF IT + HIC vendor"}]},"open_questions":[{"id":"Q-007","question":"-1: What is the exact HIC request/response payload schema and rate-limit contract? (Resolver: PTSF IT + HIC vendor)","status":"UNANSWERED"},{"question":"surface: integration","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"confirmed","openCount":2,"openTotal":2,"extDepCount":1,"intDepCount":0}]},{"phase":3,"epic":"E04","name":"Medical Practitioner Community & Assignment","description":"Partner Experience Cloud community for 4,000 external practitioners: registration, treatment-type specialties, geolocation, assignment inbox. Apex-based auto-assignment on application insert (nearest practitioner registered for the treatment type). Scheduled Flow reassigns after 3 business days if no acceptance. Business-day calendar per region.","confidence":"Confirmed","kb_sources":[],"intents":[{"id":"INT-009","phase":3,"epic":"E04","confidence":"Confirmed","origin":"scopezilla","title":"Practitioner community and geolocation-based auto-assignment","build_target":"- Partner Community licenses provisioned for ~4,000 practitioners (subject to G0101 resolution)\n- Contact geocoded on Address change (Location__c geolocation field)\n- Practitioner_Specialty__c junction between Contact and Treatment_Type__c\n- Assignment__c custom object with Status (Assigned / Accepted / Declined / Completed / Reassigned)\n- Apex trigger on Subsidy_Application__c after HIC completion → enqueue Queueable `AssignmentSelector`\n- SOQL selection by DISTANCE() from patient Location__c, filtered by specialty, On_Leave__c = false, Current_Load__c \u003c Capacity_Max__c, excluding previously-declined practitioners\n- Community record page for Assignment__c with Accept / Decline buttons and Medical_History__c related list (visible only via INT-004's sharing)","guardrails":["Must not select a practitioner outside the patient's region (patient's Region drives BusinessHours downstream)","Must not assign more than one open Assignment per application at a time","Must not expose an application's Medical_History__c to a practitioner before their Assignment reaches Accepted"],"out_of_scope":["Must not build the reassignment SLA clock (INT-010 owns it)","Must not build the assessment form (INT-011 owns it)"],"acceptance":"A submitted application in APAC with treatment 'Oncology → Radiation Therapy' fires the trigger; within 5 seconds, an Assignment__c exists on the nearest oncology-capable, on-duty APAC practitioner. That practitioner opens the community, sees the assignment tile, opens it, and can see the patient's Medical_History__c rows.","success_criteria":[],"dependencies":{"internal":["INT-003","INT-008"],"external":[]},"open_questions":[{"id":"Q-009","question":"-1: What tie-breakers apply when two practitioners tie on distance (load, longest-since-last-assignment, random)? (Resolver: PTSF Ops leadership + IA)","status":"UNANSWERED"},{"question":"surface: experience-cloud","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"confirmed","openCount":2,"openTotal":2,"extDepCount":0,"intDepCount":2},{"id":"INT-010","phase":3,"epic":"E04","confidence":"Confirmed","origin":"scopezilla","title":"3-business-day accept-or-reassign SLA with regional Business Hours","build_target":"- Scheduled Flow running nightly at 01:00 local per region\n- Query: Assignment__c where Status = Assigned AND Accepted_Date = null AND Assigned_Date \u003c TODAY minus 3 business days (per the practitioner's Region Business Hours)\n- On match: set Status = Reassigned, add practitioner to previously-declined set on the Application, enqueue AssignmentSelector (INT-009) to pick the next candidate\n- Email notification to the practitioner explaining the reassignment (localized)","guardrails":["Must not use calendar days — business days per Region Business Hours only","Must not reassign an application without excluding the previously-declined practitioner"],"out_of_scope":["Must not escalate to a manager here — INT-012 owns 15-day escalation"],"acceptance":"An assignment made in APAC at 10:00 Monday, with Region Business Hours excluding weekends and local holidays, remains unaccepted; by 01:00 the following Friday (3 business days elapsed) the Scheduled Flow reassigns it to the next candidate, and the original practitioner receives a localized 'assignment reassigned' email.","success_criteria":[],"dependencies":{"internal":["INT-009"],"external":[]},"open_questions":[{"id":"Q-010","question":"-1: Whose Business Hours drive the clock — the practitioner's region, the patient's region, or the assessing region? (Resolver: PTSF Ops leadership + IA)","status":"UNANSWERED"},{"question":"surface: automation","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"confirmed","openCount":2,"openTotal":2,"extDepCount":0,"intDepCount":1}]},{"phase":3,"epic":"E05","name":"Digital Assessment & Escalation","description":"Replace the PDF-email-scan flow with an in-platform digital assessment form for practitioners. Support practitioner requests for additional specialist assessments. Escalate assessments that remain 'pending' 15 days after assignment to Team Managers.","confidence":"Confirmed","kb_sources":[],"intents":[{"id":"INT-011","phase":3,"epic":"E05","confidence":"Confirmed","origin":"scopezilla","title":"Digital assessment form with specialist re-referral","build_target":"- Assessment__c custom object linked to Assignment__c\n- LWC Assessment component that loads a dynamic form from metadata-driven layouts keyed by Treatment_Type__c\n- Save-draft support; submission moves Assessment to Pending Review\n- 'Request specialist assessment' action creates a child Assessment__c and a new Assignment__c via INT-009's logic filtered to the specialist specialty\n- Attachments (imaging, prior reports) uploadable and linked to Assessment__c","guardrails":["Must not let a practitioner see or edit an Assessment for an Assignment they don't own","Must not accept a submission without all metadata-required fields for the treatment type"],"out_of_scope":["Must not implement the 15-day escalation (INT-012 owns it)","Must not build the assessor review console (INT-013 owns it)"],"acceptance":"A practitioner with an accepted oncology assignment opens the Assessment LWC, sees the oncology-specific form, saves a draft, returns the next day, completes it, and submits. A second run: they request a specialist assessment; a child Assessment is created and a new Assignment appears on the assigned specialist's community home.","success_criteria":[],"dependencies":{"internal":[],"external":[]},"open_questions":[{"question":"surface: lwc","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"confirmed","openCount":1,"openTotal":1,"extDepCount":0,"intDepCount":0},{"id":"INT-012","phase":3,"epic":"E05","confidence":"Assumed","origin":"scopezilla","title":"15-day assessment escalation to Team Manager","build_target":"- Scheduled Flow scanning Assessment__c where Status = Pending AND Assigned_Date \u003c TODAY - 15 (calendar days)\n- On match: create a Task assigned to the Team Manager (region-aware) with a link to the Assessment\n- Set Assessment.Escalated__c = true and store Escalated_Date__c","guardrails":["Must not double-escalate — check Escalated__c before creating a Task"],"out_of_scope":["Must not build a chatter-post variant — Task is the ratified channel (subject to G0501 confirmation)"],"acceptance":"An Assessment created 16 days ago in Pending status is escalated on the next Scheduled Flow run: the Team Manager sees a new Task on their queue and clicking through opens the Assessment.","success_criteria":[],"dependencies":{"internal":[],"external":[]},"open_questions":[{"id":"Q-012","question":"-1: Escalation channel — Task, Case, or Chatter post? (Resolver: PTSF Ops leadership)","status":"UNANSWERED"},{"question":"surface: automation","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"assumed","openCount":2,"openTotal":2,"extDepCount":0,"intDepCount":0}]},{"phase":3,"epic":"E09","name":"Data Security & PHI Visibility Model","description":"Medical History as a separate object with Private OWD. Apex-managed sharing granted on assignment acceptance and revoked on assignment close (TTL model). Restriction Rules deny visibility to internal PTSF profiles. Field-level security, encryption evaluation (Shield). Cross-region residency model TBC.","confidence":"Confirmed","kb_sources":[],"intents":[{"id":"INT-019","phase":3,"epic":"E09","confidence":"Confirmed","origin":"local","title":"Practitioner temporary access to medical history via Apex-managed sharing on Assignment__c","build_target":"- Apex trigger on Assignment__c: on Status → Accepted, insert Medical_History__Share rows granting Read to the Practitioner User for every Medical_History__c record on the assigned patient\n- Same trigger: on Status → Completed / Declined / Reassigned, delete those manual shares\n- Trigger is idempotent and bulk-safe (handles list of Assignment__c per DML)","guardrails":["Must not grant Edit or Delete via the manual share — Read only","Must not survive an Assignment moving off Accepted — share deletion must be atomic with the status change","Must not use standard sharing rules or role-hierarchy grants (INT-004's guardrail carries)"],"out_of_scope":["Must not change Medical_History__c OWD, Restriction Rule, break-glass permission set, or Shield config (INT-004 owns those)","Must not build the Assignment__c object itself (INT-009 owns it)"],"acceptance":"An Assignment moves to Accepted; the practitioner opens the assignment record and sees the patient's Medical_History__c rows on the page. Move the Assignment to Completed; the practitioner refreshes and the records are gone. Repeat with Declined and Reassigned — same result.","success_criteria":[],"dependencies":{"internal":["INT-004","INT-009"],"external":[]},"open_questions":[{"question":"surface: security","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"confirmed","openCount":1,"openTotal":1,"extDepCount":0,"intDepCount":2},{"id":"INT-020","phase":3,"epic":"E09","confidence":"Confirmed","origin":"local","title":"Region scoping and OWD sharing on subsidy/assignment/assessment objects","build_target":"- Region__c on Subsidy_Application__c, Assignment__c, Assessment__c (populated at insert from the parent Contact / owning User's Region)\n- OWD Public Read-Only on all three objects\n- Criteria-based sharing rule per object constraining visibility to same-Region users\n- List views (My Region's Open Applications, etc.) filtered by Region","guardrails":["Must not apply this pattern to Medical_History__c (INT-004 owns it — PHI stays Private OWD)","Must not let a role-hierarchy grant cross regions","Must not populate Region__c from the running User's context at query time — it's a persisted field so sharing rules can act on it"],"out_of_scope":["Must not build cross-region reporting overrides (Reporting phase decides)"],"acceptance":"An APAC Assessor opens the All Open Applications list view and sees only APAC applications; the EMEA Regional Ops Manager opens the same list view and sees only EMEA; the SOQL `SELECT Id FROM Subsidy_Application__c` returns only the caller's region for both.","success_criteria":[],"dependencies":{"internal":["INT-005","INT-008","INT-009","INT-011"],"external":[]},"open_questions":[{"question":"surface: security","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"confirmed","openCount":1,"openTotal":1,"extDepCount":0,"intDepCount":4}]},{"phase":4,"epic":"E06","name":"Application Review, Approval & Subsidy Determination","description":"Assessor console (Service Cloud) for reviewing applications and assessments, approving/rejecting, entering subsidy amount. Decision-support for subsidy amount based on distance and transport type. Managerial approval hierarchy for higher-value subsidies.","confidence":"Confirmed","kb_sources":[],"intents":[{"id":"INT-013","phase":4,"epic":"E06","confidence":"Confirmed","origin":"scopezilla","title":"Assessor Service Console for application review","build_target":"- Service Console app 'Application Review' with Subsidy_Application__c as primary tab\n- Related lists: Assessment(s), HIC_Check(s), Practitioner info (Contact card)\n- Medical_History__c intentionally NOT shown (INT-004's Restriction Rule enforces)\n- Utility bar with a 'Determine Subsidy' launcher (INT-014) and 'Escalate to Manager' action\n- List views for My Queue, Regional Queue, SLA Breached","guardrails":["Must not expose Medical_History__c anywhere in this console — no related list, no lookup, no report","Must not surface an application from a different region on a Regional Ops list view"],"out_of_scope":["Must not build the determination Flow (INT-014 owns it)","Must not build managerial approval routing (INT-015 owns it)"],"acceptance":"An APAC Assessor opens the console, sees My Queue with only APAC applications, opens one, sees the Assessment and HIC_Check tiles, tries to reach medical history — nothing exists in the UI to reach it — and clicks Determine Subsidy to launch INT-014.","success_criteria":[],"dependencies":{"internal":[],"external":[]},"open_questions":[{"question":"surface: console","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"confirmed","openCount":1,"openTotal":1,"extDepCount":0,"intDepCount":0},{"id":"INT-014","phase":4,"epic":"E06","confidence":"Assumed","origin":"scopezilla","title":"Subsidy determination Flow with regional threshold approval","build_target":"- Subsidy_Determination_Rule__c custom object holding transport-type multipliers per region\n- Screen Flow 'Determine Subsidy' invoked from INT-013's utility bar; computes proposed amount from Practitioner.Distance_From_Patient × Transport_Type multiplier\n- Assessor can adjust the amount with a reason field\n- Approval Process: if Amount > Region.Threshold__c, route to Team Manager (role hierarchy)\n- Subsidy_Application__c fields: Proposed_Amount__c, Approved_Amount__c, Adjustment_Reason__c","guardrails":["Must not commit a subsidy amount that skips the approval process where required","Must not use a global threshold — Region.Threshold__c drives it"],"out_of_scope":["Must not integrate to a payment system (G0603 unresolved)"],"acceptance":"An Assessor in EMEA determines a subsidy of €1,800 (threshold €1,500); the Approval Process routes to the EMEA Team Manager, who approves; the application moves to Approved with Approved_Amount__c populated.","success_criteria":[],"dependencies":{"internal":[],"external":[]},"open_questions":[{"id":"Q-014","question":"-1: Is the decision-support mechanism a business rule engine, this Flow-based calculator, or a reference-table lookup? (Resolver: PTSF Program Sponsor + IA)","status":"UNANSWERED"},{"question":"surface: screen-flow","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"assumed","openCount":2,"openTotal":2,"extDepCount":0,"intDepCount":0}]},{"phase":4,"epic":"E07","name":"Chat, Messaging & Support Deflection","description":"Live chat between Patients/Practitioners and PTSF Assessors. Einstein Bots + Knowledge for common-question deflection. Channel selection TBC (Messaging for In-App/Web candidate).","confidence":"Assumed","kb_sources":[],"intents":[{"id":"INT-015","phase":4,"epic":"E07","confidence":"Assumed","origin":"scopezilla","title":"Chat, deflection bot, and knowledge base on both surfaces","build_target":"- Messaging for In-App/Web widget embedded on Patient Portal and Practitioner Community\n- Einstein Bot answering the top intents from the current static-website FAQ\n- Omni-Channel routing on handoff, keyed by Language and Region as skills\n- Knowledge base seeded from the current static-website FAQ content, per language","guardrails":["Must not route a patient chat to an Assessor in a different region unless no in-region agent is available","Must not surface medical-history references in bot responses"],"out_of_scope":["Must not build voice channel — chat only"],"acceptance":"A French-speaking patient opens chat on the EMEA portal, the bot answers three FAQ intents, then the patient asks about a specific application; the bot routes to Omni-Channel and lands with a French-speaking EMEA Assessor.","success_criteria":[],"dependencies":{"internal":[],"external":[]},"open_questions":[{"question":"surface: experience-cloud","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"assumed","openCount":1,"openTotal":1,"extDepCount":0,"intDepCount":0}]},{"phase":4,"epic":"E11","name":"Reporting & Analytics","description":"Operational dashboards for Assessors/Managers (applications by region/treatment, cycle times, escalations, practitioner acceptance rates). Executive KPIs for the leadership team. Volume-aware design given 1M applications/year.","confidence":"Assumed","kb_sources":[],"intents":[{"id":"INT-016","phase":4,"epic":"E11","confidence":"Assumed","origin":"scopezilla","title":"Operational and executive reporting","build_target":"- Assessor dashboard: My Queue, SLA breaches, applications-in-flight by status\n- Team Manager dashboard: regional throughput, escalation count, practitioner acceptance rate\n- Executive dashboard (CRM Analytics if standard reports hit LDV): subsidies granted per region, rejection reasons, cycle time\n- All reports run against region-scoped rows; med-history-derived fields are excluded from any internal-facing report","guardrails":["Must not surface any Medical_History__c field, count, or derived metric on an internal report","Must not aggregate across regions on a Regional Ops dashboard"],"out_of_scope":["Must not build patient-facing analytics"],"acceptance":"An APAC Regional Ops Manager opens their dashboard, sees 200 in-flight APAC applications, a 5% SLA breach count, and no data leaks across into EMEA or AMER.","success_criteria":[],"dependencies":{"internal":[],"external":[]},"open_questions":[{"question":"surface: console","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"assumed","openCount":1,"openTotal":1,"extDepCount":0,"intDepCount":0}]},{"phase":5,"epic":"E10","name":"Data Migration from TAMS","description":"Migrate patients, historical subsidy applications, and assessments from 30 satellite-office TAMS instances. Dedup across offices. In-flight applications remain in TAMS to complete (~1 month). Cutover strategy: dual-run vs. big-bang per region.","confidence":"Confirmed","kb_sources":[],"intents":[{"id":"INT-017","phase":5,"epic":"E10","confidence":"Confirmed","origin":"scopezilla","title":"TAMS-to-Salesforce data migration ETL and dedup","build_target":"- Per-TAMS-instance ETL adapter (MuleSoft or Informatica) mapping the source shape to a canonical staging model\n- Canonical staging schema with source-office attribution on every row\n- Contact dedup on (Family Name + DOB + Email + Region) with a Data Steward review queue for near-matches (\u003c95% score)\n- Bulk API 2.0 load in phased batches by region, in this order: Contact → Subsidy_Application__c (historical, Status=Closed) → Assessment__c → attachments (PDFs as ContentDocument)\n- Reconciliation reports (row counts + checksums) per batch","guardrails":["Must not migrate in-flight applications — they finish in TAMS by their own dynamic","Must not lose source-office attribution — every migrated row carries Origin_Office__c","Must not merge two Contacts automatically below the 95% match threshold — humans review"],"out_of_scope":["Must not migrate audit history (out of scope for this program)"],"acceptance":"For a pilot region (smallest AMER office), the ETL loads 12,000 Contacts, 40,000 historical applications, and 90,000 assessments; reconciliation reports show 100% count parity with the TAMS source, and the Data Steward queue contains fewer than 200 near-match candidates to review.","success_criteria":[],"dependencies":{"internal":[],"external":[{"system":"TAMS (30 bespoke instances)","need":"Schema inventory + read access per instance + PDF export path","owner":"PTSF IT + regional office leads"}]},"open_questions":[{"id":"Q-017","question":"-1: Are PDF-only historical assessments OCR'd (text-searchable) or migrated as-is attachments? (Resolver: PTSF Program Sponsor)","status":"UNANSWERED"},{"question":"surface: integration","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"confirmed","openCount":2,"openTotal":2,"extDepCount":1,"intDepCount":0},{"id":"INT-018","phase":5,"epic":"E10","confidence":"Confirmed","origin":"scopezilla","title":"Per-region cutover with 4-week dual-run","build_target":"- Cutover runbook per region (smallest region first, then next-largest, then largest)\n- Freeze window for TAMS new-application intake during the migration batch\n- 4-week dual-run window: new applications go to Salesforce, in-flight TAMS applications stay in TAMS and finish there\n- Post-cutover: TAMS becomes read-only per region; reconciliation report signed off by Regional Ops Manager\n- Rollback plan documented (fail fast in the first 48 hours)","guardrails":["Must not cut over more than one region on the same weekend","Must not close the dual-run window before every in-flight TAMS application has completed"],"out_of_scope":["Must not decommission TAMS hardware (PTSF IT owns that after read-only cutover)"],"acceptance":"AMER-pilot region cuts over on a Friday night; Monday morning, new applications flow into Salesforce; the last in-flight TAMS application closes on day 24; on day 29 TAMS-AMER is set read-only and the Regional Ops Manager signs the reconciliation report.","success_criteria":[],"dependencies":{"internal":["INT-017"],"external":[]},"open_questions":[{"question":"surface: devops","status":"UNANSWERED"}],"status":"not-started","confidenceKey":"confirmed","openCount":1,"openTotal":1,"extDepCount":0,"intDepCount":1}]}],"bands":[{"phase":1,"span":3,"name":"Platform Foundation, Identity & PHI Security","objectives":"Establish the org(s), DevOps toolchain, LDV design, all three regional AD federations, patient/practitioner auth patterns, and the Medical History security model (Private OWD + Apex-managed sharing + Restriction Rules + break-glass audit)."},{"phase":2,"span":3,"name":"Patient Journey MVP","objectives":"Patient portal live: registration, onboarding wizard, HIC prefill, address validation, gated subsidy application intake, async HIC entitlement check + auto-reject, localized welcome email. First visible business value."},{"phase":3,"span":3,"name":"Practitioner Community & Assignment","objectives":"Bring the 4,000-practitioner surface online: partner community, geolocation-based auto-assignment on submission, 3-business-day accept-or-reassign SLA, digital assessment form (replacing the PDF flow), specialist re-referral, 15-day escalation to Team Managers."},{"phase":4,"span":3,"name":"Assessor Review, Approval & Support","objectives":"Internal workflow live: Service Console for Assessors, subsidy-amount decision-support, managerial approval hierarchy, live chat + Einstein Bot deflection, operational and executive reporting."},{"phase":5,"span":1,"name":"Data Migration & Regional Cutover","objectives":"Migrate the 3.5M patients + historical applications + historical assessments from 30 TAMS instances into the new platform. Execute a per-region cutover with a 4-week dual-run tail; in-flight apps stay in TAMS."}],"gatingPhases":[{"number":0,"name":"Discovery-Deep & Architecture Lock","objectives":"Close the load-bearing open forks before design lock: F1/G0904 (org residency), G0101 (cloud + license mix), G0301/G0302 (HIC contract + payload), G0401 (practitioner auth), G0601 (subsidy decision-support tool), G0901-G0903 (PHI classification, audit exceptions, Shield), G1001 (migration data quality baseline).","epicIds":[]}],"stats":{"intents":20,"epics":12,"phases":5,"confidence":{"confirmed":13,"assumed":7},"openQuestions":28,"externalDeps":4},"warnings":["INT-019: placed in phase 3 per the intent, but the Scopezilla mirror schedules its epic E09 in phase(s) 1 — following the intent; the mirror looks stale (run /ql-ingest-scopezilla to reconcile).","INT-020: placed in phase 3 per the intent, but the Scopezilla mirror schedules its epic E09 in phase(s) 1 — following the intent; the mirror looks stale (run /ql-ingest-scopezilla to reconcile)."]};
+
+const phaseClass = (n) => (n==null ? 'pX' : 'p'+n);
+const CONF_LABEL = {confirmed:'Confirmed',assumed:'Assumed',unknown:'Unknown',draft:'Draft'};
+const STATUS_GLYPH = {'not-started':'⬜','in-progress':'🔧','delivered':'✅','reverify':'🔄','retired':'🚫'};
+const STATUS_LABEL = {'not-started':'Not started','in-progress':'In progress','delivered':'Delivered','reverify':'Needs re-verify','retired':'Retired'};
+
+// Flatten all intents once so the side panel can resolve a dependency ID to its title
+// and compute the reverse "blocks" relationship (who depends on this intent).
+const ALL_INTENTS = MODEL.columns.flatMap(c=>c.intents.map(it=>({it,epic:c.epic,phase:c.phase})));
+const INTENT_BY_ID = {}; ALL_INTENTS.forEach(r=>{INTENT_BY_ID[r.it.id]=r;});
+const titleFor = (id)=>{const r=INTENT_BY_ID[id]; return r? id+' — '+r.it.title : id;};
+const blockedBy = (id)=> ALL_INTENTS.filter(r=>(r.it.dependencies.internal||[]).includes(id)).map(r=>r.it.id);
+
+const state = {
+  q:'',
+  confs:new Set(),           // empty = all
+  openOnly:false, depOnly:false,
+};
+
+function filterActive(){
+  return !!(state.confs.size || state.openOnly || state.depOnly || state.q);
+}
+
+function matches(it){
+  if(state.confs.size && !state.confs.has(it.confidenceKey)) return false;
+  if(state.openOnly && it.openCount===0) return false;
+  if(state.depOnly && it.extDepCount===0) return false;
+  if(state.q){
+    const hay=(it.id+' '+it.title+' '+(it.dependencies.external||[]).map(e=>e.system).join(' ')).toLowerCase();
+    if(!hay.includes(state.q)) return false;
+  }
+  return true;
+}
+
+function renderStats(){
+  const s=MODEL.stats;
+  const c=s.confidence||{};
+  document.getElementById('stats').innerHTML =
+    stat(s.intents,'Intents') + stat(s.epics,'Epics') + stat(s.phases,'Phases') +
+    stat((c.confirmed||0),'Confirmed') + stat((c.assumed||0),'Assumed') +
+    stat(s.openQuestions,'Open Qs') + stat(s.externalDeps,'Ext deps');
+}
+const stat=(n,l)=>'<div class="stat"><b>'+n+'</b><span>'+l+'</span></div>';
+
+const COL_W = 244; // px per epic column — keeps bands and columns aligned on one grid
+
+function render(){
+  const grid=document.getElementById('grid'); grid.innerHTML='';
+  const n=MODEL.columns.length;
+  grid.style.gridTemplateColumns='repeat('+n+', '+COL_W+'px)';
+  let visible=0;
+  const active=filterActive();
+
+  // Precompute, per column and per phase, whether any intent matches the active
+  // filter — so a filter dims epics/phases that are wholly irrelevant to it,
+  // rather than leaving their headers bright while only the cells dim.
+  const colMatch={}; const phaseMatch={};
+  MODEL.columns.forEach((col,idx)=>{
+    const any=col.intents.some(matches);
+    colMatch[idx]=any;
+    const pk=String(col.phase);
+    phaseMatch[pk]=phaseMatch[pk]||any;
+  });
+
+  // Row 1 — phase bands, each spanning the columns of its phase, with the phase
+  // name inline. Bands are already in column order with their span.
+  let startCol=1;
+  MODEL.bands.forEach(b=>{
+    const band=document.createElement('div');
+    const bdim=active && !phaseMatch[String(b.phase)];
+    band.className='band pc '+phaseClass(b.phase)+(bdim?' dim':'');
+    band.style.gridColumn=startCol+' / span '+b.span;
+    band.style.gridRow='1';
+    const label=(b.phase==null?'Unmapped':'Phase '+b.phase);
+    band.innerHTML='<span class="bphase">'+label+'</span><span class="bname">'+escapeHtml(b.name||'')+'</span>';
+    grid.appendChild(band);
+    startCol+=b.span;
+  });
+
+  // Row 2 — one stacked column per epic, in the same order, aligned under its band.
+  MODEL.columns.forEach((col,idx)=>{
+    col.intents.forEach(it=>{ it._phase=col.phase; });
+    const wrap=document.createElement('div'); wrap.className='col '+phaseClass(col.phase);
+    wrap.style.gridColumn=(idx+1)+' / span 1';
+    wrap.style.gridRow='2';
+
+    const headDim=active && !colMatch[idx];
+    const head=document.createElement('div'); head.className='col-head'+(headDim?' dim':'');
+    head.innerHTML='<div class="eid">'+escapeHtml(col.epic)+'</div><div class="ename">'+escapeHtml(col.name)+'</div>'+
+      '<div class="erow"><span class="tag">'+col.intents.length+' intents</span></div>';
+    head.querySelector('.ename').onclick=()=>openEpic(col);
+    wrap.appendChild(head);
+
+    col.intents.forEach(it=>{
+      const show=matches(it); if(show)visible++;
+      const cell=document.createElement('div');
+      cell.className='cell pc '+phaseClass(col.phase)+(show?'':' dim');
+      cell.innerHTML=
+        '<div class="cid"><span>'+escapeHtml(it.id)+'</span><span class="status" title="'+STATUS_LABEL[it.status]+'">'+STATUS_GLYPH[it.status]+'</span></div>'+
+        '<div class="ctitle">'+escapeHtml(it.title)+'</div>'+
+        '<div class="crow">'+
+          '<span class="badge"><span class="dot conf-'+it.confidenceKey+'"></span>'+(CONF_LABEL[it.confidenceKey]||it.confidenceKey)+'</span>'+
+          (it.openCount?'<span class="badge warn">❓'+it.openCount+'</span>':'')+
+          (it.extDepCount?'<span class="badge dep">🔗'+it.extDepCount+'</span>':'')+
+        '</div>';
+      cell.onclick=()=>openIntent(it,col);
+      wrap.appendChild(cell);
+    });
+    grid.appendChild(wrap);
+  });
+  document.getElementById('empty').hidden = visible>0;
+}
+
+function openIntent(it,col){
+  const b=document.getElementById('panelBody');
+  const list=(arr)=> arr&&arr.length ? '<ul>'+arr.map(x=>'<li>'+escapeHtml(x)+'</li>').join('')+'</ul>' : '<p class="muted">—</p>';
+  const qs = it.open_questions&&it.open_questions.length
+    ? it.open_questions.map(q=>'<div class="q '+(q.status==='ANSWERED'?'answered':'unanswered')+'"><span class="qid">'+(q.id||'Q')+'</span> '+escapeHtml(q.question)+(q.answer?'<br><b>Answered:</b> '+escapeHtml(q.answer):'')+'</div>').join('')
+    : '<p class="muted">None.</p>';
+  const ext = it.dependencies.external&&it.dependencies.external.length
+    ? it.dependencies.external.map(e=>'<div class="ext"><div class="sys">'+escapeHtml(e.system)+'</div>'+(e.need?'<div>'+escapeHtml(e.need)+'</div>':'')+(e.owner?'<div class="owner">owner: '+escapeHtml(e.owner)+'</div>':'')+'</div>').join('')
+    : '<p class="muted">None.</p>';
+  const dependsOn = (it.dependencies.internal||[]);
+  const blocks = blockedBy(it.id);
+  const depList=(ids)=> ids&&ids.length
+    ? '<ul>'+ids.map(x=>'<li>'+escapeHtml(titleFor(x))+'</li>').join('')+'</ul>' : '<p class="muted">None.</p>';
+  b.innerHTML=
+    '<h2>'+escapeHtml(it.id)+' — '+escapeHtml(it.title)+'</h2>'+
+    '<div class="pmeta">'+
+      '<span class="tag">'+escapeHtml(col.epic+' · '+col.name)+'</span>'+
+      '<span class="tag">Phase '+(col.phase==null?'—':col.phase)+'</span>'+
+      '<span class="badge"><span class="dot conf-'+it.confidenceKey+'"></span>'+(CONF_LABEL[it.confidenceKey]||it.confidenceKey)+'</span>'+
+      '<span class="badge">'+STATUS_GLYPH[it.status]+' '+STATUS_LABEL[it.status]+'</span>'+
+    '</div>'+
+    '<h3>Build target</h3>'+(it.build_target?'<p>'+escapeHtml(it.build_target)+'</p>':'<p class="muted">—</p>')+
+    '<h3>Guardrails</h3>'+list(it.guardrails)+
+    '<h3>Out of scope</h3>'+list(it.out_of_scope)+
+    '<h3>Acceptance</h3>'+(it.acceptance?'<p>'+escapeHtml(it.acceptance)+'</p>':'<p class="muted">—</p>')+
+    (it.success_criteria&&it.success_criteria.length?'<h3>Success criteria</h3>'+list(it.success_criteria):'')+
+    '<h3>Open questions ('+it.openCount+' open / '+it.openTotal+' total)</h3>'+qs+
+    '<h3>Depends on</h3>'+depList(dependsOn)+
+    '<h3>Blocks</h3>'+depList(blocks)+
+    '<h3>External dependencies</h3>'+ext+
+    '<div class="governed">Read-only view. To change this scope, use the governed paths — '+
+      '<code>/ql-refine-intent '+escapeHtml(it.id)+'</code> (edit / answer a question) or <code>/ql-capture-intent</code> (new capability from notes). '+
+      'The map never edits intents; it regenerates after a ratified change.</div>';
+  showPanel();
+}
+
+function openEpic(col){
+  const b=document.getElementById('panelBody');
+  const kb = col.kb_sources&&col.kb_sources.length ? '<h3>KB sources</h3><ul>'+col.kb_sources.map(k=>'<li class="kb">'+escapeHtml(k)+'</li>').join('')+'</ul>' : '';
+  b.innerHTML=
+    '<h2>'+escapeHtml(col.epic)+' — '+escapeHtml(col.name)+'</h2>'+
+    '<div class="pmeta"><span class="tag">Phase '+(col.phase==null?'—':col.phase)+'</span>'+
+      (col.confidence?'<span class="badge"><span class="dot conf-'+(col.confidence.toLowerCase().startsWith('conf')?'confirmed':col.confidence.toLowerCase().startsWith('assum')?'assumed':'unknown')+'"></span>'+escapeHtml(col.confidence)+'</span>':'')+
+      '<span class="tag">'+col.intents.length+' intents</span></div>'+
+    '<h3>Description</h3><p>'+escapeHtml(col.description||'—')+'</p>'+
+    '<h3>Capabilities (intents)</h3><ul>'+col.intents.map(i=>'<li><b>'+escapeHtml(i.id)+'</b> — '+escapeHtml(i.title)+'</li>').join('')+'</ul>'+
+    kb;
+  showPanel();
+}
+
+function showPanel(){ document.getElementById('panel').hidden=false; document.getElementById('backdrop').hidden=false; }
+function hidePanel(){ document.getElementById('panel').hidden=true; document.getElementById('backdrop').hidden=true; }
+
+function renderWarnings(){
+  const el=document.getElementById('warnings');
+  const base='Phase → Epic → Intent. Click a capability for its full intent; click an epic name for the epic. Cells colored by phase.';
+  if(MODEL.warnings&&MODEL.warnings.length){
+    el.innerHTML=base+'<br><span class="warn">⚠ Data notes: '+MODEL.warnings.map(escapeHtml).join(' · ')+'</span>';
+  } else el.textContent=base;
+}
+
+function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+// wire controls
+document.getElementById('search').addEventListener('input',e=>{state.q=e.target.value.toLowerCase().trim();render();});
+document.querySelectorAll('#confFilters .chip').forEach(btn=>{
+  btn.onclick=()=>{const c=btn.dataset.conf; state.confs.has(c)?state.confs.delete(c):state.confs.add(c); btn.classList.toggle('on',state.confs.has(c)); render();};
+});
+document.getElementById('fOpen').onclick=function(){state.openOnly=!state.openOnly;this.classList.toggle('on',state.openOnly);render();};
+document.getElementById('fDep').onclick=function(){state.depOnly=!state.depOnly;this.classList.toggle('on',state.depOnly);render();};
+document.getElementById('reset').onclick=()=>{
+  state.q='';state.confs.clear();state.openOnly=false;state.depOnly=false;
+  document.getElementById('search').value='';
+  document.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on'));
+  render();
+};
+document.getElementById('panelClose').onclick=hidePanel;
+document.getElementById('backdrop').onclick=hidePanel;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')hidePanel();});
+
+renderStats(); renderWarnings(); render();
+
+</script>
+</body>
+</html>

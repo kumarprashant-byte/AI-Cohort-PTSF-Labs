@@ -16,17 +16,17 @@ Status: ⬜ Not started · 🔧 In progress · ✅ Delivered · 🔄 Needs re-ve
 
 | Intent | Phase | Status | PR | Evidence | Scope hash @ delivery |
 |--------|-------|--------|----|----------|-----------------------|
-| INT-001 | 1 | ⬜ Not started | — | — | — |
+| INT-001 | 1 | ✅ Delivered | — | — | `268745afcc83` |
 | INT-002 | 1 | ⬜ Not started | — | — | — |
 | INT-003 | 1 | ⬜ Not started | — | — | — |
-| INT-004 | 1 | ⬜ Not started | — | — | — |
-| INT-005 | 1 | ⬜ Not started | — | — | — |
+| INT-004 | 1 | ✅ Delivered | local-orgfarm-2026-09-29 | — | `7a87f285c64b` |
+| INT-005 | 1 | 🔧 In progress | — | — | — |
 | INT-006 | 2 | ⬜ Not started | — | — | — |
-| INT-007 | 2 | ⬜ Not started | — | — | — |
+| INT-007 | 2 | ✅ Delivered | sandbox-deploy:0AfoB000000yjmXSAQ+partial-per-decision-2026-09-29-INT-007-hic-payload-deferred | — | `e0f63f2a5954` |
 | INT-008 | 2 | ⬜ Not started | — | — | — |
-| INT-009 | 3 | ⬜ Not started | — | — | — |
-| INT-010 | 3 | ⬜ Not started | — | — | — |
-| INT-011 | 3 | ⬜ Not started | — | — | — |
+| INT-009 | 3 | ✅ Delivered | local-orgfarm-2026-09-29 | — | `e7826a71b17e` |
+| INT-010 | 3 | ✅ Delivered | sandbox-deploy:0AfoB000000yj3tSAA | — | `2ae5cd8d9fee` |
+| INT-011 | 3 | ✅ Delivered | sandbox-deploy:0AfoB000000yjWvSAI+partial-per-decision-2026-09-29-INT-011-specialist-referral-deferred | — | `e5c327e92065` |
 | INT-012 | 3 | ⬜ Not started | — | — | — |
 | INT-013 | 4 | ⬜ Not started | — | — | — |
 | INT-014 | 4 | ⬜ Not started | — | — | — |
@@ -34,5 +34,7 @@ Status: ⬜ Not started · 🔧 In progress · ✅ Delivered · 🔄 Needs re-ve
 | INT-016 | 4 | ⬜ Not started | — | — | — |
 | INT-017 | 5 | ⬜ Not started | — | — | — |
 | INT-018 | 5 | ⬜ Not started | — | — | — |
+| INT-019 | 3 | ✅ Delivered | local-orgfarm-2026-09-29 | — | `67b23cf17f93` |
+| INT-020 | 3 | ⬜ Not started | — | — | — |
 
-_18 intents across phase(s) 1, 2, 3, 4, 5. Seeded from `intents/`._
+_20 intents across phase(s) 1, 2, 3, 4, 5. Seeded from `intents/`._
