@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <description>Daily at 01:00 org time: check every open Assignment for 3-business-day acceptance SLA and reassign overdue ones. Delegates to AssignmentSlaCheckAction invocable Apex for the BusinessHours math (Flow has no native BUSINESSHOURS diff).</description>
+    <interviewLabel>Assignment SLA Check {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Assignment SLA Check</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value><stringValue>LightningFlowBuilder</stringValue></value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <runInMode>SystemModeWithSharing</runInMode>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Run_SLA_Check</targetReference>
+        </connector>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2026-09-30</startDate>
+            <startTime>01:00:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <actionCalls>
+        <name>Run_SLA_Check</name>
+        <label>Run SLA Check</label>
+        <locationX>50</locationX>
+        <locationY>120</locationY>
+        <actionName>AssignmentSlaCheckAction</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+    </actionCalls>
+    <status>Active</status>
+</Flow>

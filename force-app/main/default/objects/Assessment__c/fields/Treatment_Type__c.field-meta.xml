@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Treatment_Type__c</fullName>
+    <label>Treatment Type</label>
+    <required>true</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>Oncology</fullName><default>false</default><label>Oncology</label></value>
+            <value><fullName>Cardiology</fullName><default>false</default><label>Cardiology</label></value>
+            <value><fullName>Orthopaedic</fullName><default>false</default><label>Orthopaedic</label></value>
+            <value><fullName>General</fullName><default>true</default><label>General</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

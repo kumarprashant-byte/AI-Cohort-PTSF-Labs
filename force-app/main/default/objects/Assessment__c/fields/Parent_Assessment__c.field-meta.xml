@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Parent_Assessment__c</fullName>
+    <description>Present but unused in the INT-011 core build; hosts the specialist re-referral follow-on (a child Assessment spawned from a parent).</description>
+    <label>Parent Assessment</label>
+    <referenceTo>Assessment__c</referenceTo>
+    <relationshipLabel>Child Assessments</relationshipLabel>
+    <relationshipName>Child_Assessments</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+    <deleteConstraint>SetNull</deleteConstraint>
+</CustomField>

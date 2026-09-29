@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Practitioner assignment to a Subsidy Application. OwnerId = the Practitioner User (settles INT-019 Q-019-1). Private OWD — practitioner sees own via ownership.</description>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>Private</externalSharingModel>
+    <label>Assignment</label>
+    <nameField>
+        <displayFormat>ASN-{00000}</displayFormat>
+        <label>Assignment Number</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Assignments</pluralLabel>
+    <sharingModel>Private</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

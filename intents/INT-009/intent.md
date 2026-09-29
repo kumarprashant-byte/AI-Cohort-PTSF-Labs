@@ -5,6 +5,7 @@ epic: E04
 confidence: Confirmed
 origin: scopezilla
 title: Practitioner community and geolocation-based auto-assignment
+ratified: 2026-09-29 by Prashant Kumar @ e7826a71b17e
 ---
 
 # INT-009 — Practitioner community and geolocation-based auto-assignment
@@ -46,6 +47,8 @@ _none_
 
 ### Internal
 - INT-003
+- INT-004 — Medical_History__c must exist; the community record page's related list is gated by INT-004's Private OWD + INT-019's manual share
+- INT-005 — Contact.Region__c drives the region guardrail on selection
 - INT-008
 
 ### External

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Practitioner Assessment Access</label>
+    <description>FLS + object access on Assessment__c for practitioners submitting digital assessments (INT-011).</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <license>Salesforce</license>
+    <objectPermissions>
+        <object>Assessment__c</object>
+        <allowCreate>true</allowCreate>
+        <allowRead>true</allowRead>
+        <allowEdit>true</allowEdit>
+        <allowDelete>false</allowDelete>
+        <viewAllRecords>false</viewAllRecords>
+        <modifyAllRecords>false</modifyAllRecords>
+    </objectPermissions>
+    <fieldPermissions>
+        <field>Assessment__c.Response_JSON__c</field><readable>true</readable><editable>true</editable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Assessment__c.Submitted_Date__c</field><readable>true</readable><editable>false</editable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Assessment__c.Parent_Assessment__c</field><readable>true</readable><editable>false</editable>
+    </fieldPermissions>
+    <classAccesses>
+        <apexClass>AssessmentFormController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+</PermissionSet>

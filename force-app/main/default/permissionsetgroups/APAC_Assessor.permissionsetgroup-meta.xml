@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSetGroup xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>INT-005 — APAC region × Assessor composite. Assigns the role's baseline access plus the APAC region marker.</description>
+    <label>APAC Assessor</label>
+    <permissionSets>Assessor_Base</permissionSets>
+    <permissionSets>Region_APAC</permissionSets>
+    <status>Updated</status>
+</PermissionSetGroup>

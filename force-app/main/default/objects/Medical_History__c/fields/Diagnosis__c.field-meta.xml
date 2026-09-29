@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Diagnosis__c</fullName>
+    <description>Primary diagnosis label. Shield encryption pending Q-004-1 classification matrix — probabilistic per design proposal.</description>
+    <externalId>false</externalId>
+    <label>Diagnosis</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

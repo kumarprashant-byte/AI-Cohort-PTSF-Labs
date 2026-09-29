@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Oncology</label>
+    <protected>false</protected>
+    <values>
+        <field>Treatment_Type__c</field>
+        <value xsi:type="xsd:string">Oncology</value>
+    </values>
+    <values>
+        <field>Schema_JSON__c</field>
+        <value xsi:type="xsd:string">[{"api_name":"primary_tumor_site","label":"Primary Tumor Site","type":"text","required":true},{"api_name":"stage","label":"Stage","type":"picklist","required":true,"options":["I","II","III","IV"]},{"api_name":"prior_treatment","label":"Prior Treatment Summary","type":"textarea","required":false},{"api_name":"performance_status_ecog","label":"ECOG Performance Status","type":"number","required":true},{"api_name":"biomarkers","label":"Relevant Biomarkers","type":"textarea","required":false},{"api_name":"needs_specialist_referral","label":"Needs Specialist Re-referral","type":"checkbox","required":false}]</value>
+    </values>
+</CustomMetadata>

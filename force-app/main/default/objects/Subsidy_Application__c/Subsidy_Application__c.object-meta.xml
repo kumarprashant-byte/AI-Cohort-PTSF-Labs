@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Patient subsidy application. Thin scaffold created for INT-009's Assignment__c master-detail; INT-008 will own the full lifecycle (HIC integration, Status transitions, etc.).</description>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>ReadWrite</externalSharingModel>
+    <label>Subsidy Application</label>
+    <nameField>
+        <displayFormat>APP-{00000}</displayFormat>
+        <label>Application Number</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Subsidy Applications</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

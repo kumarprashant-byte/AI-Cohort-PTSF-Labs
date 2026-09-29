@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>INT-005 — region marker for EMEA. Grants no CRUD/FLS on its own; INT-020 criteria-based sharing rules and future automation read the assignment of this PS as a stable region signal (a lever for a secondary-region grant even if User.Region__c is renamed).</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Region EMEA</label>
+</PermissionSet>

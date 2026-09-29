@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Action__c</fullName>
+    <label>Action</label>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>Break_Glass_Grant</fullName><default>false</default><label>Break-Glass Grant</label></value>
+            <value><fullName>Break_Glass_Revoke</fullName><default>false</default><label>Break-Glass Revoke</label></value>
+            <value><fullName>Manual_Share_Insert</fullName><default>false</default><label>Manual Share Insert</label></value>
+            <value><fullName>Manual_Share_Delete</fullName><default>false</default><label>Manual Share Delete</label></value>
+            <value><fullName>Regional_Access_Override</fullName><default>false</default><label>Regional Access Override</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

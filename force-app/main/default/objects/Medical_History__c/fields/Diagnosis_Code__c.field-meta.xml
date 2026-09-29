@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Diagnosis_Code__c</fullName>
+    <description>Standardized diagnosis code (ICD-10 or equivalent). Shield encryption pending Q-004-1 — deterministic per design proposal for equality-match compliance queries.</description>
+    <externalId>false</externalId>
+    <label>Diagnosis Code</label>
+    <length>40</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>PHI clinical history keyed to a patient Contact. OWD Private. Access is granted via PHI_Emergency_Access PS (compliance break-glass) or via INT-019's Apex-managed sharing to practitioners on Accepted assignments.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>Private</externalSharingModel>
+    <label>Medical History</label>
+    <nameField>
+        <displayFormat>MH-{00000}</displayFormat>
+        <label>Medical History Number</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Medical Histories</pluralLabel>
+    <sharingModel>Private</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>
