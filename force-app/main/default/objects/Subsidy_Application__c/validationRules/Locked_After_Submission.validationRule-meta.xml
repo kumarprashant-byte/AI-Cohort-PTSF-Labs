@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Locked_After_Submission</fullName>
+    <active>true</active>
+    <description>INT-008 guardrail 2 — after Status leaves Draft, key application fields are locked. Status transitions themselves are driven by the flows and allowed.</description>
+    <errorConditionFormula>AND(
+  NOT(ISPICKVAL(PRIORVALUE(Status__c), &quot;Draft&quot;)),
+  OR(
+    ISCHANGED(Patient__c),
+    ISCHANGED(Treatment_Type__c),
+    ISCHANGED(Previously_Declined_Practitioners__c)
+  )
+)</errorConditionFormula>
+    <errorMessage>This application is locked from further edits after submission. Corrections are out of scope in this phase.</errorMessage>
+</ValidationRule>

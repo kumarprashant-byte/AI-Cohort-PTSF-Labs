@@ -52,7 +52,7 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 |--------|--------|----|-------|
 | INT-006 | ⬜ Not started | — | Patient portal + onboarding wizard with async HIC prefill |
 | INT-007 | ✅ Delivered | sandbox-deploy:0AfoB000000yjmXSAQ+partial-per-decision-2026-09-29-INT-007-hic-payload-deferred | Health Insurance Checker async integration pattern (Platform Event → Queueable → callback) |
-| INT-008 | ⬜ Not started | — | Subsidy application lifecycle with treatment picker and auto-reject |
+| INT-008 | ✅ Delivered | sandbox-verify:2026-09-30+manual-scenes-pending | Subsidy application lifecycle with treatment picker and auto-reject |
 
 ### Phase 3
 
