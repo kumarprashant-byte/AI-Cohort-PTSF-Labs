@@ -7,8 +7,7 @@
   NOT(ISPICKVAL(PRIORVALUE(Status__c), &quot;Draft&quot;)),
   OR(
     ISCHANGED(Patient__c),
-    ISCHANGED(Treatment_Type__c),
-    ISCHANGED(Previously_Declined_Practitioners__c)
+    ISCHANGED(Treatment_Type__c)
   )
 )</errorConditionFormula>
     <errorMessage>This application is locked from further edits after submission. Corrections are out of scope in this phase.</errorMessage>
