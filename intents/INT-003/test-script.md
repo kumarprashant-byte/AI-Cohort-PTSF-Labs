@@ -13,7 +13,7 @@ authored: 2026-09-30
 |----|-----------|------------|------|----------|
 | INT-003-C1 | Contact RecordTypes `Patient` and `Practitioner` are active | org-probe | ✅ | (verify — green, 2026-09-30) |
 | INT-003-C2 | `Contact.Practitioner_Vetting_Status__c` picklist exists with values Pending / Approved / Rejected | org-probe | ✅ | (verify — green, 2026-09-30) |
-| INT-003-C3 | Experience Cloud sites Patient Portal + Practitioner Community + Facebook Auth Provider + self-registration flows — 📋 accepted by Prashant Kumar — runbook-INT-003.md (real Facebook Dev App, per-site login pages, partner license SKU) | 📋 | 📋 | — |
+| INT-003-C3 | Experience Cloud sites Patient Portal + Practitioner Community + Facebook Auth Provider + self-registration flows (real Facebook Dev App, per-site login pages, partner license SKU) | 📋 accepted by Prashant Kumar — delivery/runbook-INT-003.md | 📋 | accepted-gap |
 | INT-003-C4 | End-to-end: patient registers via Facebook, lands on onboarding entry; separately practitioner self-registers, admin approves, then logs in (acceptance) | Manual scene A (post-runbook) | 👁 | _pending_ |
 
 ## Manual validation scenes

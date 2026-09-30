@@ -1,6 +1,6 @@
 ---
 intent: INT-019
-proof_hash: 67b23cf17f93
+proof_hash: 8df167a79bd5
 authored: 2026-09-29
 ---
 
