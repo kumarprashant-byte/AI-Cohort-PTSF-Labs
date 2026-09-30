@@ -41,8 +41,8 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 | Intent | Status | PR | Title |
 |--------|--------|----|-------|
 | INT-001 | ✅ Delivered | — | Provision capstone org and DevOps pipeline |
-| INT-002 | ⬜ Not started | — | Federate three regional Active Directories with JIT provisioning |
-| INT-003 | ⬜ Not started | — | Patient and practitioner login (email/password, Facebook, and partner path) |
+| INT-002 | ✅ Delivered | local/INT-002+samlssoconfig-deferred | Federate three regional Active Directories with JIT provisioning |
+| INT-003 | ✅ Delivered | local/INT-003+expcloud-deferred | Patient and practitioner login (email/password, Facebook, and partner path) |
 | INT-004 | ✅ Delivered | local-orgfarm-2026-09-29 | PHI security foundation — Medical_History__c Private OWD, Restriction Rule, break-glass permission set |
 | INT-005 | ✅ Delivered | sandbox-verify:2026-09-30+2-manual-scenes-pending | Regional user model and role hierarchy |
 
@@ -50,7 +50,7 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 
 | Intent | Status | PR | Title |
 |--------|--------|----|-------|
-| INT-006 | ⬜ Not started | — | Patient portal + onboarding wizard with async HIC prefill |
+| INT-006 | ✅ Delivered | local-build | Patient portal + onboarding wizard with async HIC prefill |
 | INT-007 | ✅ Delivered | sandbox-deploy:0AfoB000000yjmXSAQ+partial-per-decision-2026-09-29-INT-007-hic-payload-deferred | Health Insurance Checker async integration pattern (Platform Event → Queueable → callback) |
 | INT-008 | ✅ Delivered | sandbox-verify:2026-09-30+manual-scenes-pending | Subsidy application lifecycle with treatment picker and auto-reject |
 
@@ -64,21 +64,21 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 | INT-012 | ✅ Delivered | sandbox-verify:2026-09-30+manual-scenes-pending | 15-day assessment escalation to Team Manager |
 | INT-013 | ✅ Delivered | sandbox-deploy:0AfoB000000ypXVSAY+permset-pass | Assessor Service Console for application review |
 | INT-019 | ✅ Delivered | local-orgfarm-2026-09-29 | Practitioner temporary access to medical history via Apex-managed sharing on Assignment__c |
-| INT-020 | ⬜ Not started | — | Region scoping and OWD sharing on subsidy/assignment/assessment objects |
+| INT-020 | ✅ Delivered | local/INT-020 | Region scoping and OWD sharing on subsidy/assignment/assessment objects |
 
 ### Phase 4
 
 | Intent | Status | PR | Title |
 |--------|--------|----|-------|
 | INT-014 | ✅ Delivered | local:INT-014-subsidy-determination | Subsidy determination Flow with regional threshold approval |
-| INT-015 | ⬜ Not started | — | Chat, deflection bot, and knowledge base on both surfaces |
-| INT-016 | ⬜ Not started | — | Operational and executive reporting |
+| INT-015 | ✅ Delivered | local-build | Chat, deflection bot, and knowledge base on both surfaces |
+| INT-016 | ✅ Delivered | local/INT-016+admin-clickthrough | Operational and executive reporting |
 
 ### Phase 5
 
 | Intent | Status | PR | Title |
 |--------|--------|----|-------|
-| INT-017 | ⬜ Not started | — | TAMS-to-Salesforce data migration ETL and dedup |
-| INT-018 | ⬜ Not started | — | Per-region cutover with 4-week dual-run |
+| INT-017 | ✅ Delivered | local-build | TAMS-to-Salesforce data migration ETL and dedup |
+| INT-018 | ✅ Delivered | local-build | Per-region cutover with 4-week dual-run |
 
 <!-- ENGAGEMENT:INDEX:END -->

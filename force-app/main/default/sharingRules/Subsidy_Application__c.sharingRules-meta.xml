@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingCriteriaRules>
+        <fullName>Share_EMEA_Applications</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>INT-020 — share EMEA Subsidy Applications with the EMEA Regional Ops Manager role and its subordinates (Team Manager, Assessor).</description>
+        <label>Share EMEA Applications</label>
+        <sharedTo>
+            <roleAndSubordinates>EMEA_Regional_Ops_Manager</roleAndSubordinates>
+        </sharedTo>
+        <booleanFilter></booleanFilter>
+        <criteriaItems>
+            <field>Region__c</field>
+            <operation>equals</operation>
+            <value>EMEA</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Share_AMER_Applications</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>INT-020 — share AMER Subsidy Applications with the AMER Regional Ops Manager role and its subordinates.</description>
+        <label>Share AMER Applications</label>
+        <sharedTo>
+            <roleAndSubordinates>AMER_Regional_Ops_Manager</roleAndSubordinates>
+        </sharedTo>
+        <booleanFilter></booleanFilter>
+        <criteriaItems>
+            <field>Region__c</field>
+            <operation>equals</operation>
+            <value>AMER</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Share_APAC_Applications</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>INT-020 — share APAC Subsidy Applications with the APAC Regional Ops Manager role and its subordinates.</description>
+        <label>Share APAC Applications</label>
+        <sharedTo>
+            <roleAndSubordinates>APAC_Regional_Ops_Manager</roleAndSubordinates>
+        </sharedTo>
+        <booleanFilter></booleanFilter>
+        <criteriaItems>
+            <field>Region__c</field>
+            <operation>equals</operation>
+            <value>APAC</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+</SharingRules>

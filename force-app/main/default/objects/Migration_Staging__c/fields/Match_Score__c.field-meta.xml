@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Match_Score__c</fullName>
+    <label>Match Score</label>
+    <type>Number</type>
+    <precision>5</precision>
+    <scale>2</scale>
+    <description>Dedup confidence 0-100. Below 95 routes to Data Steward review queue.</description>
+</CustomField>

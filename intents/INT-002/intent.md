@@ -5,6 +5,7 @@ epic: E08
 confidence: Assumed
 origin: scopezilla
 title: Federate three regional Active Directories with JIT provisioning
+ratified: 2026-09-30 by Prashant Kumar @ c066bc1dbd9d
 ---
 
 # INT-002 — Federate three regional Active Directories with JIT provisioning

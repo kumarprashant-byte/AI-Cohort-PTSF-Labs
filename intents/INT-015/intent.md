@@ -5,6 +5,7 @@ epic: E07
 confidence: Assumed
 origin: scopezilla
 title: Chat, deflection bot, and knowledge base on both surfaces
+ratified: 2026-09-30 by Prashant Kumar @ ce2662925246
 ---
 
 # INT-015 — Chat, deflection bot, and knowledge base on both surfaces

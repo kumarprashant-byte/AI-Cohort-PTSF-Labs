@@ -5,6 +5,7 @@ epic: E01
 confidence: Confirmed
 origin: scopezilla
 title: Patient portal + onboarding wizard with async HIC prefill
+ratified: 2026-09-30 by Prashant Kumar @ 550355e10b6f
 ---
 
 # INT-006 — Patient portal + onboarding wizard with async HIC prefill

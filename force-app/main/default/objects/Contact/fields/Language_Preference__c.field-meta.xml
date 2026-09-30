@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Language_Preference__c</fullName>
+    <label>Language Preference</label>
+    <type>Picklist</type>
+    <description>INT-006 — patient's preferred language, keys localized welcome emails and portal templates.</description>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>en_US</fullName><default>true</default><label>English (US)</label></value>
+            <value><fullName>fr</fullName><default>false</default><label>French</label></value>
+            <value><fullName>de</fullName><default>false</default><label>German</label></value>
+            <value><fullName>zh_CN</fullName><default>false</default><label>Chinese (Simplified)</label></value>
+            <value><fullName>ja</fullName><default>false</default><label>Japanese</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

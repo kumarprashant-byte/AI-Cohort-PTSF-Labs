@@ -5,6 +5,7 @@ epic: E08
 confidence: Assumed
 origin: scopezilla
 title: Patient and practitioner login (email/password, Facebook, and partner path)
+ratified: 2026-09-30 by Prashant Kumar @ d1fb860cee24
 ---
 
 # INT-003 — Patient and practitioner login (email/password, Facebook, and partner path)

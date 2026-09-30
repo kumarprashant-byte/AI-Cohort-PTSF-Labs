@@ -5,6 +5,7 @@ epic: E11
 confidence: Assumed
 origin: scopezilla
 title: Operational and executive reporting
+ratified: 2026-09-30 by Prashant Kumar @ 8ee60968746a
 ---
 
 # INT-016 — Operational and executive reporting
