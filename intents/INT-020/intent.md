@@ -5,6 +5,7 @@ epic: E09
 confidence: Confirmed
 origin: local
 title: Region scoping and OWD sharing on subsidy/assignment/assessment objects
+ratified: 2026-09-30 by Prashant Kumar @ f30955a620b6
 ---
 
 # INT-020 — Region scoping and OWD sharing on subsidy/assignment/assessment objects

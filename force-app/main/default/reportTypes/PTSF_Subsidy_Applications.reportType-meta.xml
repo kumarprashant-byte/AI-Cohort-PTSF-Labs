@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ReportType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <baseObject>Subsidy_Application__c</baseObject>
+    <category>other</category>
+    <deployed>true</deployed>
+    <label>PTSF Subsidy Applications</label>
+    <sections>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Name</field>
+            <table>Subsidy_Application__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Status__c</field>
+            <table>Subsidy_Application__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Region__c</field>
+            <table>Subsidy_Application__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Approved_Amount__c</field>
+            <table>Subsidy_Application__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Submitted_At__c</field>
+            <table>Subsidy_Application__c</table>
+        </columns>
+        <masterLabel>Subsidy Applications</masterLabel>
+    </sections>
+</ReportType>

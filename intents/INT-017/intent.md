@@ -5,6 +5,7 @@ epic: E10
 confidence: Confirmed
 origin: scopezilla
 title: TAMS-to-Salesforce data migration ETL and dedup
+ratified: 2026-09-30 by Prashant Kumar @ 5f97a829effe
 ---
 
 # INT-017 — TAMS-to-Salesforce data migration ETL and dedup

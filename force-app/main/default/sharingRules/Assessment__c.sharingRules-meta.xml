@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingCriteriaRules>
+        <fullName>Share_EMEA_Assessments</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>INT-020 — share EMEA Assessments (read-only) with the EMEA Regional Ops Manager role and subordinates.</description>
+        <label>Share EMEA Assessments</label>
+        <sharedTo>
+            <roleAndSubordinates>EMEA_Regional_Ops_Manager</roleAndSubordinates>
+        </sharedTo>
+        <booleanFilter></booleanFilter>
+        <criteriaItems>
+            <field>Region__c</field>
+            <operation>equals</operation>
+            <value>EMEA</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Share_AMER_Assessments</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>INT-020 — share AMER Assessments (read-only) with the AMER Regional Ops Manager role and subordinates.</description>
+        <label>Share AMER Assessments</label>
+        <sharedTo>
+            <roleAndSubordinates>AMER_Regional_Ops_Manager</roleAndSubordinates>
+        </sharedTo>
+        <booleanFilter></booleanFilter>
+        <criteriaItems>
+            <field>Region__c</field>
+            <operation>equals</operation>
+            <value>AMER</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Share_APAC_Assessments</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>INT-020 — share APAC Assessments (read-only) with the APAC Regional Ops Manager role and subordinates.</description>
+        <label>Share APAC Assessments</label>
+        <sharedTo>
+            <roleAndSubordinates>APAC_Regional_Ops_Manager</roleAndSubordinates>
+        </sharedTo>
+        <booleanFilter></booleanFilter>
+        <criteriaItems>
+            <field>Region__c</field>
+            <operation>equals</operation>
+            <value>APAC</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+</SharingRules>

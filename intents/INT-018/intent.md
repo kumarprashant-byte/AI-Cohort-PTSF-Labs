@@ -5,6 +5,7 @@ epic: E10
 confidence: Confirmed
 origin: scopezilla
 title: Per-region cutover with 4-week dual-run
+ratified: 2026-09-30 by Prashant Kumar @ 570be557cf40
 ---
 
 # INT-018 — Per-region cutover with 4-week dual-run

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Patient</fullName>
+    <active>true</active>
+    <label>Patient</label>
+    <description>INT-003 — Patient portal contact. Kept distinct from Practitioner to prevent record merges (guardrail 1).</description>
+</RecordType>

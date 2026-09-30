@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <deploymentStatus>Deployed</deploymentStatus>
-    <description>Patient subsidy application. Thin scaffold created for INT-009's Assignment__c master-detail; INT-008 will own the full lifecycle (HIC integration, Status transitions, etc.).</description>
-    <enableActivities>true</enableActivities>
+    <description>INT-017 — canonical staging row for TAMS ETL. One row per source record, batch-loaded via Bulk API 2.0, then materialized into Contact / Subsidy_Application__c / Assessment__c.</description>
+    <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>
-    <enableHistory>true</enableHistory>
+    <enableHistory>false</enableHistory>
     <enableReports>true</enableReports>
-    <enableSearch>true</enableSearch>
+    <enableSearch>false</enableSearch>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <externalSharingModel>Private</externalSharingModel>
-    <label>Subsidy Application</label>
+    <label>Migration Staging</label>
     <nameField>
-        <displayFormat>APP-{00000}</displayFormat>
-        <label>Application Number</label>
+        <displayFormat>MIG-{0000000}</displayFormat>
+        <label>Staging Row</label>
         <type>AutoNumber</type>
     </nameField>
-    <pluralLabel>Subsidy Applications</pluralLabel>
+    <pluralLabel>Migration Staging</pluralLabel>
     <sharingModel>Private</sharingModel>
     <visibility>Public</visibility>
 </CustomObject>
