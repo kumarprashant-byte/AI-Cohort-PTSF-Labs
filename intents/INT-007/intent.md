@@ -5,6 +5,7 @@ epic: E03
 confidence: Confirmed
 origin: scopezilla
 title: Health Insurance Checker async integration pattern (Platform Event → Queueable → callback)
+ratified: 2026-09-30 by Prashant Kumar @ e0f63f2a5954
 ---
 
 # INT-007 — Health Insurance Checker async integration pattern (Platform Event → Queueable → callback)

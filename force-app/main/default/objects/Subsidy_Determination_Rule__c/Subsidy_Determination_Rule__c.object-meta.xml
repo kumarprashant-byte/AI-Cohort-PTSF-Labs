@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>INT-014 — reference table of transport-type multipliers and regional thresholds used by the Determine_Subsidy Screen Flow.</description>
+    <enableActivities>false</enableActivities>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <label>Subsidy Determination Rule</label>
+    <pluralLabel>Subsidy Determination Rules</pluralLabel>
+    <nameField>
+        <label>Rule Name</label>
+        <type>Text</type>
+    </nameField>
+    <sharingModel>Read</sharingModel>
+</CustomObject>

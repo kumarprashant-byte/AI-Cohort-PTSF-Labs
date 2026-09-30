@@ -5,7 +5,7 @@ epic: E09
 confidence: Confirmed
 origin: scopezilla
 title: PHI security foundation — Medical_History__c Private OWD, Restriction Rule, break-glass permission set
-ratified: 2026-09-29 by Prashant Kumar @ 7a87f285c64b
+ratified: 2026-09-30 by Prashant Kumar @ 7a87f285c64b
 ---
 
 # INT-004 — PHI security foundation — Medical_History__c Private OWD, Restriction Rule, break-glass permission set

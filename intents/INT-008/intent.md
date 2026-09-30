@@ -5,6 +5,7 @@ epic: E02
 confidence: Confirmed
 origin: scopezilla
 title: Subsidy application lifecycle with treatment picker and auto-reject
+ratified: 2026-09-30 by Prashant Kumar @ eebdfaf09a89
 ---
 
 # INT-008 — Subsidy application lifecycle with treatment picker and auto-reject

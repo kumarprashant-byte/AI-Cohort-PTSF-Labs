@@ -20,16 +20,16 @@ Status: ⬜ Not started · 🔧 In progress · ✅ Delivered · 🔄 Needs re-ve
 | INT-002 | 1 | ⬜ Not started | — | — | — |
 | INT-003 | 1 | ⬜ Not started | — | — | — |
 | INT-004 | 1 | ✅ Delivered | local-orgfarm-2026-09-29 | — | `7a87f285c64b` |
-| INT-005 | 1 | 🔧 In progress | — | — | — |
+| INT-005 | 1 | ✅ Delivered | sandbox-verify:2026-09-30+2-manual-scenes-pending | — | `3a454bd1c005` |
 | INT-006 | 2 | ⬜ Not started | — | — | — |
 | INT-007 | 2 | ✅ Delivered | sandbox-deploy:0AfoB000000yjmXSAQ+partial-per-decision-2026-09-29-INT-007-hic-payload-deferred | — | `e0f63f2a5954` |
-| INT-008 | 2 | ⬜ Not started | — | — | — |
+| INT-008 | 2 | ✅ Delivered | sandbox-verify:2026-09-30+manual-scenes-pending | — | `eebdfaf09a89` |
 | INT-009 | 3 | ✅ Delivered | local-orgfarm-2026-09-29 | — | `e7826a71b17e` |
 | INT-010 | 3 | ✅ Delivered | sandbox-deploy:0AfoB000000yj3tSAA | — | `2ae5cd8d9fee` |
 | INT-011 | 3 | ✅ Delivered | sandbox-deploy:0AfoB000000yjWvSAI+partial-per-decision-2026-09-29-INT-011-specialist-referral-deferred | — | `e5c327e92065` |
-| INT-012 | 3 | ⬜ Not started | — | — | — |
-| INT-013 | 4 | ⬜ Not started | — | — | — |
-| INT-014 | 4 | ⬜ Not started | — | — | — |
+| INT-012 | 3 | ✅ Delivered | sandbox-verify:2026-09-30+manual-scenes-pending | — | `9256b9fa1d61` |
+| INT-013 | 4 | ✅ Delivered | sandbox-deploy:0AfoB000000ypXVSAY+permset-pass | — | `ebef5bab7440` |
+| INT-014 | 4 | ✅ Delivered | local:INT-014-subsidy-determination | — | `b4a09a4178cf` |
 | INT-015 | 4 | ⬜ Not started | — | — | — |
 | INT-016 | 4 | ⬜ Not started | — | — | — |
 | INT-017 | 5 | ⬜ Not started | — | — | — |

@@ -5,7 +5,7 @@ epic: E04
 confidence: Confirmed
 origin: scopezilla
 title: Practitioner community and geolocation-based auto-assignment
-ratified: 2026-09-29 by Prashant Kumar @ e7826a71b17e
+ratified: 2026-09-30 by Prashant Kumar @ e7826a71b17e
 ---
 
 # INT-009 — Practitioner community and geolocation-based auto-assignment

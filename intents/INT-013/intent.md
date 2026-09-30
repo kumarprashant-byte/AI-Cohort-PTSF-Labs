@@ -1,10 +1,11 @@
 ---
 id: INT-013
-phase: 4
+phase: 3
 epic: E06
 confidence: Confirmed
 origin: scopezilla
 title: Assessor Service Console for application review
+ratified: 2026-09-30 by Prashant Kumar @ ebef5bab7440
 ---
 
 # INT-013 — Assessor Service Console for application review

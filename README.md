@@ -44,7 +44,7 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 | INT-002 | ⬜ Not started | — | Federate three regional Active Directories with JIT provisioning |
 | INT-003 | ⬜ Not started | — | Patient and practitioner login (email/password, Facebook, and partner path) |
 | INT-004 | ✅ Delivered | local-orgfarm-2026-09-29 | PHI security foundation — Medical_History__c Private OWD, Restriction Rule, break-glass permission set |
-| INT-005 | 🔧 In progress | — | Regional user model and role hierarchy |
+| INT-005 | ✅ Delivered | sandbox-verify:2026-09-30+2-manual-scenes-pending | Regional user model and role hierarchy |
 
 ### Phase 2
 
@@ -52,7 +52,7 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 |--------|--------|----|-------|
 | INT-006 | ⬜ Not started | — | Patient portal + onboarding wizard with async HIC prefill |
 | INT-007 | ✅ Delivered | sandbox-deploy:0AfoB000000yjmXSAQ+partial-per-decision-2026-09-29-INT-007-hic-payload-deferred | Health Insurance Checker async integration pattern (Platform Event → Queueable → callback) |
-| INT-008 | ⬜ Not started | — | Subsidy application lifecycle with treatment picker and auto-reject |
+| INT-008 | ✅ Delivered | sandbox-verify:2026-09-30+manual-scenes-pending | Subsidy application lifecycle with treatment picker and auto-reject |
 
 ### Phase 3
 
@@ -61,7 +61,8 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 | INT-009 | ✅ Delivered | local-orgfarm-2026-09-29 | Practitioner community and geolocation-based auto-assignment |
 | INT-010 | ✅ Delivered | sandbox-deploy:0AfoB000000yj3tSAA | 3-business-day accept-or-reassign SLA with regional Business Hours |
 | INT-011 | ✅ Delivered | sandbox-deploy:0AfoB000000yjWvSAI+partial-per-decision-2026-09-29-INT-011-specialist-referral-deferred | Digital assessment form with specialist re-referral |
-| INT-012 | ⬜ Not started | — | 15-day assessment escalation to Team Manager |
+| INT-012 | ✅ Delivered | sandbox-verify:2026-09-30+manual-scenes-pending | 15-day assessment escalation to Team Manager |
+| INT-013 | ✅ Delivered | sandbox-deploy:0AfoB000000ypXVSAY+permset-pass | Assessor Service Console for application review |
 | INT-019 | ✅ Delivered | local-orgfarm-2026-09-29 | Practitioner temporary access to medical history via Apex-managed sharing on Assignment__c |
 | INT-020 | ⬜ Not started | — | Region scoping and OWD sharing on subsidy/assignment/assessment objects |
 
@@ -69,8 +70,7 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 
 | Intent | Status | PR | Title |
 |--------|--------|----|-------|
-| INT-013 | ⬜ Not started | — | Assessor Service Console for application review |
-| INT-014 | ⬜ Not started | — | Subsidy determination Flow with regional threshold approval |
+| INT-014 | ✅ Delivered | local:INT-014-subsidy-determination | Subsidy determination Flow with regional threshold approval |
 | INT-015 | ⬜ Not started | — | Chat, deflection bot, and knowledge base on both surfaces |
 | INT-016 | ⬜ Not started | — | Operational and executive reporting |
 

@@ -5,7 +5,7 @@ epic: E12
 confidence: Confirmed
 origin: scopezilla
 title: Provision capstone org and DevOps pipeline
-ratified: 2026-09-29 by Prashant Kumar @ 268745afcc83
+ratified: 2026-09-30 by Prashant Kumar @ 268745afcc83
 ---
 
 # INT-001 — Provision capstone org and DevOps pipeline

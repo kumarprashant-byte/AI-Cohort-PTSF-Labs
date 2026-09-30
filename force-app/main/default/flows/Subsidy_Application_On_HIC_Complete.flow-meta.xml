@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Send_Rejection_Email</name>
+        <label>Send rejection email</label>
+        <locationX>200</locationX>
+        <locationY>720</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value><stringValue>Your subsidy application</stringValue></value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value><stringValue>Hello,
+
+We have reviewed your subsidy application. Because your insurance already covers travel for this treatment, we are unable to approve a subsidy at this time.
+
+If you believe this is incorrect, please contact PTSF support.
+
+— PTSF Patient Travel Support</stringValue></value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value><elementReference>Patient.Email</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value><booleanValue>false</booleanValue></value>
+        </inputParameters>
+    </actionCalls>
+    <apiVersion>61.0</apiVersion>
+    <decisions>
+        <name>App_Found</name>
+        <label>App found?</label>
+        <locationX>50</locationX>
+        <locationY>240</locationY>
+        <defaultConnectorLabel>No — ignore (event was for another source object)</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>App.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Branch_On_Coverage</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Branch_On_Coverage</name>
+        <label>Covered by insurance?</label>
+        <locationX>50</locationX>
+        <locationY>360</locationY>
+        <defaultConnector>
+            <targetReference>Advance_To_Practitioner</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not covered — route</defaultConnectorLabel>
+        <rules>
+            <name>Covered</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>Covered</stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Patient_Email</targetReference>
+            </connector>
+            <label>Covered</label>
+        </rules>
+    </decisions>
+    <description>INT-008 — Subscribes to HIC_Entitlement_Completed__e for Subsidy_Application__c source. If Status=Covered, auto-reject with a rejection reason and email the patient. Else, advance to Awaiting_Practitioner.</description>
+    <environments>Default</environments>
+    <interviewLabel>Subsidy Application On HIC Complete {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Subsidy Application On HIC Complete</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value><stringValue>LightningFlowBuilder</stringValue></value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Application</name>
+        <label>Get Subsidy Application</label>
+        <locationX>50</locationX>
+        <locationY>120</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>App_Found</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>$Record.Source_Record_Id__c</elementReference></value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Subsidy_Application__c</object>
+        <outputReference>App</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Status__c</queriedFields>
+        <queriedFields>Patient__c</queriedFields>
+        <storeOutputAutomatically>false</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Patient_Email</name>
+        <label>Get patient email</label>
+        <locationX>200</locationX>
+        <locationY>480</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Auto_Reject</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>App.Patient__c</elementReference></value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contact</object>
+        <outputReference>Patient</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Email</queriedFields>
+        <storeOutputAutomatically>false</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Auto_Reject</name>
+        <label>Auto-reject application</label>
+        <locationX>200</locationX>
+        <locationY>600</locationY>
+        <connector>
+            <targetReference>Send_Rejection_Email</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>App.Id</elementReference></value>
+        </filters>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value><stringValue>Rejected</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Rejection_Reason__c</field>
+            <value><stringValue>Your insurance already covers travel for this treatment, so a subsidy is not required. If this looks wrong, contact PTSF support.</stringValue></value>
+        </inputAssignments>
+        <object>Subsidy_Application__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Advance_To_Practitioner</name>
+        <label>Advance to Awaiting_Practitioner</label>
+        <locationX>50</locationX>
+        <locationY>480</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>App.Id</elementReference></value>
+        </filters>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value><stringValue>Awaiting_Practitioner</stringValue></value>
+        </inputAssignments>
+        <object>Subsidy_Application__c</object>
+    </recordUpdates>
+    <runInMode>SystemModeWithSharing</runInMode>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Application</targetReference>
+        </connector>
+        <object>HIC_Entitlement_Completed__e</object>
+        <triggerType>PlatformEvent</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>App</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Subsidy_Application__c</objectType>
+    </variables>
+    <variables>
+        <name>Patient</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Contact</objectType>
+    </variables>
+</Flow>

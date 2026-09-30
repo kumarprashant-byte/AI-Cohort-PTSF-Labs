@@ -5,6 +5,7 @@ epic: E04
 confidence: Confirmed
 origin: scopezilla
 title: 3-business-day accept-or-reassign SLA with regional Business Hours
+ratified: 2026-09-30 by Prashant Kumar @ 2ae5cd8d9fee
 ---
 
 # INT-010 — 3-business-day accept-or-reassign SLA with regional Business Hours

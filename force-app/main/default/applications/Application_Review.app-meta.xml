@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#0176D3</headerColor>
+    </brand>
+    <description>INT-013 — Service Console for Assessors to work subsidy applications end-to-end. Medical History is not surfaced anywhere; INT-004 enforces the row-level denial.</description>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <label>Application Review</label>
+    <navType>Console</navType>
+    <tabs>Subsidy_Application__c</tabs>
+    <tabs>Assessment__c</tabs>
+    <tabs>HIC_Check__c</tabs>
+    <uiType>Lightning</uiType>
+    <workspaceConfig>
+        <mappings>
+            <tab>Subsidy_Application__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Assessment__c</tab>
+        </mappings>
+        <mappings>
+            <tab>HIC_Check__c</tab>
+        </mappings>
+    </workspaceConfig>
+</CustomApplication>

@@ -15,6 +15,9 @@
             <value><fullName>Awaiting_Practitioner</fullName><default>false</default><label>Awaiting Practitioner</label></value>
             <value><fullName>Assigned</fullName><default>false</default><label>Assigned</label></value>
             <value><fullName>In_Progress</fullName><default>false</default><label>In Progress</label></value>
+            <value><fullName>Assessment</fullName><default>false</default><label>Assessment</label></value>
+            <value><fullName>Approved</fullName><default>false</default><label>Approved</label></value>
+            <value><fullName>Rejected</fullName><default>false</default><label>Rejected</label></value>
             <value><fullName>Completed</fullName><default>false</default><label>Completed</label></value>
             <value><fullName>Manual_Assignment_Required</fullName><default>false</default><label>Manual Assignment Required</label></value>
         </valueSetDefinition>
