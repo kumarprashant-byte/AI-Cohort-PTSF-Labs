@@ -28,7 +28,7 @@ Status: ⬜ Not started · 🔧 In progress · ✅ Delivered · 🔄 Needs re-ve
 | INT-010 | 3 | ✅ Delivered | sandbox-deploy:0AfoB000000yj3tSAA | — | `2ae5cd8d9fee` |
 | INT-011 | 3 | ✅ Delivered | sandbox-deploy:0AfoB000000yjWvSAI+partial-per-decision-2026-09-29-INT-011-specialist-referral-deferred | — | `e5c327e92065` |
 | INT-012 | 3 | ⬜ Not started | — | — | — |
-| INT-013 | 4 | ⬜ Not started | — | — | — |
+| INT-013 | 4 | ✅ Delivered | sandbox-deploy:0AfoB000000ypXVSAY+permset-pass | — | `ebef5bab7440` |
 | INT-014 | 4 | ⬜ Not started | — | — | — |
 | INT-015 | 4 | ⬜ Not started | — | — | — |
 | INT-016 | 4 | ⬜ Not started | — | — | — |

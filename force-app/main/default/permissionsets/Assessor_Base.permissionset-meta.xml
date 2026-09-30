@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>INT-005 — baseline access for the Assessor role, region-agnostic. Composed into every Region × Assessor PSG.</description>
+    <description>INT-005 — baseline access for the Assessor role, region-agnostic. Composed into every Region × Assessor PSG. INT-013 adds Application Review app + custom tabs.</description>
+    <applicationVisibilities>
+        <application>Application_Review</application>
+        <visible>true</visible>
+    </applicationVisibilities>
     <fieldPermissions>
         <editable>false</editable>
         <field>User.Region__c</field>
@@ -8,4 +12,16 @@
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Assessor Base</label>
+    <tabSettings>
+        <tab>Subsidy_Application__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Assessment__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>HIC_Check__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
 </PermissionSet>

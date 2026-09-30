@@ -62,6 +62,7 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 | INT-010 | ✅ Delivered | sandbox-deploy:0AfoB000000yj3tSAA | 3-business-day accept-or-reassign SLA with regional Business Hours |
 | INT-011 | ✅ Delivered | sandbox-deploy:0AfoB000000yjWvSAI+partial-per-decision-2026-09-29-INT-011-specialist-referral-deferred | Digital assessment form with specialist re-referral |
 | INT-012 | ⬜ Not started | — | 15-day assessment escalation to Team Manager |
+| INT-013 | ✅ Delivered | sandbox-deploy:0AfoB000000ypXVSAY+permset-pass | Assessor Service Console for application review |
 | INT-019 | ✅ Delivered | local-orgfarm-2026-09-29 | Practitioner temporary access to medical history via Apex-managed sharing on Assignment__c |
 | INT-020 | ⬜ Not started | — | Region scoping and OWD sharing on subsidy/assignment/assessment objects |
 
@@ -69,7 +70,6 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 
 | Intent | Status | PR | Title |
 |--------|--------|----|-------|
-| INT-013 | ⬜ Not started | — | Assessor Service Console for application review |
 | INT-014 | ⬜ Not started | — | Subsidy determination Flow with regional threshold approval |
 | INT-015 | ⬜ Not started | — | Chat, deflection bot, and knowledge base on both surfaces |
 | INT-016 | ⬜ Not started | — | Operational and executive reporting |
