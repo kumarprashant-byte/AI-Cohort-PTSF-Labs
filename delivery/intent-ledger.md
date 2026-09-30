@@ -29,7 +29,7 @@ Status: ⬜ Not started · 🔧 In progress · ✅ Delivered · 🔄 Needs re-ve
 | INT-011 | 3 | ✅ Delivered | sandbox-deploy:0AfoB000000yjWvSAI+partial-per-decision-2026-09-29-INT-011-specialist-referral-deferred | — | `e5c327e92065` |
 | INT-012 | 3 | ✅ Delivered | sandbox-verify:2026-09-30+manual-scenes-pending | — | `9256b9fa1d61` |
 | INT-013 | 4 | ✅ Delivered | sandbox-deploy:0AfoB000000ypXVSAY+permset-pass | — | `ebef5bab7440` |
-| INT-014 | 4 | ⬜ Not started | — | — | — |
+| INT-014 | 4 | ✅ Delivered | local:INT-014-subsidy-determination | — | `b4a09a4178cf` |
 | INT-015 | 4 | ⬜ Not started | — | — | — |
 | INT-016 | 4 | ⬜ Not started | — | — | — |
 | INT-017 | 5 | ⬜ Not started | — | — | — |

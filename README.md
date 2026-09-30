@@ -70,7 +70,7 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 
 | Intent | Status | PR | Title |
 |--------|--------|----|-------|
-| INT-014 | ⬜ Not started | — | Subsidy determination Flow with regional threshold approval |
+| INT-014 | ✅ Delivered | local:INT-014-subsidy-determination | Subsidy determination Flow with regional threshold approval |
 | INT-015 | ⬜ Not started | — | Chat, deflection bot, and knowledge base on both surfaces |
 | INT-016 | ⬜ Not started | — | Operational and executive reporting |
 

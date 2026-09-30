@@ -5,6 +5,7 @@ epic: E06
 confidence: Assumed
 origin: scopezilla
 title: Subsidy determination Flow with regional threshold approval
+ratified: 2026-09-30 by Prashant Kumar @ b4a09a4178cf
 ---
 
 # INT-014 — Subsidy determination Flow with regional threshold approval
