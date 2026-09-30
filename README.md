@@ -61,7 +61,7 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 | INT-009 | ✅ Delivered | local-orgfarm-2026-09-29 | Practitioner community and geolocation-based auto-assignment |
 | INT-010 | ✅ Delivered | sandbox-deploy:0AfoB000000yj3tSAA | 3-business-day accept-or-reassign SLA with regional Business Hours |
 | INT-011 | ✅ Delivered | sandbox-deploy:0AfoB000000yjWvSAI+partial-per-decision-2026-09-29-INT-011-specialist-referral-deferred | Digital assessment form with specialist re-referral |
-| INT-012 | ⬜ Not started | — | 15-day assessment escalation to Team Manager |
+| INT-012 | ✅ Delivered | sandbox-verify:2026-09-30+manual-scenes-pending | 15-day assessment escalation to Team Manager |
 | INT-013 | ✅ Delivered | sandbox-deploy:0AfoB000000ypXVSAY+permset-pass | Assessor Service Console for application review |
 | INT-019 | ✅ Delivered | local-orgfarm-2026-09-29 | Practitioner temporary access to medical history via Apex-managed sharing on Assignment__c |
 | INT-020 | ⬜ Not started | — | Region scoping and OWD sharing on subsidy/assignment/assessment objects |

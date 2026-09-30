@@ -5,6 +5,7 @@ epic: E05
 confidence: Assumed
 origin: scopezilla
 title: 15-day assessment escalation to Team Manager
+ratified: 2026-09-30 by Prashant Kumar @ 9256b9fa1d61
 ---
 
 # INT-012 — 15-day assessment escalation to Team Manager
