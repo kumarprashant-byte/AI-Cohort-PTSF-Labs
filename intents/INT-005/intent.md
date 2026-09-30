@@ -5,6 +5,7 @@ epic: E09
 confidence: Assumed
 origin: scopezilla
 title: Regional user model and role hierarchy
+ratified: 2026-09-30 by Prashant Kumar @ 3a454bd1c005
 ---
 
 # INT-005 — Regional user model and role hierarchy
