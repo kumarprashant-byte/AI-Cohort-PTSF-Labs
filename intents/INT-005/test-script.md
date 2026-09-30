@@ -14,15 +14,15 @@ authored: 2026-09-29
 
 | ID | Criterion (source) | How proven | Type | Sign-off |
 |----|--------------------|------------|------|----------|
-| INT-005-C1 | `User.Region__c` exists as a restricted picklist with values APAC / EMEA / AMER (build target) | org-probe (see § Org assertions) | ✅ | _pending_ |
-| INT-005-C2 | Ten roles deployed — `PTSF_Global` root plus three regional branches, each three levels (Regional Ops Manager → Team Manager → Assessor) (build target, acceptance A3) | org-probe (see § Org assertions) | ✅ | _pending_ |
-| INT-005-C3 | Nine Permission Set Groups deployed, one per Profile × Region combination (build target) | org-probe (see § Org assertions) | ✅ | _pending_ |
-| INT-005-C4 | Each PSG composes its role base PS (`Assessor_Base` / `Team_Manager_Base` / `Regional_Ops_Manager_Base`) and its region marker PS (`Region_APAC` / `Region_EMEA` / `Region_AMER`) (design § Sharing) | org-probe (see § Org assertions) | ✅ | _pending_ |
-| INT-005-C5 | No parent-child edge crosses regions in the role hierarchy — each regional branch's parent chain stays within one region up to `PTSF_Global` (guardrail 2) | org-probe (see § Org assertions) | ✅ | _pending_ |
+| INT-005-C1 | `User.Region__c` exists as a restricted picklist with values APAC / EMEA / AMER (build target) | org-probe (see § Org assertions) | ✅ | (verify — green, 2026-09-30) |
+| INT-005-C2 | Ten roles deployed — `PTSF_Global` root plus three regional branches, each three levels (Regional Ops Manager → Team Manager → Assessor) (build target, acceptance A3) | org-probe (see § Org assertions) | ✅ | (verify — green, 2026-09-30) |
+| INT-005-C3 | Nine Permission Set Groups deployed, one per Profile × Region combination (build target) | org-probe (see § Org assertions) | ✅ | (verify — green, 2026-09-30) |
+| INT-005-C4 | Each PSG composes its role base PS (`Assessor_Base` / `Team_Manager_Base` / `Regional_Ops_Manager_Base`) and its region marker PS (`Region_APAC` / `Region_EMEA` / `Region_AMER`) (design § Sharing) | org-probe (see § Org assertions) | ✅ | (verify — green, 2026-09-30) |
+| INT-005-C5 | No parent-child edge crosses regions in the role hierarchy — each regional branch's parent chain stays within one region up to `PTSF_Global` (guardrail 2) | org-probe (see § Org assertions) | ✅ | (verify — green, 2026-09-30) |
 | INT-005-C6 | An APAC Assessor test user logs in; their `User.Region__c = APAC`, their `UserRole` is `APAC_Assessor`, and the `APAC_Assessor` PSG is assigned (acceptance A1 + A3 + A4) | Manual scene A | 👁 | _pending_ |
 | INT-005-C7 | An EMEA Regional Ops Manager test user logs in; their `User.Region__c = EMEA`, their `UserRole` is `EMEA_Regional_Ops_Manager`, and the `EMEA_Regional_Ops_Manager` PSG is assigned (acceptance A2 + A3 + A4) | Manual scene B | 👁 | _pending_ |
-| INT-005-C8 | `Region__c` is **not** added to `Medical_History__c` — INT-004 continues to own it unchanged (guardrail 1) | org-probe (see § Org assertions) | ✅ | _pending_ |
-| INT-005-C9 | `Region__c` is **not** added to `Subsidy_Application__c` or `Assignment__c` (Assessment__c doesn't exist yet) — INT-020 will own Region on these once created (out_of_scope 1) | org-probe (see § Org assertions) | ✅ | _pending_ |
+| INT-005-C8 | `Region__c` is **not** added to `Medical_History__c` — INT-004 continues to own it unchanged (guardrail 1) | org-probe (see § Org assertions) | ✅ | (verify — green, 2026-09-30) |
+| INT-005-C9 | `Region__c` is **not** added to `Subsidy_Application__c` or `Assignment__c` (Assessment__c doesn't exist yet) — INT-020 will own Region on these once created (out_of_scope 1) | org-probe (see § Org assertions) | ✅ | (verify — green, 2026-09-30) |
 
 ### Deliberately not tested (out of scope)
 

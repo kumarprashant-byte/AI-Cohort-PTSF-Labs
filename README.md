@@ -44,7 +44,7 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 | INT-002 | ⬜ Not started | — | Federate three regional Active Directories with JIT provisioning |
 | INT-003 | ⬜ Not started | — | Patient and practitioner login (email/password, Facebook, and partner path) |
 | INT-004 | ✅ Delivered | local-orgfarm-2026-09-29 | PHI security foundation — Medical_History__c Private OWD, Restriction Rule, break-glass permission set |
-| INT-005 | 🔧 In progress | — | Regional user model and role hierarchy |
+| INT-005 | ✅ Delivered | sandbox-verify:2026-09-30+2-manual-scenes-pending | Regional user model and role hierarchy |
 
 ### Phase 2
 
