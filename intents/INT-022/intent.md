@@ -5,6 +5,7 @@ epic: E01
 confidence: Draft
 origin: engagement
 title: PTSF unified application — end-to-end patient subsidy lifecycle UI
+ratified: 2026-10-01 by Prashant Kumar @ aa150bf28875
 ---
 
 # INT-022 — PTSF unified application

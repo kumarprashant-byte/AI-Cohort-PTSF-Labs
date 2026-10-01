@@ -5,6 +5,7 @@ epic: E01
 confidence: Draft
 origin: engagement
 title: HIC prefill callout — react to platform event, call HIC, write response back
+ratified: 2026-10-01 by Prashant Kumar @ f435140e1e98
 ---
 
 # INT-021 — HIC prefill callout

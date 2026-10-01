@@ -36,5 +36,7 @@ Status: ⬜ Not started · 🔧 In progress · ✅ Delivered · 🔄 Needs re-ve
 | INT-018 | 5 | ✅ Delivered | local-build | decisions/TEMPLATE.md | `570be557cf40` |
 | INT-019 | 3 | ✅ Delivered | local-orgfarm-2026-09-29 | — | `67b23cf17f93` |
 | INT-020 | 3 | ✅ Delivered | local/INT-020 | — | `f30955a620b6` |
+| INT-021 | 2 | ✅ Delivered | local-build:88784f8 | — | `f435140e1e98` |
+| INT-022 | 3 | ✅ Delivered | local-build:1d63a25 | — | `aa150bf28875` |
 
-_20 intents across phase(s) 1, 2, 3, 4, 5. Seeded from `intents/`._
+_22 intents across phase(s) 1, 2, 3, 4, 5. Seeded from `intents/`._

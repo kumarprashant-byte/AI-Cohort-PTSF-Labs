@@ -34,7 +34,7 @@ Then start building: `/ql-start-intent INT-001`. Not sure what's next at any poi
 
 _Derived view — intent titles from `intents/`, status from `delivery/intent-ledger.md`. The ledger stays canonical; this block is regenerated, never hand-edited._
 
-**20 intents** across phase(s) 1, 2, 3, 4, 5.
+**22 intents** across phase(s) 1, 2, 3, 4, 5.
 
 ### Phase 1
 
@@ -53,6 +53,7 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 | INT-006 | ✅ Delivered | local-build | Patient portal + onboarding wizard with async HIC prefill |
 | INT-007 | ✅ Delivered | sandbox-deploy:0AfoB000000yjmXSAQ+partial-per-decision-2026-09-29-INT-007-hic-payload-deferred | Health Insurance Checker async integration pattern (Platform Event → Queueable → callback) |
 | INT-008 | ✅ Delivered | sandbox-verify:2026-09-30+manual-scenes-pending | Subsidy application lifecycle with treatment picker and auto-reject |
+| INT-021 | ✅ Delivered | local-build:88784f8 | HIC prefill callout — react to platform event, call HIC, write response back |
 
 ### Phase 3
 
@@ -65,6 +66,7 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 | INT-013 | ✅ Delivered | sandbox-deploy:0AfoB000000ypXVSAY+permset-pass | Assessor Service Console for application review |
 | INT-019 | ✅ Delivered | local-orgfarm-2026-09-29 | Practitioner temporary access to medical history via Apex-managed sharing on Assignment__c |
 | INT-020 | ✅ Delivered | local/INT-020 | Region scoping and OWD sharing on subsidy/assignment/assessment objects |
+| INT-022 | ✅ Delivered | local-build:1d63a25 | PTSF unified application — end-to-end patient subsidy lifecycle UI |
 
 ### Phase 4
 
