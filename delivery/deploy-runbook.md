@@ -76,6 +76,28 @@ Features that must be enabled before metadata referencing them will deploy or be
 Accounts, multi-currency, a cloud/feature license). Note ⛔ for irreversible enablements. Cross-link
 the PR/phase that introduced each.
 
+- **🖐️ Role hierarchy (Setup UI only — OrgFarm platform restriction).** `Role` metadata API deploys
+  fail on OrgFarm; see `build-notes.md`. Build the tree by hand in **Setup → Users → Roles →
+  Set Up Roles**, top-down. The 10 PTSF roles, in create order:
+  1. **PTSF Global** (no parent)
+  2. **EMEA Regional Ops Manager** → parent *PTSF Global*
+  3. **AMER Regional Ops Manager** → parent *PTSF Global*
+  4. **APAC Regional Ops Manager** → parent *PTSF Global*
+  5. **EMEA Team Manager** → parent *EMEA Regional Ops Manager*
+  6. **AMER Team Manager** → parent *AMER Regional Ops Manager*
+  7. **APAC Team Manager** → parent *APAC Regional Ops Manager*
+  8. **EMEA Assessor** → parent *EMEA Team Manager*
+  9. **AMER Assessor** → parent *AMER Team Manager*
+  10. **APAC Assessor** → parent *APAC Team Manager*
+
+  For each: set the API name (Developer Name) to match the metadata filename
+  (e.g. `PTSF_Global`, `EMEA_Regional_Ops_Manager`) so queries/assignments resolve. Leave
+  the Case/Contact/Opportunity access levels at the defaults the parent allows.
+- **🖐️ Person Accounts enablement (Setup UI only — irreversible ⛔).** Setup → Feature Settings →
+  Sales → Account Settings → *Enable Person Accounts*.
+- **🖐️ Org-Wide Default sharing (Setup UI only).** Setup → Security → Sharing Settings. Set per the
+  PHI/region plan (Account/Case/Contact OWDs per INT-004 / INT-020).
+
 ### 2. 📦 Deploy metadata
 ```bash
 sf project deploy start -o <org-alias>
