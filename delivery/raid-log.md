@@ -39,8 +39,8 @@ Rolling log across all 20 intents. Source of truth: `intents/INT-NNN/intent.md` 
 |---|---|---|---|---|---|
 | I-01 | HIC_Prefill_Requested__e platform event fields Contact_Id__c + Onboarding_Id__c set `required=true` silently dropped events at INT-007 test time | Medium | 2026-09-30 | Set `required=false`; documented Salesforce platform-event silent-drop behavior | Closed (`641f55b`, `2c892b6`) |
 | I-02 | INT-008 `Locked_After_Submission` validation rule blocked INT-011's SLA reassignment writing to `Previously_Declined_Practitioners__c` | High | 2026-09-30 | `/ql-refine-intent` on INT-008 narrowed guardrail 2; VR dropped that field from ISCHANGED list | Closed (`ebad0ca`, `decisions/2026-09-30-INT-008-lock-scope-narrowed.md`) |
-| I-03 | `Treatment_Type__c`, `Transport_Type__c`, `Distance_Km__c` on Subsidy_Application__c lack System Admin FLS — seed script had to drop them | Low | 2026-09-30 | Fields granted via other permission sets (Assessor_Base). Sysadmin FLS backfill pending | Open |
-| I-04 | `Practitioner_Contact__c` on Assignment__c lacks Sysadmin FLS — same pattern | Low | 2026-09-30 | Same as I-03 | Open |
+| I-03 | `Treatment_Type__c`, `Transport_Type__c`, `Distance_Km__c` on Subsidy_Application__c lack System Admin FLS — seed script had to drop them | Low | 2026-09-30 | New perm set `PTSF_Admin_Fls_Overrides` grants edit on all three; assign to sysadmin before next seed run | Closed (2026-10-01) |
+| I-04 | `Practitioner_Contact__c` on Assignment__c lacks Sysadmin FLS — same pattern | Low | 2026-09-30 | Covered by `PTSF_Admin_Fls_Overrides` | Closed (2026-10-01) |
 | I-05 | Migration_Staging__c deploy failed on "Allow Sharing/Bulk/Streaming must match" error | Low | Earlier session | Set enableStreamingApi=true | Closed |
 
 ## Dependencies
