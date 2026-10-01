@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prefill_Response_JSON__c</fullName>
+    <description>INT-021 — raw JSON returned by the HIC prefill callout.</description>
+    <label>Prefill Response JSON</label>
+    <length>32768</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

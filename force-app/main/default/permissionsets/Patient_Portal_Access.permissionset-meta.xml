@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Grants object + FLS access needed to run the Patient Onboarding wizard and complete INT-006.</description>
+    <description>Grants object + FLS access needed to run the Patient Onboarding wizard and the HIC prefill integration.</description>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Patient Portal Access</label>
+    <classAccesses>
+        <apexClass>OnboardingWizardController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>HICPrefillCallout</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
@@ -11,6 +19,15 @@
         <modifyAllRecords>false</modifyAllRecords>
         <object>Onboarding__c</object>
         <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Integration_Error__c</object>
+        <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <fieldPermissions>
         <editable>true</editable>
@@ -29,6 +46,21 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Onboarding__c.Prefill_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Onboarding__c.Prefill_Response_JSON__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Onboarding__c.Prefill_Error__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Contact.Onboarding_Complete__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -37,8 +69,29 @@
         <field>Contact.Language_Preference__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <classAccesses>
-        <apexClass>OnboardingWizardController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Integration_Error__c.Related_Record_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Integration_Error__c.Status_Code__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Integration_Error__c.Request_Payload__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Integration_Error__c.Response_Body__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Integration_Error__c.Retry_Count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
 </PermissionSet>
