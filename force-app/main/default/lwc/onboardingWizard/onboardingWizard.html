@@ -1,0 +1,56 @@
+<template>
+    <lightning-card title="Patient Onboarding" icon-name="standard:person_account">
+        <div class="slds-p-horizontal_medium">
+
+            <lightning-progress-bar value={progressPct} size="large"></lightning-progress-bar>
+            <p class="slds-text-body_small slds-m-top_x-small">Step: {currentStep}</p>
+
+            <template lwc:if={prefillPending}>
+                <lightning-badge label="Coverage check pending"></lightning-badge>
+            </template>
+
+            <template lwc:if={isIdentity}>
+                <lightning-input name="firstName" label="First Name" value={data.firstName} onchange={handleChange}></lightning-input>
+                <lightning-input name="lastName"  label="Last Name"  value={data.lastName}  onchange={handleChange}></lightning-input>
+                <lightning-input type="date" name="dob" label="Date of Birth" value={data.dob} onchange={handleChange}></lightning-input>
+            </template>
+
+            <template lwc:if={isAddress}>
+                <lightning-input name="street"  label="Street"  value={data.street}  onchange={handleChange}></lightning-input>
+                <lightning-input name="city"    label="City"    value={data.city}    onchange={handleChange}></lightning-input>
+                <lightning-input name="country" label="Country" value={data.country} onchange={handleChange}></lightning-input>
+                <p class="slds-text-body_small slds-text-color_weak">Address validation (Loqate) runs on real portal; sandbox skips it.</p>
+            </template>
+
+            <template lwc:if={isLanguage}>
+                <lightning-combobox name="language" label="Language Preference"
+                    value={data.language} options={languageOptions} onchange={handleChange}></lightning-combobox>
+            </template>
+
+            <template lwc:if={isInsurance}>
+                <lightning-input name="insurerName"  label="Insurer Name"  value={data.insurerName}  onchange={handleChange}></lightning-input>
+                <lightning-input name="policyNumber" label="Policy Number" value={data.policyNumber} onchange={handleChange}></lightning-input>
+                <p class="slds-text-body_small slds-text-color_weak">Full medical history is captured encrypted on Medical_History__c (INT-004).</p>
+            </template>
+
+            <template lwc:if={isSummary}>
+                <h3 class="slds-text-heading_small">Review</h3>
+                <pre class="slds-box slds-box_x-small slds-text-body_small">{summaryJson}</pre>
+            </template>
+
+            <div class="slds-m-top_medium">
+                <template lwc:if={isFirst}>
+                    <lightning-button label="Next" variant="brand" onclick={next}></lightning-button>
+                </template>
+                <template lwc:elseif={isLast}>
+                    <lightning-button label="Back"   onclick={back}></lightning-button>
+                    <lightning-button label="Submit" variant="brand" onclick={submit} class="slds-m-left_x-small"></lightning-button>
+                </template>
+                <template lwc:else>
+                    <lightning-button label="Back" onclick={back}></lightning-button>
+                    <lightning-button label="Next" variant="brand" onclick={next} class="slds-m-left_x-small"></lightning-button>
+                </template>
+            </div>
+        </div>
+    </lightning-card>
+</template>

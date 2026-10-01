@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>INT-006 — localized welcome email (Japanese)</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>Welcome Email (ja)</name>
+    <style>none</style>
+    <subject>PTSF Patient Travel Support へようこそ</subject>
+    <type>text</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>
