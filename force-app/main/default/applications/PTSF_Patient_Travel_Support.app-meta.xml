@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#0C6BA8</headerColor>
+    </brand>
+    <description>INT-022 — end-to-end PTSF application tying patient onboarding, subsidy applications, assignments, and integration errors into one Lightning app.</description>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <label>PTSF Patient Travel Support</label>
+    <navType>Standard</navType>
+    <tabs>Patient_Onboarding</tabs>
+    <tabs>standard-Contact</tabs>
+    <tabs>Subsidy_Application__c</tabs>
+    <tabs>Onboarding__c</tabs>
+    <tabs>Assignment__c</tabs>
+    <tabs>Integration_Error__c</tabs>
+    <uiType>Lightning</uiType>
+</CustomApplication>
