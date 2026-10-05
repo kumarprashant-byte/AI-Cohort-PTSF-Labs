@@ -17,10 +17,10 @@ authored: 2026-09-30
 | INT-016-C2 | Custom Report Type `PTSF_Subsidy_Applications` (base object Subsidy_Application__c) deployed | org-probe | ✅ | (verify — green, 2026-09-30) |
 | INT-016-C3 | Custom Report Type `PTSF_Assignments` (base object Assignment__c) deployed | org-probe | ✅ | (verify — green, 2026-09-30) |
 | INT-016-C4 | Row-level scoping via OWD (INT-020) — reports written on these report types honor Region__c sharing (no report-level filter needed) | derivation from INT-020-C2..C4 | ✅ | (verify — green, 2026-09-30) |
-| INT-016-C5 | Reports (In-Flight by Region, SLA Breach Count, Subsidies Granted by Region) + three persona dashboards created in Setup — 📋 accepted by Prashant Kumar — runbook-INT-016.md click-through (Salesforce report/dashboard metadata deploys are fragile on greenfield orgs; admin creates them in Report Builder against the deployed CRTs) | 📋 | 📋 | — |
+| INT-016-C5 | Reports (In-Flight by Region, SLA Breach Count, Subsidies Granted by Region) + three persona dashboards created in Setup (Salesforce report/dashboard metadata deploys are fragile on greenfield orgs; admin creates them in Report Builder against the deployed CRTs) | 📋 accepted by Prashant Kumar — delivery/runbook-INT-016.md | 📋 | accepted-gap |
 | INT-016-C6 | No report or dashboard references Medical_History__c (guardrail 1) — enforced by the click-through step's explicit exclusion list | 👁 | 👁 | _pending_ |
 | INT-016-C7 | APAC Regional Ops Manager opens Team Manager Dashboard and sees APAC rows only (acceptance) | Manual scene A | 👁 | _pending_ |
-| INT-016-C8 | CRM Analytics escalation when standard reports hit LDV — 📋 accepted by Prashant Kumar — INT-016-follow-on | 📋 | 📋 | — |
+| INT-016-C8 | CRM Analytics escalation when standard reports hit LDV | 📋 accepted by Prashant Kumar — delivery/runbook-INT-016.md | 📋 | accepted-gap |
 
 ## Manual validation scenes
 

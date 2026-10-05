@@ -1,0 +1,35 @@
+<template>
+    <lightning-card title="Application Actions" icon-name="action:approval">
+        <div class="slds-p-horizontal_medium">
+            <p class="slds-text-body_regular slds-m-bottom_small">
+                Current status: <strong>{status}</strong>
+            </p>
+
+            <template lwc:if={canSubmit}>
+                <lightning-button variant="brand" label="Submit for Review" onclick={doSubmit} disabled={busy}></lightning-button>
+            </template>
+
+            <template lwc:if={canDecide}>
+                <div class="slds-box slds-m-top_small">
+                    <lightning-input type="number" label="Approved Amount" step="0.01" onchange={handleAmount} value={approvedAmount}></lightning-input>
+                    <lightning-button class="slds-m-top_x-small" variant="success" label="Approve" onclick={doApprove} disabled={busy}></lightning-button>
+                </div>
+                <div class="slds-box slds-m-top_small">
+                    <lightning-textarea label="Rejection Reason" onchange={handleReason} value={rejectReason}></lightning-textarea>
+                    <lightning-button class="slds-m-top_x-small" variant="destructive" label="Reject" onclick={doReject} disabled={busy}></lightning-button>
+                </div>
+            </template>
+
+            <template lwc:if={canAssign}>
+                <div class="slds-box slds-m-top_small">
+                    <lightning-combobox label="Practitioner" options={practitionerOptions} value={selectedPractitioner} onchange={handlePractitioner}></lightning-combobox>
+                    <lightning-button class="slds-m-top_x-small" variant="brand" label="Assign Practitioner" onclick={doAssign} disabled={busy}></lightning-button>
+                </div>
+            </template>
+
+            <template lwc:if={busy}>
+                <lightning-spinner alternative-text="Working..." size="small"></lightning-spinner>
+            </template>
+        </div>
+    </lightning-card>
+</template>

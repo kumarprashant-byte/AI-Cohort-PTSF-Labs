@@ -1,7 +1,7 @@
 ---
 intent: INT-018
 phase: 5
-proof_hash: 570be557cf40
+proof_hash: 863ebd7615a6
 authored: 2026-09-30
 ---
 

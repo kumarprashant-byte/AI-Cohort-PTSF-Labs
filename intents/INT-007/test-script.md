@@ -21,8 +21,8 @@ authored: 2026-09-29
 | INT-007-C5 | On success, completion Platform Event fires with the response payload (acceptance line 2) | `HICQueueableTest.successPublishesCompletionEvent` — subscribe via `Test.getEventBus().deliver()`; assert `HIC_Prefill_Completed__e` published with Status=Success and Response_JSON = mock body | ✅ | (CI) |
 | INT-007-C6 | Scheduled Flow (`HICRetrySchedulable`) picks up `Deferred` rows whose Next_Attempt_At has passed and re-enqueues (build target: hourly for 24h) | `HICRetrySchedulableTest.deferredRowIsRequeuedWhenDue` — seed a Deferred row with Next_Attempt_At in the past; run the schedulable in `Test.startTest()`; assert Attempt_Count advanced | ✅ | (CI) |
 | INT-007-C7 | Rows older than 24 hours are NOT retried (build target: "hourly for 24 hours") | `HICRetrySchedulableTest.rowsOlderThan24HoursAreIgnored` — insert a row with CreatedDate manipulated via `Test.setCreatedDate`; assert schedulable skips it | ✅ | (CI) |
-| INT-007-C8 | Named Credential `PTSF_HIC` is present in metadata (structural) | org-probe: `named-credential-exists(PTSF_HIC)` | ✅ | (verify) |
-| INT-007-C9 | Concrete vendor payload mapping (request builder + response parser onto `Subsidy_Application__c`) | Deferred — `decisions/2026-09-29-INT-007-hic-payload-deferred.md` (follow-on when Q-007-1 lands) | 📋 accepted by (pending Trusted Guide) — decisions/2026-09-29-INT-007-hic-payload-deferred.md | _pending accepter_ |
+| INT-007-C8 | Named Credential `PTSF_HIC` is present in metadata (structural) | org-probe: `named-credential-exists(PTSF_HIC)` | ✅ | (verify — green, 2026-09-30) |
+| INT-007-C9 | Concrete vendor payload mapping (request builder + response parser onto `Subsidy_Application__c`) | 📋 accepted by Prashant Kumar — decisions/2026-09-29-INT-007-hic-payload-deferred.md | 📋 | accepted-gap |
 
 ## Automated proofs to write
 

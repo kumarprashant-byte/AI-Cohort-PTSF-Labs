@@ -15,7 +15,7 @@ authored: 2026-09-30
 | INT-002-C2 | `SamlJitHandler.createUser` stamps `Region__c` and `LanguageLocaleKey` from the SAML `Region` / `Language` attributes | `SamlJitHandlerTest.createUserStampsRegionAndLanguage` | ✅ | (CI) |
 | INT-002-C3 | `SamlJitHandler.createUser` throws when SAML `Region` is missing or not in {EMEA,AMER,APAC} (guardrail — no cross-region default) | `SamlJitHandlerTest.rejectsUnknownRegion` | ✅ | (CI) |
 | INT-002-C4 | `SamlJitHandler.createUser` assigns `Assessor_Base` permission set and does NOT assign any Medical_History-access perm set (guardrail 2) | `SamlJitHandlerTest.assignsBaseNotPHI` | ✅ | (CI) |
-| INT-002-C5 | Three `SamlSsoConfig` entries (EMEA_AD, AMER_AD, APAC_AD) reference `SamlJitHandler` and each region's login-URL routing works — 📋 accepted by Prashant Kumar — runbook-INT-002.md (needs PTSF IT IdP metadata + certs; can't ship in metadata safely) | 📋 | 📋 | — |
+| INT-002-C5 | Three `SamlSsoConfig` entries (EMEA_AD, AMER_AD, APAC_AD) reference `SamlJitHandler` and each region's login-URL routing works (needs PTSF IT IdP metadata + certs; can't ship in metadata safely) | 📋 accepted by Prashant Kumar — delivery/runbook-INT-002.md | 📋 | accepted-gap |
 | INT-002-C6 | End-to-end: an EMEA user SAML-authenticates and lands in Salesforce with Region__c=EMEA, Language=fr (acceptance) | Manual scene A (post-IdP handoff) | 👁 | _pending_ |
 
 ## Manual validation scenes

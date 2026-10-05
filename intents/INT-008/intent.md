@@ -5,7 +5,7 @@ epic: E02
 confidence: Confirmed
 origin: scopezilla
 title: Subsidy application lifecycle with treatment picker and auto-reject
-ratified: 2026-09-30 by Prashant Kumar @ eebdfaf09a89
+ratified: 2026-09-30 by Prashant Kumar @ 0d9f92f33ec1
 ---
 
 # INT-008 — Subsidy application lifecycle with treatment picker and auto-reject
@@ -26,7 +26,7 @@ A patient submits a subsidy application, picks a treatment from a hierarchy of 5
 ## Guardrails
 
 - Must not allow submission before Contact.Onboarding_Complete__c
-- Must not let a patient edit an application after submission (a corrections workflow is out of scope this phase)
+- Must not let a patient edit patient-facing fields on an application after submission — Patient__c and Treatment_Type__c are locked. System-managed bookkeeping fields (e.g., Previously_Declined_Practitioners__c written by INT-011's SLA reassignment) stay open for platform automation. Corrections workflow is out of scope this phase.
 
 ## Out of scope
 

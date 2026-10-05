@@ -14,7 +14,7 @@ authored: 2026-09-29
 
 | ID | Criterion (source) | How proven | Type | Sign-off |
 |----|--------------------|------------|------|----------|
-| INT-011-C1 | `Assessment__c` exists with Private OWD and the field set the design names (Assignment lookup required, Treatment_Type restricted picklist, Status picklist with Draft/Pending Review, Response_JSON LongText, Submitted_Date, Parent_Assessment self-lookup) (build target — object) | org-probe (see § Org assertions) | ✅ | _pending_ |
+| INT-011-C1 | `Assessment__c` exists with Private OWD and the field set the design names (Assignment lookup required, Treatment_Type restricted picklist, Status picklist with Draft/Pending Review, Response_JSON LongText, Submitted_Date, Parent_Assessment self-lookup) (build target — object) | org-probe (see § Org assertions) | ✅ | (verify — green, 2026-09-30) |
 | INT-011-C2 | `AssessmentFormController.getFormSchema` returns the correct `Assessment_Form__mdt` schema for the Assignment's Treatment_Type (build target — metadata-driven layouts) | `AssessmentFormControllerTest.getFormSchemaReturnsMatchingSchema` | ✅ | (CI) |
 | INT-011-C3 | Save-draft persists a `Draft` Assessment tied to the Assignment; repeated calls upsert the same Assessment (build target — save-draft support) | `AssessmentFormControllerTest.saveDraftPersistsAndUpserts` | ✅ | (CI) |
 | INT-011-C4 | `submit` flips Status to `Pending Review` and stamps `Submitted_Date__c` (build target — submission moves to Pending Review) | `AssessmentFormControllerTest.submitFlipsStatusAndStampsDate` | ✅ | (CI) |
