@@ -38,5 +38,9 @@ Status: ⬜ Not started · 🔧 In progress · ✅ Delivered · 🔄 Needs re-ve
 | INT-020 | 3 | ✅ Delivered | local/INT-020 | — | `f30955a620b6` |
 | INT-021 | 2 | ✅ Delivered | local-build:88784f8 | — | `f435140e1e98` |
 | INT-022 | 3 | ✅ Delivered | local-build:1d63a25 | — | `aa150bf28875` |
+| INT-023 | 4 | ⬜ Not started | — | — | — |
+| INT-024 | 4 | ⬜ Not started | — | — | — |
+| INT-025 | 5 | ⬜ Not started | — | — | — |
+| INT-026 | 1 | ⬜ Not started | — | — | — |
 
-_22 intents across phase(s) 1, 2, 3, 4, 5. Seeded from `intents/`._
+_26 intents across phase(s) 1, 2, 3, 4, 5. Seeded from `intents/`._

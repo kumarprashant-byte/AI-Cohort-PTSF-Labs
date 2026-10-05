@@ -34,7 +34,7 @@ Then start building: `/ql-start-intent INT-001`. Not sure what's next at any poi
 
 _Derived view — intent titles from `intents/`, status from `delivery/intent-ledger.md`. The ledger stays canonical; this block is regenerated, never hand-edited._
 
-**22 intents** across phase(s) 1, 2, 3, 4, 5.
+**26 intents** across phase(s) 1, 2, 3, 4, 5.
 
 ### Phase 1
 
@@ -45,6 +45,7 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 | INT-003 | ✅ Delivered | local/INT-003+expcloud-deferred | Patient and practitioner login (email/password, Facebook, and partner path) |
 | INT-004 | ✅ Delivered | local-orgfarm-2026-09-29 | PHI security foundation — Medical_History__c Private OWD, Restriction Rule, break-glass permission set |
 | INT-005 | ✅ Delivered | sandbox-verify:2026-09-30+2-manual-scenes-pending | Regional user model and role hierarchy |
+| INT-026 | ⬜ Not started | — | PTSF-internal PHI blockout — provable denial path on Medical_History__c |
 
 ### Phase 2
 
@@ -75,6 +76,8 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 | INT-014 | ✅ Delivered | local:INT-014-subsidy-determination | Subsidy determination Flow with regional threshold approval |
 | INT-015 | ✅ Delivered | local-build | Chat, deflection bot, and knowledge base on both surfaces |
 | INT-016 | ✅ Delivered | local/INT-016+admin-clickthrough | Operational and executive reporting |
+| INT-023 | ⬜ Not started | — | Practitioner-requested specialist sub-assessment |
+| INT-024 | ⬜ Not started | — | Subsidy calculator — distance x transport decision table and manual override |
 
 ### Phase 5
 
@@ -82,5 +85,6 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 |--------|--------|----|-------|
 | INT-017 | ✅ Delivered | local-build | TAMS-to-Salesforce data migration ETL and dedup |
 | INT-018 | ✅ Delivered | local-build | Per-region cutover with 4-week dual-run |
+| INT-025 | ⬜ Not started | — | LDV scale-soak proving 5M patients and 50% year-on-year growth |
 
 <!-- ENGAGEMENT:INDEX:END -->
