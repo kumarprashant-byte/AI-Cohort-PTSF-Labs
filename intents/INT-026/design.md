@@ -91,5 +91,7 @@ Not applicable — commercial engagement, no inherited premises in `scopezilla/d
 
 ## Open design questions
 
-- **Q-design-026-1:** Scratch-org vs. long-lived sandbox for CI runs. Scratch org = clean per run, slower (~15 min spin-up). Sandbox = fast, but drift risk if a prior test left state. Default: scratch org for `pr-validation`, sandbox for the nightly rerun. (resolver: Technical Architect)
-- **Q-design-026-2:** JWT auth per profile needs one Connected App or one per profile. One Connected App with per-profile certificates is cleaner; needs a secret-storage decision for CI (GitHub OIDC → SF JWT exchange). (resolver: PTSF IT + Technical Architect)
+_Both resolved 2026-10-06 — see `decisions/2026-10-06-INT-026-design-q-resolution.md`._
+
+- **Q-design-026-1 (resolved):** Scratch org for PR validation (reuses the `feature-ci_pr-validation.yml` scratch); sandbox for a nightly full matrix via a new `phi-blockout-nightly.yml`. Disagreement between the two is a flagged matrix anomaly.
+- **Q-design-026-2 (resolved):** One Connected App `PHI_Blockout_Matrix_CI` with per-profile pre-authorized users and six per-profile certs stored as GitHub Actions secrets. OIDC → SF JWT exchange is a follow-on intent, not blocking.
