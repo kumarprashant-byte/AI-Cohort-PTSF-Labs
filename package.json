@@ -14,7 +14,8 @@
     "prettier:verify": "prettier --check \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
     "prepare": "husky || true",
     "precommit": "lint-staged",
-    "setup": "npm install -g @salesforce/cli @earendil-works/pi-coding-agent && pi install git:github.com/salesforce/sf-pi && npx -y skills@1.5.25 add forcedotcom/sf-skills"
+    "setup": "npm install -g @salesforce/cli @earendil-works/pi-coding-agent && pi install git:github.com/salesforce/sf-pi && npx -y skills@1.5.25 add forcedotcom/sf-skills",
+    "phi-blockout-matrix": "node scripts/phi-blockout-matrix.mjs"
   },
   "engines": { "node": ">=22.20" },
   "devDependencies": {

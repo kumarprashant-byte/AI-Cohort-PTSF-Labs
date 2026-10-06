@@ -1,0 +1,35 @@
+{
+  "$schema": "./phi-blockout-profiles.schema.json",
+  "description": "Profiles exercised by the INT-026 PHI-blockout denial-path matrix. Adding a row here is the only change required to extend coverage to a new profile — the Apex tests and the Node API runner both read this list.",
+  "deny_profiles": [
+    { "profile": "System Administrator", "note": "Hardest case — View All Data must still be blocked by the Restriction Rule" },
+    { "profile": "Assessor", "note": "PTSF internal" },
+    { "profile": "Team Manager", "note": "PTSF internal" },
+    { "profile": "Regional Ops Manager", "note": "PTSF internal" },
+    { "profile": "Standard User", "note": "Read-only clone baseline" }
+  ],
+  "allow_profiles": [
+    {
+      "profile": "Compliance Officer",
+      "permission_sets": ["PHI_Emergency_Access"],
+      "note": "Positive-path cell — must succeed AND write Audit_Log__c in the same transaction"
+    }
+  ],
+  "in_platform_surfaces": [
+    "record_page",
+    "related_list",
+    "list_view",
+    "standard_report",
+    "custom_report",
+    "dashboard",
+    "sosl",
+    "content_document"
+  ],
+  "api_surfaces": [
+    "rest_query",
+    "soap_query",
+    "tooling_api",
+    "weekly_export",
+    "data_loader"
+  ]
+}
