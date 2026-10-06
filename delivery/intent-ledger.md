@@ -39,7 +39,7 @@ Status: ⬜ Not started · 🔧 In progress · ✅ Delivered · 🔄 Needs re-ve
 | INT-021 | 2 | ✅ Delivered | local-build:88784f8 | — | `f435140e1e98` |
 | INT-022 | 3 | ✅ Delivered | local-build:1d63a25 | — | `aa150bf28875` |
 | INT-023 | 4 | ⬜ Not started | — | — | — |
-| INT-024 | 4 | ⬜ Not started | — | — | — |
+| INT-024 | 4 | 🔧 In progress | — | — | — |
 | INT-025 | 5 | ⬜ Not started | — | — | — |
 | INT-026 | 1 | 🔧 In progress | — | — | — |
 | INT-027 | 1 | ⬜ Not started | — | — | — |
