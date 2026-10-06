@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>FAQ entries deflected by the Assessor chat panel (INT-028). One record per topic; Trigger_Phrases is a semicolon-separated keyword list the LWC matches free-text against; Answer_Body renders inline.</description>
+    <label>Assessor FAQ</label>
+    <pluralLabel>Assessor FAQs</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

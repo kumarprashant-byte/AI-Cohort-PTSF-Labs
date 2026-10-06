@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Assignment Acceptance</label>
+    <protected>false</protected>
+    <values>
+        <field>Topic__c</field>
+        <value xsi:type="xsd:string">Assignment Acceptance</value>
+    </values>
+    <values>
+        <field>Trigger_Phrases__c</field>
+        <value xsi:type="xsd:string">accept assignment;how do I accept;decline assignment;reassign;picked up;assignment accept</value>
+    </values>
+    <values>
+        <field>Answer_Body__c</field>
+        <value xsi:type="xsd:string">Open the Assignment record from your "My Open Assignments" list view and set Status to Accepted (or Declined with a reason). An accepted Assignment unlocks the Assessment form; a declined one returns to the routing queue for reassignment within one business day.</value>
+    </values>
+</CustomMetadata>

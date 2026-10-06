@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PHI_Flagged__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Set true by AssessorFaqController when an inbound chat question contains a PHI kill-list keyword (INT-028). Surfaces in the Chat Queue list view so Assessors see at a glance which chats are flagged.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>True when the inbound chat question hit the PHI kill-list.</inlineHelpText>
+    <label>PHI Flagged</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

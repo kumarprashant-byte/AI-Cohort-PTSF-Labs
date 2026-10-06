@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Chat_Queue_Open</fullName>
+    <columns>CASE_NUMBER</columns>
+    <columns>SUBJECT</columns>
+    <columns>PHI_Flagged__c</columns>
+    <columns>STATUS</columns>
+    <columns>OWNER</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>ORIGIN</field>
+        <operation>equals</operation>
+        <value>Chat</value>
+    </filters>
+    <filters>
+        <field>STATUS</field>
+        <operation>notEqual</operation>
+        <value>Closed</value>
+    </filters>
+    <label>Chat Queue — Open</label>
+</ListView>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Application Status</label>
+    <protected>false</protected>
+    <values>
+        <field>Topic__c</field>
+        <value xsi:type="xsd:string">Application Status</value>
+    </values>
+    <values>
+        <field>Trigger_Phrases__c</field>
+        <value xsi:type="xsd:string">application status;where is my application;applied;submitted application;is my application in</value>
+    </values>
+    <values>
+        <field>Answer_Body__c</field>
+        <value xsi:type="xsd:string">You can see the current status of any Subsidy Application you have access to on the Application record itself. Standard progression is Submitted → In Review → Assigned → Decision. If an application has sat in a single status for more than 10 business days, note it in the chat and an Assessor will follow up directly on the record. Please do not share clinical details here.</value>
+    </values>
+</CustomMetadata>
