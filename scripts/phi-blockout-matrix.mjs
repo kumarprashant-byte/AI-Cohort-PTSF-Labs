@@ -35,7 +35,7 @@ console.log(`[matrix] Running Layer 1 (Apex tests) against org ${orgAlias}`);
 const apexResult = runArgv("sf", [
   "apex", "run", "test",
   "--target-org", orgAlias,
-  "--class-names", "PhiBlockoutRecordPageTest,PhiBreakGlassAuditSameTxnTest",
+  "--class-names", "PhiBlockoutRecordPageTest,PhiBlockoutRelatedListTest,PhiBlockoutListViewTest,PhiBlockoutStandardReportTest,PhiBlockoutCustomReportTest,PhiBlockoutDashboardTest,PhiBlockoutSoslTest,PhiBlockoutContentDocumentTest,PhiBreakGlassAuditSameTxnTest",
   "--result-format", "json",
   "--synchronous",
   "--code-coverage", "false"
