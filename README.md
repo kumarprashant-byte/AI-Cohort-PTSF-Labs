@@ -78,7 +78,7 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 | INT-015 | ✅ Delivered | local-build | Chat, deflection bot, and knowledge base on both surfaces |
 | INT-016 | ✅ Delivered | local/INT-016+admin-clickthrough | Operational and executive reporting |
 | INT-023 | ⬜ Not started | — | Practitioner-requested specialist sub-assessment |
-| INT-024 | ⬜ Not started | — | Subsidy calculator — distance x transport decision table and manual override |
+| INT-024 | ✅ Delivered | — | Subsidy calculator — distance x transport decision table and manual override |
 
 ### Phase 5
 
