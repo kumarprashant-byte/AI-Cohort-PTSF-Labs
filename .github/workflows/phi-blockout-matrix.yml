@@ -1,0 +1,89 @@
+name: phi-blockout-matrix
+
+on:
+  pull_request:
+    branches:
+      - "develop"
+    paths:
+      - "force-app/main/default/objects/Medical_History__c/**"
+      - "force-app/main/default/restrictionRules/**"
+      - "force-app/main/default/permissionsets/PHI_Emergency_Access**"
+      - "force-app/main/default/sharingRules/**"
+      - "force-app/main/default/profiles/**"
+      - "force-app/main/default/classes/PhiBlockout**"
+      - "force-app/main/default/classes/PhiBreakGlass**"
+      - "scripts/phi-blockout-*.mjs"
+      - "config/phi-blockout-profiles.json"
+
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    environment: CI
+    timeout-minutes: 45
+
+    env:
+      SF_DEVHUB_AUTH_URL: ${{ secrets.SF_DEVHUB_AUTH_URL }}
+      SF_LOGIN_URL: https://test.salesforce.com
+      SF_CLIENT_ID: ${{ secrets.SF_PHI_MATRIX_CLIENT_ID }}
+      SF_JWT_KEY_SYSADMIN: ${{ secrets.SF_JWT_KEY_SYSADMIN }}
+      SF_JWT_USER_SYSADMIN: ${{ secrets.SF_JWT_USER_SYSADMIN }}
+      SF_JWT_KEY_ASSESSOR: ${{ secrets.SF_JWT_KEY_ASSESSOR }}
+      SF_JWT_USER_ASSESSOR: ${{ secrets.SF_JWT_USER_ASSESSOR }}
+      SF_JWT_KEY_TEAMMGR: ${{ secrets.SF_JWT_KEY_TEAMMGR }}
+      SF_JWT_USER_TEAMMGR: ${{ secrets.SF_JWT_USER_TEAMMGR }}
+      SF_JWT_KEY_REGOPS: ${{ secrets.SF_JWT_KEY_REGOPS }}
+      SF_JWT_USER_REGOPS: ${{ secrets.SF_JWT_USER_REGOPS }}
+      SF_JWT_KEY_STDUSER: ${{ secrets.SF_JWT_KEY_STDUSER }}
+      SF_JWT_USER_STDUSER: ${{ secrets.SF_JWT_USER_STDUSER }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Authenticate DevHub
+        run: |
+          printf '%s' "$SF_DEVHUB_AUTH_URL" > devhub.auth
+          sf org login sfdx-url --sfdx-url-file devhub.auth --alias DevHub --set-default-dev-hub
+          rm devhub.auth
+
+      - name: Create scratch org
+        run: |
+          sf org create scratch \
+            --definition-file config/project-scratch-def.json \
+            --alias phi-matrix \
+            --duration-days 1 \
+            --wait 20 \
+            --set-default
+
+      - name: Deploy source to scratch
+        run: sf project deploy start --target-org phi-matrix --wait 30
+
+      - name: Run matrix orchestrator
+        env:
+          SF_TARGET_ORG: phi-matrix
+        run: npm run phi-blockout-matrix -- --org phi-matrix
+
+      - name: Upload matrix report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phi-blockout-matrix-${{ github.run_id }}
+          path: |
+            delivery/compliance-evidence/phi-blockout-matrix-*.csv
+            delivery/compliance-evidence/phi-blockout-matrix-*.md
+          if-no-files-found: warn
+
+      - name: Delete scratch
+        if: always()
+        run: sf org delete scratch --target-org phi-matrix --no-prompt || true

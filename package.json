@@ -18,6 +18,10 @@
     "phi-blockout-matrix": "node scripts/phi-blockout-matrix.mjs"
   },
   "engines": { "node": ">=22.20" },
+  "dependencies": {
+    "jsforce": "^3.6.5",
+    "jsonwebtoken": "^9.0.2"
+  },
   "devDependencies": {
     "@lwc/eslint-plugin-lwc": "^3.1.0",
     "@prettier/plugin-xml": "^3.4.1",

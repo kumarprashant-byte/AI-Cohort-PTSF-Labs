@@ -1,0 +1,64 @@
+name: phi-blockout-nightly
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+    environment: CI
+    timeout-minutes: 60
+
+    env:
+      SF_SANDBOX_AUTH_URL: ${{ secrets.SF_SANDBOX_AUTH_URL }}
+      SF_LOGIN_URL: https://test.salesforce.com
+      SF_CLIENT_ID: ${{ secrets.SF_PHI_MATRIX_CLIENT_ID }}
+      SF_JWT_KEY_SYSADMIN: ${{ secrets.SF_JWT_KEY_SYSADMIN }}
+      SF_JWT_USER_SYSADMIN: ${{ secrets.SF_JWT_USER_SYSADMIN }}
+      SF_JWT_KEY_ASSESSOR: ${{ secrets.SF_JWT_KEY_ASSESSOR }}
+      SF_JWT_USER_ASSESSOR: ${{ secrets.SF_JWT_USER_ASSESSOR }}
+      SF_JWT_KEY_TEAMMGR: ${{ secrets.SF_JWT_KEY_TEAMMGR }}
+      SF_JWT_USER_TEAMMGR: ${{ secrets.SF_JWT_USER_TEAMMGR }}
+      SF_JWT_KEY_REGOPS: ${{ secrets.SF_JWT_KEY_REGOPS }}
+      SF_JWT_USER_REGOPS: ${{ secrets.SF_JWT_USER_REGOPS }}
+      SF_JWT_KEY_STDUSER: ${{ secrets.SF_JWT_KEY_STDUSER }}
+      SF_JWT_USER_STDUSER: ${{ secrets.SF_JWT_USER_STDUSER }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Authenticate build sandbox
+        run: |
+          printf '%s' "$SF_SANDBOX_AUTH_URL" > sandbox.auth
+          sf org login sfdx-url --sfdx-url-file sandbox.auth --alias PtsfBuildSandbox
+          rm sandbox.auth
+
+      - name: Run matrix orchestrator against sandbox
+        env:
+          SF_TARGET_ORG: PtsfBuildSandbox
+        run: npm run phi-blockout-matrix -- --org PtsfBuildSandbox
+
+      - name: Upload signed-ready matrix report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phi-blockout-nightly-${{ github.run_id }}
+          path: |
+            delivery/compliance-evidence/phi-blockout-matrix-*.csv
+            delivery/compliance-evidence/phi-blockout-matrix-*.md
+          retention-days: 90
+          if-no-files-found: warn
