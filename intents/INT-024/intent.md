@@ -5,6 +5,7 @@ epic: E06
 confidence: draft
 origin: local
 title: Subsidy calculator — distance x transport decision table and manual override
+ratified: 2026-10-06 by Prashant Kumar @ 7fd57d3f25cd
 ---
 
 # INT-024 — Subsidy calculator — distance x transport decision table and manual override
