@@ -18,8 +18,8 @@ authored: 2026-09-30
 | INT-012-C2 | Flow `Assessment_15_Day_Escalation` is Active — Scheduled (daily) on Assessment__c (build target — scheduled scan) | org-probe | ✅ | (verify — green, 2026-09-30) |
 | INT-012-C3 | The Flow filters on `Status = 'Pending Review'` (per Assessment__c's picklist — the intent's shorthand "Pending" maps here) AND `Escalated__c = false` AND `Assigned_Date__c < TODAY - 15` (build target + guardrail 1) | org-probe (flow XML inspection) | ✅ | (verify — green, 2026-09-30) |
 | INT-012-C4 | Task OwnerId routes to the practitioner's Team Manager (build target — region-aware Team Manager) | 📋 accepted by Prashant Kumar — INT-005 + INT-020 routing follow-on (Practitioner user mapping + Region on Assessment) | 📋 | — |
-| INT-012-C5 | End-to-end: an Assessment created 16 days ago in Pending status runs through the scheduled Flow → Task created with WhatId = Assessment, Assessment.Escalated__c=true, Escalated_Date__c=today (acceptance walkthrough) | Manual scene A | 👁 | _pending_ |
-| INT-012-C6 | Double-escalate guardrail: rerunning the Flow on an already-Escalated assessment does not create a second Task (guardrail 1) | Manual scene B | 👁 | _pending_ |
+| INT-012-C5 | End-to-end: an Assessment created 16 days ago in Pending status runs through the scheduled Flow → Task created with WhatId = Assessment, Assessment.Escalated__c=true, Escalated_Date__c=today (acceptance walkthrough) | Manual scene A | 👁 | Prashant Kumar / 2026-10-06 / ⚠ env-not-ready / 2026-10-06-63e72dc-execution-report.md |
+| INT-012-C6 | Double-escalate guardrail: rerunning the Flow on an already-Escalated assessment does not create a second Task (guardrail 1) | Manual scene B | 👁 | Prashant Kumar / 2026-10-06 / ⚠ env-not-ready / 2026-10-06-63e72dc-execution-report.md |
 
 ## Automated proofs to write
 
