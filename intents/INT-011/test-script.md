@@ -21,7 +21,7 @@ authored: 2026-09-29
 | INT-011-C5 | A practitioner who owns Assignment A can read the Assessment on A; a practitioner who does not own A cannot see that Assessment via SOQL — Apex-managed sharing granting `Edit` to the Assignment's owner (guardrail 1) | `AssessmentSharingTest.practitionerSeesOwnCannotSeeOthers` | ✅ | (CI) |
 | INT-011-C6 | `AssessmentShareTrigger` fires on insert and inserts one `Assessment__Share` per new Assessment for the Assignment owner | `AssessmentSharingTest.shareRowInsertedOnInsert` | ✅ | (CI) |
 | INT-011-C7 | Files uploaded via the LWC's `lightning-file-upload` are linked to the Assessment record — a `ContentDocumentLink` with `LinkedEntityId = <Assessment>.Id` exists (build target — attachments uploadable and linked) | `AssessmentAttachmentTest.contentDocumentLinksToAssessment` | ✅ | (CI) |
-| INT-011-C8 | End-to-end: a practitioner opens an accepted oncology Assignment in the community, the Assessment LWC renders the oncology form (from `Assessment_Form__mdt` with `Treatment_Type__c='Oncology'`), they save a draft, return and submit; a second Assignment for the same practitioner shows an independent form and doesn't leak data (acceptance) | Manual scene A | 👁 | _pending_ |
+| INT-011-C8 | End-to-end: a practitioner opens an accepted oncology Assignment in the community, the Assessment LWC renders the oncology form (from `Assessment_Form__mdt` with `Treatment_Type__c='Oncology'`), they save a draft, return and submit; a second Assignment for the same practitioner shows an independent form and doesn't leak data (acceptance) | Manual scene A | 👁 | Prashant Kumar / 2026-10-06 / ⚠ env-not-ready / 2026-10-06-63e72dc-execution-report.md |
 
 ### Deliberately not tested (out of scope)
 
