@@ -5,6 +5,7 @@ epic: E09
 confidence: draft
 origin: local
 title: PTSF-internal PHI blockout — provable denial path on Medical_History__c
+ratified: 2026-10-06 by Prashant Kumar @ 8e4386d466b8
 ---
 
 # INT-026 — PTSF-internal PHI blockout — provable denial path on Medical_History__c
