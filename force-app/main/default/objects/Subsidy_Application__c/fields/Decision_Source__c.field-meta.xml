@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Decision_Source__c</fullName>
+    <label>Decision Source</label>
+    <description>INT-024 — derived: "calculator" when Approved_Amount__c = Proposed_Amount__c, else "manual".</description>
+    <type>Text</type>
+    <formula>IF(Approved_Amount__c = Proposed_Amount__c, "calculator", "manual")</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <required>false</required>
+    <unique>false</unique>
+    <trackTrending>false</trackTrending>
+</CustomField>

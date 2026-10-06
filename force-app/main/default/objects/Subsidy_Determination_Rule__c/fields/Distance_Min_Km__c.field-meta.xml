@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Distance_Min_Km__c</fullName>
+    <label>Distance Min (km)</label>
+    <description>INT-024 — inclusive lower bound of the distance band this rule row applies to.</description>
+    <precision>7</precision>
+    <scale>2</scale>
+    <required>false</required>
+    <type>Number</type>
+    <trackTrending>false</trackTrending>
+</CustomField>

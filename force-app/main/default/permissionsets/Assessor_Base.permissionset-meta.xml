@@ -109,6 +109,30 @@
         <field>Subsidy_Determination_Rule__c.Threshold__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Subsidy_Application__c.Decision_Source__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Subsidy_Determination_Rule__c.Distance_Min_Km__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Subsidy_Determination_Rule__c.Distance_Max_Km__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Subsidy_Determination_Rule__c.Base_Amount__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <classAccesses>
+        <apexClass>AssessorSubsidyController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Assessor Base</label>
     <objectPermissions>
