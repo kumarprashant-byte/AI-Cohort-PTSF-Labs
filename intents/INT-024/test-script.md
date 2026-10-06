@@ -13,18 +13,18 @@ authored: 2026-10-06
 
 | ID | Criterion (source) | How proven | Type | Sign-off |
 |----|--------------------|------------|------|----------|
-| INT-024-C1 | `Subsidy_Determination_Rule__c.Distance_Min_Km__c`, `Distance_Max_Km__c`, `Base_Amount__c` exist with the design-specified types (build target — rule table extension) | org-probe | ✅ | _pending_ |
-| INT-024-C2 | `Subsidy_Application__c.Decision_Source__c` exists as a formula field returning `calculator` when `Approved_Amount__c = Proposed_Amount__c`, else `manual` (SC-3) | org-probe + Apex test `decisionSourceFormulaResolves` | ✅ | _pending_ |
-| INT-024-C3 | Validation rule `Override_Needs_Reason` exists on `Subsidy_Application__c` (guardrail — override reason required) | org-probe | ✅ | _pending_ |
-| INT-024-C4 | `AssessorSubsidyController.recalculate` returns the correct proposed amount for a seeded `(EMEA, long-distance ground, 180km)` tuple → 1,200 EUR (acceptance scene, SC-1) | `AssessorSubsidyControllerTest.recalculateEmeaGround180km` | ✅ | _pending_ |
-| INT-024-C5 | `AssessorSubsidyController.recalculate` returns the correct proposed amount for `(EMEA, air, 180km)` → 2,400 EUR (acceptance scene) | `AssessorSubsidyControllerTest.recalculateEmeaAir180km` | ✅ | _pending_ |
-| INT-024-C6 | `recalculate` does **not** modify the record (SC-1 — proposal lives in-memory until Assessor saves) | `AssessorSubsidyControllerTest.recalculateDoesNotPersist` | ✅ | _pending_ |
-| INT-024-C7 | `recalculate` throws a clear error when no rule row matches (missing config is loud, not silent) | `AssessorSubsidyControllerTest.recalculateThrowsOnMissingRule` | ✅ | _pending_ |
-| INT-024-C8 | Saving a `Subsidy_Application__c` with `Approved_Amount__c ≠ Proposed_Amount__c` and blank `Adjustment_Reason__c` fails with the validation rule (SC-2) | `AssessorSubsidyControllerTest.overrideReasonRequiredOnDivergence` | ✅ | _pending_ |
-| INT-024-C9 | Saving with matching amounts and no reason passes; `Decision_Source__c` reads `calculator` (SC-3) | `AssessorSubsidyControllerTest.calculatorPathNoOverride` | ✅ | _pending_ |
-| INT-024-C10 | Haversine helper returns correct great-circle distance (known fixture: Paris ↔ Lyon ≈ 393 km, within 2% tolerance) | `AssessorSubsidyControllerTest.haversineAgainstKnownFixture` | ✅ | _pending_ |
-| INT-024-C11 | `assessorSubsidyCalculator` LWC bundle exists with target `lightning__RecordPage` and resolves on deploy | org-probe | ✅ | _pending_ |
-| INT-024-C12 | `Assessor_Base` permset grants R/E on `Decision_Source__c` and classAccess on `AssessorSubsidyController` | org-probe | ✅ | _pending_ |
+| INT-024-C1 | `Subsidy_Determination_Rule__c.Distance_Min_Km__c`, `Distance_Max_Km__c`, `Base_Amount__c` exist with the design-specified types (build target — rule table extension) | org-probe | ✅ | verify — green / 2026-10-06 / test-evidence/2026-10-06-a78d0c3-org-probe.md |
+| INT-024-C2 | `Subsidy_Application__c.Decision_Source__c` exists as a formula field returning `calculator` when `Approved_Amount__c = Proposed_Amount__c`, else `manual` (SC-3) | org-probe + Apex test `decisionSourceReadsManualOnDivergence` | ✅ | verify — green / 2026-10-06 / test-evidence/2026-10-06-a78d0c3-org-probe.md |
+| INT-024-C3 | Validation rule `Override_Needs_Reason` exists on `Subsidy_Application__c` (guardrail — override reason required) | org-probe | ✅ | verify — green / 2026-10-06 / test-evidence/2026-10-06-a78d0c3-org-probe.md |
+| INT-024-C4 | `AssessorSubsidyController.recalculate` returns the correct proposed amount for a seeded `(EMEA, Road, 180km)` tuple → 1,200 EUR (acceptance scene, SC-1 — picklist values per 2026-10-06 ratification: shipped `Road` substitutes for intent's "long-distance ground") | `AssessorSubsidyControllerTest.recalculateEmeaRoad180km` | ✅ | CI — green via deploy `0AfoB0000012UZJSA2` / 2026-10-06 |
+| INT-024-C5 | `AssessorSubsidyController.recalculate` returns the correct proposed amount for `(EMEA, Air, 180km)` → 2,400 EUR (acceptance scene) | `AssessorSubsidyControllerTest.recalculateEmeaAir180km` | ✅ | CI — green via deploy `0AfoB0000012UZJSA2` / 2026-10-06 |
+| INT-024-C6 | `recalculate` does **not** modify the record (SC-1 — proposal lives in-memory until Assessor saves) | `AssessorSubsidyControllerTest.recalculateDoesNotPersist` | ✅ | CI — green via deploy `0AfoB0000012UZJSA2` / 2026-10-06 |
+| INT-024-C7 | `recalculate` throws a clear error when no rule row matches (missing config is loud, not silent) | `AssessorSubsidyControllerTest.recalculateThrowsOnMissingRule` | ✅ | CI — green via deploy `0AfoB0000012UZJSA2` / 2026-10-06 |
+| INT-024-C8 | Saving a `Subsidy_Application__c` with `Approved_Amount__c ≠ Proposed_Amount__c` and blank `Adjustment_Reason__c` fails with the validation rule (SC-2) | `AssessorSubsidyControllerTest.overrideReasonRequiredOnDivergence` | ✅ | CI — green via deploy `0AfoB0000012UZJSA2` / 2026-10-06 |
+| INT-024-C9 | Saving with matching amounts and no reason passes; `Decision_Source__c` reads `calculator` (SC-3) | `AssessorSubsidyControllerTest.calculatorPathNoOverride` | ✅ | CI — green via deploy `0AfoB0000012UZJSA2` / 2026-10-06 |
+| ~~INT-024-C10~~ | ~~Haversine helper~~ — **dropped per 2026-10-06 design ratification**: `Subsidy_Application__c` has no Facility reference, so v1 uses manually entered `Distance_Km__c`. Follow-up when Facility model lands. | n/a | — | — |
+| INT-024-C11 | `assessorSubsidyCalculator` LWC bundle exists with target `lightning__RecordPage` and resolves on deploy | org-probe | ✅ | verify — green / 2026-10-06 / test-evidence/2026-10-06-a78d0c3-org-probe.md |
+| INT-024-C12 | `Assessor_Base` permset grants R/E on `Decision_Source__c` and classAccess on `AssessorSubsidyController` | org-probe | ✅ | verify — green / 2026-10-06 / test-evidence/2026-10-06-a78d0c3-org-probe.md |
 | INT-024-C13 | End-to-end: Assessor opens an EMEA Subsidy_Application with distance 180km and transport `long-distance ground`, clicks Recalculate → sees 1,200 EUR, changes transport to `air`, clicks Recalculate → sees 2,400 EUR, approves at 2,400 with an Adjustment Reason, record saves, `Decision_Source__c = manual`, INT-014's threshold Approval Process routes to EMEA Team Manager (acceptance) | Manual scene A | 👁 | _pending_ |
 
 ### Deliberately not tested (out of scope)
@@ -57,9 +57,9 @@ authored: 2026-10-06
 
 ### Scene A — End-to-end calculator + override + hand-off (criterion C13)
 
-1. Log in as an Assessor-persona user with `Assessor_Base`. Open an EMEA Subsidy_Application whose `Distance_Km__c` is 180 and `Transport_Type__c` is `long-distance ground` (seed data).
-2. Click **Recalculate** on the calculator panel — confirm the `Proposed Amount` field in the form updates to **1,200 EUR** without saving the record (verify by refreshing the page in a parallel tab — the record still has its pre-click value until Step 5).
-3. Change `Transport_Type__c` on the form to `air`. Click **Recalculate** — confirm `Proposed Amount` updates to **2,400 EUR**.
+1. Log in as an Assessor-persona user with `Assessor_Base`. Open an EMEA Subsidy_Application whose `Distance_Km__c` is 180 and `Transport_Type__c` is `Road` (seed data).
+2. Click **Recalculate** on the calculator panel — confirm the panel surfaces **1,200 EUR** as the proposed amount (v1 UX: the LWC displays the proposal; Assessor types Approved Amount on the standard record form). The record is not saved.
+3. Change `Transport_Type__c` on the record to `Air` and save. Click **Recalculate** — confirm the panel surfaces **2,400 EUR**.
 4. Attempt to save with `Approved Amount = 2,400` and **blank** `Adjustment Reason` — confirm the validation rule fires with the "Adjustment Reason is required…" error.
 5. Enter `Adjustment Reason = "clinical need — air transport approved"`, set `Approved Amount = 2,400`, save. Confirm the record persists with `Proposed_Amount__c = 1,200`, `Approved_Amount__c = 2,400`, `Decision_Source__c = manual`.
 6. Confirm INT-014's threshold Approval Process routes the record to the EMEA Team Manager (the approval request appears in that user's queue). This observes the INT-014 seam; it does not re-prove INT-014's logic.

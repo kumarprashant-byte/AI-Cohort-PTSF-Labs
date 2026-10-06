@@ -1,0 +1,34 @@
+<template>
+    <lightning-card title="Subsidy Calculator" icon-name="utility:money">
+        <div class="slds-p-around_medium">
+            <p class="slds-text-body_small slds-m-bottom_small">
+                Proposes an amount from the application's Region, Transport Type, and Distance.
+                Enter the Approved Amount on the record; a difference requires an Adjustment Reason.
+            </p>
+
+            <lightning-button
+                label="Recalculate"
+                variant="brand"
+                onclick={handleRecalculate}
+                disabled={inFlight}>
+            </lightning-button>
+
+            <template lwc:if={hasResult}>
+                <div class="slds-m-top_medium slds-box slds-theme_shade">
+                    <p class="slds-text-title_bold">Proposed: {result.proposedAmount}</p>
+                    <p class="slds-text-body_small slds-m-top_x-small">{result.basis}</p>
+                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                        Rule: {result.ruleName}
+                    </p>
+                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                        Not saved yet — enter the Approved Amount on the record and save.
+                    </p>
+                </div>
+            </template>
+
+            <template lwc:if={error}>
+                <div class="slds-m-top_medium slds-text-color_destructive">{error}</div>
+            </template>
+        </div>
+    </lightning-card>
+</template>
