@@ -2,6 +2,7 @@
 intent: INT-024
 phase: 3
 authored: 2026-10-06
+proof_hash: b491ec39c0fa
 ---
 
 # INT-024 — Test script
@@ -22,10 +23,9 @@ authored: 2026-10-06
 | INT-024-C7 | `recalculate` throws a clear error when no rule row matches (missing config is loud, not silent) | `AssessorSubsidyControllerTest.recalculateThrowsOnMissingRule` | ✅ | CI — green via deploy `0AfoB0000012UZJSA2` / 2026-10-06 |
 | INT-024-C8 | Saving a `Subsidy_Application__c` with `Approved_Amount__c ≠ Proposed_Amount__c` and blank `Adjustment_Reason__c` fails with the validation rule (SC-2) | `AssessorSubsidyControllerTest.overrideReasonRequiredOnDivergence` | ✅ | CI — green via deploy `0AfoB0000012UZJSA2` / 2026-10-06 |
 | INT-024-C9 | Saving with matching amounts and no reason passes; `Decision_Source__c` reads `calculator` (SC-3) | `AssessorSubsidyControllerTest.calculatorPathNoOverride` | ✅ | CI — green via deploy `0AfoB0000012UZJSA2` / 2026-10-06 |
-| ~~INT-024-C10~~ | ~~Haversine helper~~ — **dropped per 2026-10-06 design ratification**: `Subsidy_Application__c` has no Facility reference, so v1 uses manually entered `Distance_Km__c`. Follow-up when Facility model lands. | n/a | — | — |
 | INT-024-C11 | `assessorSubsidyCalculator` LWC bundle exists with target `lightning__RecordPage` and resolves on deploy | org-probe | ✅ | verify — green / 2026-10-06 / test-evidence/2026-10-06-a78d0c3-org-probe.md |
 | INT-024-C12 | `Assessor_Base` permset grants R/E on `Decision_Source__c` and classAccess on `AssessorSubsidyController` | org-probe | ✅ | verify — green / 2026-10-06 / test-evidence/2026-10-06-a78d0c3-org-probe.md |
-| INT-024-C13 | End-to-end: Assessor opens an EMEA Subsidy_Application with distance 180km and transport `long-distance ground`, clicks Recalculate → sees 1,200 EUR, changes transport to `air`, clicks Recalculate → sees 2,400 EUR, approves at 2,400 with an Adjustment Reason, record saves, `Decision_Source__c = manual`, INT-014's threshold Approval Process routes to EMEA Team Manager (acceptance) | Manual scene A | 👁 | _pending_ |
+| INT-024-C13 | End-to-end: Assessor opens an EMEA Subsidy_Application with distance 180km and transport `long-distance ground`, clicks Recalculate → sees 1,200 EUR, changes transport to `air`, clicks Recalculate → sees 2,400 EUR, approves at 2,400 with an Adjustment Reason, record saves, `Decision_Source__c = manual`, INT-014's threshold Approval Process routes to EMEA Team Manager (acceptance) | Manual scene A | 👁 | Prashant Kumar / 2026-10-06 / pass / test-evidence/2026-10-06-f2befe0-execution-report.md |
 
 ### Deliberately not tested (out of scope)
 
