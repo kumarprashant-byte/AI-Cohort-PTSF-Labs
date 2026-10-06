@@ -34,7 +34,7 @@ Then start building: `/ql-start-intent INT-001`. Not sure what's next at any poi
 
 _Derived view — intent titles from `intents/`, status from `delivery/intent-ledger.md`. The ledger stays canonical; this block is regenerated, never hand-edited._
 
-**26 intents** across phase(s) 1, 2, 3, 4, 5.
+**27 intents** across phase(s) 1, 2, 3, 4, 5.
 
 ### Phase 1
 
@@ -45,7 +45,8 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 | INT-003 | ✅ Delivered | local/INT-003+expcloud-deferred | Patient and practitioner login (email/password, Facebook, and partner path) |
 | INT-004 | ✅ Delivered | local-orgfarm-2026-09-29 | PHI security foundation — Medical_History__c Private OWD, Restriction Rule, break-glass permission set |
 | INT-005 | ✅ Delivered | sandbox-verify:2026-09-30+2-manual-scenes-pending | Regional user model and role hierarchy |
-| INT-026 | ⬜ Not started | — | PTSF-internal PHI blockout — provable denial path on Medical_History__c |
+| INT-026 | 🔧 In progress | — | PTSF-internal PHI blockout — in-platform denial-path proof on Medical_History__c |
+| INT-027 | ⬜ Not started | — | PHI blockout Layer 2 — off-platform APIs + CI matrix |
 
 ### Phase 2
 
