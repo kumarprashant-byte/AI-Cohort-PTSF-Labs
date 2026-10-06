@@ -41,6 +41,6 @@ Status: ⬜ Not started · 🔧 In progress · ✅ Delivered · 🔄 Needs re-ve
 | INT-023 | 4 | ⬜ Not started | — | — | — |
 | INT-024 | 4 | ⬜ Not started | — | — | — |
 | INT-025 | 5 | ⬜ Not started | — | — | — |
-| INT-026 | 1 | ⬜ Not started | — | — | — |
+| INT-026 | 1 | 🔧 In progress | — | — | — |
 
 _26 intents across phase(s) 1, 2, 3, 4, 5. Seeded from `intents/`._
