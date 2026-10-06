@@ -52,21 +52,21 @@ public with sharing class AssessorFaqController {
         if (caseId == null || String.isBlank(message)) {
             throw new AuraHandledException('Case id and message are required.');
         }
-        FeedItem fi = new FeedItem(
+        CaseComment cc = new CaseComment(
             ParentId = caseId,
-            Body = message,
-            Type = 'TextPost'
+            CommentBody = message,
+            IsPublished = true
         );
-        insert fi;
-        return fi.Id;
+        insert cc;
+        return cc.Id;
     }
 
     @AuraEnabled(cacheable=false)
-    public static List<FeedItem> getReplies(Id caseId) {
-        if (caseId == null) return new List<FeedItem>();
+    public static List<CaseComment> getReplies(Id caseId) {
+        if (caseId == null) return new List<CaseComment>();
         return [
-            SELECT Id, Body, CreatedById, CreatedBy.Name, CreatedDate
-            FROM FeedItem
+            SELECT Id, CommentBody, CreatedById, CreatedBy.Name, CreatedDate
+            FROM CaseComment
             WHERE ParentId = :caseId
             ORDER BY CreatedDate DESC
             LIMIT 200

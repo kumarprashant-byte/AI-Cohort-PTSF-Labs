@@ -1,19 +1,13 @@
 @IsTest(SeeAllData=false)
 private class AssessorFaqControllerTest {
 
-    @TestSetup
-    static void setup() {
-        Group q = new Group(
-            Name = 'Assessor Chat Queue',
-            DeveloperName = 'Assessor_Chat_Queue',
-            Type = 'Queue'
-        );
-        insert q;
-        insert new QueueSobject(QueueId = q.Id, SobjectType = 'Case');
-    }
+    // No @TestSetup — the Assessor_Chat_Queue is a metadata-deployed Queue that
+    // already exists in the org. Apex tests cannot see Setup-type Group records
+    // written by @TestSetup against a Queue that already exists (DUPLICATE_DEVELOPER_NAME),
+    // and the real Queue IS visible to the test runtime, so just resolve it live.
 
     private static Id queueId() {
-        return [SELECT Id FROM Group WHERE DeveloperName = 'Assessor_Chat_Queue' LIMIT 1].Id;
+        return [SELECT Id FROM Group WHERE DeveloperName = 'Assessor_Chat_Queue' AND Type = 'Queue' LIMIT 1].Id;
     }
 
     @IsTest
@@ -77,16 +71,16 @@ private class AssessorFaqControllerTest {
     static void replyRoundTrip() {
         Id caseId = AssessorFaqController.createChatCase('general question');
         Test.startTest();
-        Id feedId = AssessorFaqController.postReply(caseId, 'hello from assessor');
+        Id commentId = AssessorFaqController.postReply(caseId, 'hello from assessor');
         Test.stopTest();
 
-        List<FeedItem> replies = AssessorFaqController.getReplies(caseId);
+        List<CaseComment> replies = AssessorFaqController.getReplies(caseId);
         System.assert(replies.size() >= 1, 'Expected at least one reply');
         Boolean found = false;
-        for (FeedItem fi : replies) {
-            if (fi.Id == feedId && fi.Body == 'hello from assessor') { found = true; break; }
+        for (CaseComment cc : replies) {
+            if (cc.Id == commentId && cc.CommentBody == 'hello from assessor') { found = true; break; }
         }
-        System.assert(found, 'Posted FeedItem not returned by getReplies');
+        System.assert(found, 'Posted CaseComment not returned by getReplies');
     }
 
     @IsTest

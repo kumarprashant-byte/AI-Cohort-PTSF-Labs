@@ -1,5 +1,5 @@
 import { LightningElement, wire, track } from 'lwc';
-import { ShowToastEvent } from 'lightning/platformShowToast';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getFaqs from '@salesforce/apex/AssessorFaqController.getFaqs';
 import createChatCase from '@salesforce/apex/AssessorFaqController.createChatCase';
 import postReply from '@salesforce/apex/AssessorFaqController.postReply';
