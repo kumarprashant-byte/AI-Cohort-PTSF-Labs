@@ -1,0 +1,100 @@
+<template>
+    <lightning-card title="FAQ & Chat with an Assessor" icon-name="utility:chat">
+        <div class="slds-p-around_medium">
+
+            <template lwc:if={faqs.data}>
+                <lightning-accordion allow-multiple-sections-open>
+                    <template for:each={faqs.data} for:item="faq">
+                        <lightning-accordion-section key={faq.DeveloperName} name={faq.DeveloperName} label={faq.Topic__c}>
+                            <lightning-formatted-text value={faq.Answer_Body__c}></lightning-formatted-text>
+                        </lightning-accordion-section>
+                    </template>
+                </lightning-accordion>
+            </template>
+
+            <div class="slds-m-top_medium">
+                <lightning-textarea
+                    name="question"
+                    label="Ask something"
+                    placeholder="Type your question — we'll try to answer it from the FAQ."
+                    value={questionDraft}
+                    onchange={handleQuestionChange}>
+                </lightning-textarea>
+
+                <div class="slds-m-top_small">
+                    <lightning-button
+                        label="Check FAQ"
+                        variant="neutral"
+                        onclick={handleCheckFaq}
+                        class="slds-m-right_x-small">
+                    </lightning-button>
+                    <lightning-button
+                        label="Chat with an Assessor"
+                        variant="brand"
+                        onclick={handleChatClick}
+                        disabled={chatInFlight}>
+                    </lightning-button>
+                </div>
+            </div>
+
+            <template lwc:if={inlineMatch}>
+                <div class="slds-m-top_medium slds-box slds-theme_shade">
+                    <p class="slds-text-title_bold">{inlineMatch.Topic__c}</p>
+                    <lightning-formatted-text value={inlineMatch.Answer_Body__c}></lightning-formatted-text>
+                </div>
+            </template>
+
+            <template lwc:elseif={noMatchNote}>
+                <div class="slds-m-top_medium slds-text-color_weak">
+                    I don't know this one — try <strong>Chat with an Assessor</strong>.
+                </div>
+            </template>
+
+            <template lwc:if={activeCaseId}>
+                <div class="slds-m-top_medium slds-box">
+                    <p class="slds-text-title_bold">
+                        <template lwc:if={phiNotice}>Please do not share clinical details here.</template>
+                        <template lwc:else>Chat opened — an Assessor will reply here.</template>
+                    </p>
+                    <p class="slds-text-body_small slds-m-top_x-small">Case: {activeCaseId}</p>
+
+                    <div class="slds-m-top_small">
+                        <lightning-textarea
+                            name="reply"
+                            label="Reply"
+                            value={replyDraft}
+                            onchange={handleReplyChange}>
+                        </lightning-textarea>
+                        <div class="slds-m-top_x-small">
+                            <lightning-button
+                                label="Send"
+                                variant="brand"
+                                onclick={handleReplySubmit}
+                                class="slds-m-right_x-small">
+                            </lightning-button>
+                            <lightning-button
+                                label="Refresh"
+                                variant="neutral"
+                                onclick={refreshReplies}>
+                            </lightning-button>
+                        </div>
+                    </div>
+
+                    <template lwc:if={replies.length}>
+                        <ul class="slds-m-top_medium">
+                            <template for:each={replies} for:item="r">
+                                <li key={r.Id} class="slds-m-bottom_small">
+                                    <p class="slds-text-body_small slds-text-color_weak">
+                                        {r.CreatedBy.Name} · {r.CreatedDate}
+                                    </p>
+                                    <lightning-formatted-text value={r.CommentBody}></lightning-formatted-text>
+                                </li>
+                            </template>
+                        </ul>
+                    </template>
+                </div>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

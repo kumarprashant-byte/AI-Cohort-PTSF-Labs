@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Required Documents</label>
+    <protected>false</protected>
+    <values>
+        <field>Topic__c</field>
+        <value xsi:type="xsd:string">Required Documents</value>
+    </values>
+    <values>
+        <field>Trigger_Phrases__c</field>
+        <value xsi:type="xsd:string">required documents;what documents;what paperwork;what forms;do I need to submit;supporting documents</value>
+    </values>
+    <values>
+        <field>Answer_Body__c</field>
+        <value xsi:type="xsd:string">A Subsidy Application requires: a signed Travel Support Request, proof of residence, and the referring practitioner's signed letter. Attach them to the Application record via the Files related list — the Assessor will see them automatically. If a document is missing, the Application stays in "In Review" rather than moving to "Assigned".</value>
+    </values>
+</CustomMetadata>

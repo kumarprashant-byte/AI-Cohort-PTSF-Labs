@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Assessment Timeline</label>
+    <protected>false</protected>
+    <values>
+        <field>Topic__c</field>
+        <value xsi:type="xsd:string">Assessment Timeline</value>
+    </values>
+    <values>
+        <field>Trigger_Phrases__c</field>
+        <value xsi:type="xsd:string">when does my assessment close;how long does the assessment take;assessment timeline;how long until decision;turnaround;SLA</value>
+    </values>
+    <values>
+        <field>Answer_Body__c</field>
+        <value xsi:type="xsd:string">Once an Assignment is Accepted by a practitioner, the Assessment has a 15-business-day window to reach "Pending Review". After the Assessor signs off, decision is typically within 5 further business days. Timelines reset if additional documents are requested. You can see the exact dates on the Assessment record.</value>
+    </values>
+</CustomMetadata>
