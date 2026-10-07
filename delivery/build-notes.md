@@ -70,3 +70,9 @@ new automation/lifecycle intent, and append engagement-specific ones as you hit 
   write meets Flow B's entry criteria), inserting a record mid-lifecycle auto-runs downstream
   automation and pollutes state for a test meant to exercise one piece. Seed at an inert status
   (e.g. `Draft`) that triggers nothing when you need isolation.
+- **Orgfarm Case custom-field deploy may silently no-op.** `sf project deploy start` with a CustomField
+  on Case can report "Succeeded, 1/1 component deployed" against an orgfarm sandbox while leaving no
+  trace in the schema (zero `__c` fields visible via `getDescribe().fields.getMap()`, SOQL, or
+  `FieldDefinition`). Hit on 2026-10-06 deploying `Case.PHI_Flagged__c` from develop (INT-026/027) —
+  three deploy IDs all reported success; field never materialized. Confirm post-deploy via SOQL or
+  Setup → Object Manager → Case, not the CLI's summary table.
