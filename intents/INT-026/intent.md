@@ -5,7 +5,7 @@ epic: E09
 confidence: draft
 origin: local
 title: PTSF-internal PHI blockout — in-platform denial-path proof on Medical_History__c
-ratified: 2026-10-06 by Prashant Kumar @ 51e72110fb87
+ratified: 2026-10-07 by Prashant Kumar @ 6c56f219d145
 ---
 
 # INT-026 — PTSF-internal PHI blockout — in-platform denial-path proof on Medical_History__c
@@ -16,9 +16,10 @@ The "PTSF internal users cannot see medical history" promise is proved by test a
 
 ## Build target
 
-- An automated Apex denial-path test suite exercising every in-platform surface a PTSF internal user could use to reach `Medical_History__c`: record page, related list, list view, standard report, custom report, dashboard, SOSL global search, ContentDocument search
-- One test method per profile in scope: System Administrator (with View All), Assessor, Team Manager, Regional Ops, Standard User
-- Break-glass path tested in Apex: a Compliance Officer with the `PHI Emergency Access` permission set CAN see the record, and the `Audit_Log__c` write lands in the same transaction as the read
+- An automated Apex denial-path test suite exercising every in-platform surface a PTSF-internal non-admin user could use to reach `Medical_History__c`: record page, related list, list view, standard report, custom report, dashboard, SOSL global search, ContentDocument search
+- One test method per non-admin profile in scope: Assessor, Team Manager, Regional Ops Manager, Standard User. System Administrator is explicitly excluded — Restriction Rules do not bind "View All Data" holders; admin access is governed by the compensating controls named in Grounding
+- Break-glass path, Apex-provable half: assigning the `PHI Emergency Access` permission set to a Compliance Officer writes an `Audit_Log__c` row with `Action__c = 'Break_Glass_Grant'` in the same transaction as the assignment
+- Break-glass path, 👁 manual half: a named Compliance Officer activates the session-based `PHI Emergency Access` permission set in a sandbox and reads a `Medical_History__c` record end-to-end — recorded via `/ql-record-test-execution`. The permission set is session-based (`hasActivationRequired=true`), so the read side cannot be exercised in Apex and must be proved by a human run
 
 ## Guardrails
 
@@ -35,13 +36,14 @@ The "PTSF internal users cannot see medical history" promise is proved by test a
 
 ## Acceptance
 
-The in-platform Apex suite runs green: for every (profile × in-platform surface) cell where the profile is a PTSF internal, `Medical_History__c` is unreachable — 0 rows returned, no error disclosure, no sideways leak via related lists or SOSL. For the Compliance Officer with the break-glass permission set, the record IS reachable AND an `Audit_Log__c` row with `Action__c = 'Break_Glass_Grant'` is confirmed written in the same transaction as the first read. The Apex test classes run green under `sf project deploy start --test-level RunSpecifiedTests` in CI.
+The in-platform Apex suite runs green: for every (non-admin PTSF-internal profile × in-platform surface) cell, `Medical_History__c` is unreachable — 0 rows returned, no error disclosure, no sideways leak via related lists or SOSL. Apex-provable break-glass: assigning `PHI Emergency Access` to a Compliance Officer writes exactly one `Audit_Log__c` row with `Action__c = 'Break_Glass_Grant'` in the same transaction as the assignment. Manual break-glass: a named Compliance Officer activates the session-based permission set in a sandbox, reads a `Medical_History__c` record, and the run is recorded under `intents/INT-026/test-evidence/` with a human sign-off. The Apex test classes run green under `sf project deploy start --test-level RunSpecifiedTests` in CI.
 
 ## Success criteria
 
-- SC-1: Every (profile × in-platform surface) Apex cell for a PTSF-internal profile returns zero `Medical_History__c` rows.
+- SC-1: Every (non-admin PTSF-internal profile × in-platform surface) Apex cell returns zero `Medical_History__c` rows. System Administrator is out of SC-1 — covered by the compensating controls in Grounding.
 - SC-2: No surface returns an error that discloses record existence or field names.
-- SC-3: The break-glass grant for a Compliance Officer writes an `Audit_Log__c` row in the same transaction as the first read; a read without the paired log is a test failure.
+- SC-3a: Assigning the break-glass permission set to a Compliance Officer writes exactly one `Audit_Log__c` row with `Action__c = 'Break_Glass_Grant'` in the same transaction as the assignment. Apex-provable.
+- SC-3b: A named Compliance Officer activates the session-based `PHI Emergency Access` permission set in a sandbox and reads a `Medical_History__c` record; the run is recorded with a human sign-off. 👁 manual — the session-based activation (`hasActivationRequired=true`) is not exercisable in Apex.
 - SC-4: The suite runs green in the PR CI deploy-validate path on any change touching INT-004 metadata (profiles, Restriction Rules, permission sets, sharing settings).
 
 ## Dependencies
@@ -60,3 +62,5 @@ _none_
 ## Grounding
 
 - INT-004 (✅ Delivered) implemented Private OWD + Apex-managed sharing + Restriction Rules + the break-glass permission set. INT-004's acceptance walked the positive path and the SysAdmin-blocked path, but did not establish a repeatable multi-surface denial matrix. This intent closes that gap on the in-platform side; INT-027 extends it to off-platform API surfaces.
+- **System Administrator excluded from SC-1 by platform design.** Restriction Rules do not apply to users with "View All Data" / "Modify All Data" ([Salesforce docs — Restriction Rule considerations](https://help.salesforce.com/s/articleView?id=sf.security_restriction_rule_considerations.htm)). Admin PHI access is governed by compensating controls: a short named-admin roster, Setup Audit Trail retention, and (if adopted) Shield Platform Encryption key separation. Those controls are owned outside this intent; see `decisions/2026-10-07-INT-026-vad-and-session-ps-refine.md`.
+- **Break-glass read is session-based.** `PHI_Emergency_Access.permissionset-meta.xml` carries `<hasActivationRequired>true</hasActivationRequired>`. A `PermissionSetAssignment` alone does not activate it; the user must activate the session (UI or `SessionPermSetActivation`). `UserInfo.getSessionId()` is null in Apex tests, so the end-to-end read cannot be exercised in Apex — hence SC-3b is 👁 manual, not ✅ Apex.

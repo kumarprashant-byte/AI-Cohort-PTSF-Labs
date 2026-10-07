@@ -2,7 +2,9 @@
 intent: INT-026
 criterion: INT-026-C1
 severity: major
-status: open
+status: not-a-defect
+resolution: decisions/2026-10-07-INT-026-vad-and-session-ps-refine.md
+resolved_at: 2026-10-07
 found_by: Prashant Kumar
 found_at: 2026-10-06
 environment: ptsf (orgfarm epic.out.e68d765f4115)
