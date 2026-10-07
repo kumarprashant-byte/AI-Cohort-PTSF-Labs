@@ -73,6 +73,10 @@ new automation/lifecycle intent, and append engagement-specific ones as you hit 
 - **Orgfarm Case custom-field deploy may silently no-op.** `sf project deploy start` with a CustomField
   on Case can report "Succeeded, 1/1 component deployed" against an orgfarm sandbox while leaving no
   trace in the schema (zero `__c` fields visible via `getDescribe().fields.getMap()`, SOQL, or
-  `FieldDefinition`). Hit on 2026-10-06 deploying `Case.PHI_Flagged__c` from develop (INT-026/027) —
-  three deploy IDs all reported success; field never materialized. Confirm post-deploy via SOQL or
-  Setup → Object Manager → Case, not the CLI's summary table.
+  `FieldDefinition`). Hit on 2026-10-06/07 deploying `Case.PHI_Flagged__c` (INT-028): four deploy IDs
+  across both source-format and mdapi-format deploys all reported success; field never materialized.
+  Diagnostic twist: an Apex class that references the field will deploy and go `Status=Active` because
+  the deploy validation step sees the field in-transaction, so Apex *compile* succeeds — but anonymous
+  Apex that references the field later fails with `Variable does not exist`. The sandbox is accepting
+  the deploy at validation and dropping the Case field at commit. Confirm post-deploy via dynamic SOQL
+  on `FieldDefinition` or anonymous `new Case(PHI_Flagged__c = true)`, not the CLI summary table.
