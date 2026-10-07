@@ -2,7 +2,10 @@
 intent: INT-026
 criterion: INT-026-C3
 severity: major
-status: open
+status: not-a-defect
+resolution: decisions/2026-10-07-INT-026-vad-and-session-ps-refine.md
+resolved_at: 2026-10-07
+notes: C3 split into C3a (Apex PSA audit, now ✅) and C3b (manual session-activated read, now 👁 awaiting Compliance Officer sign-off). The read-side failure here is a platform-expected consequence of session-based activation, not a defect.
 found_by: Prashant Kumar
 found_at: 2026-10-06
 environment: ptsf (orgfarm epic.out.e68d765f4115)

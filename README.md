@@ -69,7 +69,7 @@ _Derived view — intent titles from `intents/`, status from `delivery/intent-le
 | INT-019 | ✅ Delivered | local-orgfarm-2026-09-29 | Practitioner temporary access to medical history via Apex-managed sharing on Assignment__c |
 | INT-020 | ✅ Delivered | local/INT-020 | Region scoping and OWD sharing on subsidy/assignment/assessment objects |
 | INT-022 | ✅ Delivered | local-build:1d63a25 | PTSF unified application — end-to-end patient subsidy lifecycle UI |
-| INT-028 | ⬜ Not started | — | Assessor chat with FAQ deflection |
+| INT-028 | 🔧 In progress | — | Assessor chat with FAQ deflection |
 
 ### Phase 4
 
